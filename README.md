@@ -8,7 +8,7 @@ docker build -t apitool-ui:latest .
 ```
 - 启动服务
 ```shell
-docker run --name wstool-ui --restart=always -p 3001:3000 wstool-ui:latest
+docker run --name apitool-ui --restart=always -p 3002:3000 apitool-ui:latest
 ```
 
 
