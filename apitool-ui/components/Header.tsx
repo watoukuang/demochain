@@ -26,22 +26,22 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
     // Horizontal navigation menu
     const menuItems: { name: string; href: string; icon: React.ReactNode }[] = [
         {
-            name: '接口模拟',
+            name: '接口测试',
             href: '/',
             icon: (
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                          d="M15 17h5l-5 5v-5zM4 19h5v-5H4v5zM13 7h5l-5-5v5zM4 1h5v5H4V1z"/>
+                          d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
                 </svg>
             ),
         },
         {
-            name: '接口测试',
-            href: '/sender',
+            name: '接口模拟',
+            href: '/mock',
             icon: (
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                          d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                          d="M15 17h5l-5 5v-5zM4 19h5v-5H4v5zM13 7h5l-5-5v5zM4 1h5v5H4V1z"/>
                 </svg>
             ),
         },
