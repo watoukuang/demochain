@@ -12,10 +12,10 @@ export default function Footer(): React.ReactElement {
                         <div className="flex items-center gap-2 mb-2">
                             <Logo/>
                             <span
-                                className="text-base md:text-lg font-semibold text-gray-900 dark:text-white">ApiTool</span>
+                                className="text-base md:text-lg font-semibold text-gray-900 dark:text-white">Demo Chain</span>
                         </div>
                         <div className="space-y-1.5 text-xs md:text-[13px] text-gray-600 dark:text-gray-400">
-                            <p>© {new Date().getFullYear()} ApiTool · API Mock 平台</p>
+                            <p>© {new Date().getFullYear()} demochain.org· 区块链演示平台</p>
                         </div>
                     </div>
 

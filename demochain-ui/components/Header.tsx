@@ -11,50 +11,78 @@ import NetworkIcon from './icons/NetworkIcon';
 import CoinIcon from './icons/CoinIcon';
 import TokenIcon from './icons/TokenIcon';
 
-const MENU_ITEMS: { name: string; href: string; icon: React.ReactNode }[] = [
-    {
-        name: '哈希',
-        href: '/',
-        icon: (
-            <HashIcon className="w-5 h-5"/>
-        ),
-    },
-    {
-        name: '区块',
-        href: '/block',
-        icon: (
-            <BlockIcon className="w-5 h-5"/>
-        ),
-    },
-    {
-        name: '区块链',
-        href: '/blockchain',
-        icon: (
-            <ChainIcon className="w-5 h-5"/>
-        ),
-    },
-    {
-        name: '分布式',
-        href: '/distribution',
-        icon: (
-            <NetworkIcon className="w-5 h-5"/>
-        ),
-    },
-    {
-        name: '代币',
-        href: '/token',
-        icon: (
-            <TokenIcon className="w-5 h-5"/>
-        ),
-    },
-    {
-        name: '币基',
-        href: '/coinbase',
-        icon: (
-            <CoinIcon className="w-5 h-5"/>
-        ),
-    }
-];
+type Consensus = 'POW' | 'POS' | 'DPoS' | 'BFT' | 'POH'
+
+const MENUS: Record<Consensus, { name: string; href: string; icon: React.ReactNode }[]> = {
+    POW: [
+        {name: '哈希', href: '/', icon: (<HashIcon className="w-5 h-5"/>)},
+        {name: '区块', href: '/block', icon: (<BlockIcon className="w-5 h-5"/>)},
+        {name: '区块链', href: '/blockchain', icon: (<ChainIcon className="w-5 h-5"/>)},
+        {name: '分布式', href: '/distribution', icon: (<NetworkIcon className="w-5 h-5"/>)},
+        {name: '代币', href: '/token', icon: (<TokenIcon className="w-5 h-5"/>)},
+        {name: '币基', href: '/coinbase', icon: (<CoinIcon className="w-5 h-5"/>)},
+    ],
+    POS: [
+        {name: '质押池', href: '/pos/staking', icon: (<CoinIcon className="w-5 h-5"/>)},
+        {name: '验证者', href: '/pos/validators', icon: (<NetworkIcon className="w-5 h-5"/>)},
+        {name: '委托投票', href: '/pos/delegation', icon: (<TokenIcon className="w-5 h-5"/>)},
+        {name: '惩罚机制', href: '/pos/slashing', icon: (<HashIcon className="w-5 h-5"/>)},
+        {name: '区块链', href: '/pos/chain', icon: (<ChainIcon className="w-5 h-5"/>)},
+    ],
+    DPoS: [
+        {name: '候选人', href: '/dpos/candidates', icon: (<NetworkIcon className="w-5 h-5"/>)},
+        {name: '出块轮次', href: '/dpos/rounds', icon: (<HashIcon className="w-5 h-5"/>)},
+        {name: '投票与权重', href: '/dpos/vote', icon: (<TokenIcon className="w-5 h-5"/>)},
+        {name: '区块链', href: '/dpos/chain', icon: (<ChainIcon className="w-5 h-5"/>)},
+    ],
+    BFT: [
+        {name: '节点状态', href: '/bft/nodes', icon: (<NetworkIcon className="w-5 h-5"/>)},
+        {name: 'BFT 流程', href: '/bft/steps', icon: (<HashIcon className="w-5 h-5"/>)},
+        {name: '最终性', href: '/bft/finality', icon: (<CoinIcon className="w-5 h-5"/>)},
+        {name: '区块链', href: '/bft/chain', icon: (<ChainIcon className="w-5 h-5"/>)},
+    ],
+    POH: [
+        {name: '时序证明', href: '/poh/timeline', icon: (<HashIcon className="w-5 h-5"/>)},
+        {name: 'VDF 演示', href: '/poh/vdf', icon: (<TokenIcon className="w-5 h-5"/>)},
+        {name: '并行验证', href: '/poh/parallel', icon: (<NetworkIcon className="w-5 h-5"/>)},
+        {name: '区块链', href: '/poh/chain', icon: (<ChainIcon className="w-5 h-5"/>)},
+    ],
+}
+
+const CONSENSUS_ICON: Record<Consensus, React.ReactNode> = {
+    POW: (
+        <svg className="h-3.5 w-3.5 text-yellow-500" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z"/>
+        </svg>
+    ),
+    POS: (
+        <svg className="h-3.5 w-3.5 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             strokeWidth="2">
+            <path d="M12 3l7 4v5c0 5-3.5 9-7 9s-7-4-7-9V7l7-4z"/>
+            <path d="M9 12l2 2 4-4"/>
+        </svg>
+    ),
+    DPoS: (
+        <svg className="h-3.5 w-3.5 text-indigo-500" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             strokeWidth="2">
+            <path d="M3 7h18M6 12h12M9 17h6"/>
+            <rect x="4" y="4" width="16" height="16" rx="3"/>
+        </svg>
+    ),
+    BFT: (
+        <svg className="h-3.5 w-3.5 text-pink-500" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             strokeWidth="2">
+            <path d="M14 4l6 6M8 20h8"/>
+            <path d="M3 11l7-7 7 7-7 7-7-7z"/>
+        </svg>
+    ),
+    POH: (
+        <svg className="h-3.5 w-3.5 text-sky-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="12" cy="12" r="9"/>
+            <path d="M12 7v5l3 3"/>
+        </svg>
+    ),
+}
 
 export default function Header({toggleSidebar}: HeaderProps): React.ReactElement {
     // Theme state: 'light' | 'dark' | 'system'
@@ -69,10 +97,22 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
     const [systemDark, setSystemDark] = useState(false);
     const [loginOpen, setLoginOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [consensusOpen, setConsensusOpen] = useState(false);
+    const consensusRef = useRef<HTMLDivElement | null>(null);
 
     // Router for active nav highlighting
     const router = useRouter();
     const {pathname} = router;
+
+    // 共识选择与菜单（避免 SSR 水合不一致：初始固定为 POW，挂载后再同步 localStorage）
+    const [consensus, setConsensus] = useState<Consensus>('POW');
+    const menuItems = MENUS[consensus];
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const saved = (localStorage.getItem('consensus') as Consensus) || 'POW';
+        if (saved !== consensus) setConsensus(saved);
+    }, []);
 
     const isDarkMode = theme === 'dark' || (theme === 'system' && systemDark);
 
@@ -121,6 +161,16 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
         if (menuOpen) document.addEventListener('mousedown', handler);
         return () => document.removeEventListener('mousedown', handler);
     }, [menuOpen]);
+
+    // 点击外部关闭共识选择菜单
+    useEffect(() => {
+        const handler = (e: MouseEvent) => {
+            if (!consensusRef.current) return;
+            if (!consensusRef.current.contains(e.target as Node)) setConsensusOpen(false);
+        };
+        if (consensusOpen) document.addEventListener('mousedown', handler);
+        return () => document.removeEventListener('mousedown', handler);
+    }, [consensusOpen]);
     return (
         <>
             <header
@@ -150,7 +200,7 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                         {/* 桌面端水平导航（绝对居中于容器） */}
                         <div className="hidden md:block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
                             <div className="flex items-center space-x-3">
-                                {MENU_ITEMS.map((item) => {
+                                {menuItems.map((item) => {
                                     const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
                                     return (
                                         <Link
@@ -172,6 +222,58 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                     </div>
 
                     <div className="flex items-center space-x-2 md:space-x-3">
+                        {/* 共识选择器（放在主题选择的右侧） */}
+                        <div className="relative" ref={consensusRef}>
+                            <button
+                                onClick={() => setConsensusOpen(v => !v)}
+                                className="h-7 px-3 inline-flex items-center gap-2 rounded-xl bg-white/90 backdrop-blur border border-gray-200 shadow-sm hover:bg-white dark:bg-[#1e1e1e]/90 dark:border-[#2d2d30] dark:text-gray-200"
+                                aria-haspopup="menu"
+                                aria-expanded={consensusOpen}
+                                aria-label="选择共识机制"
+                            >
+                                <span className="inline-flex items-center gap-2">
+                                    {CONSENSUS_ICON[consensus]}
+                                    <span className="text-sm font-semibold tracking-wide">{consensus}</span>
+                                </span>
+                                <svg className="h-4 w-4 text-gray-500" viewBox="0 0 24 24" fill="none"
+                                     stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                                          d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+                            {consensusOpen && (
+                                <div
+                                    role="menu"
+                                    aria-label="共识机制"
+                                    className="absolute right-0 mt-2 w-56 rounded-2xl border bg-white/98 backdrop-blur-sm shadow-lg ring-1 ring-black/5 p-2 border-gray-200 dark:bg-[#1e1e1e] dark:border-[#2d2d30] dark:ring-white/5 z-50"
+                                >
+                                    {(['POW', 'POS', 'DPoS', 'BFT', 'POH'] as Consensus[]).map(opt => (
+                                        <button
+                                            key={opt}
+                                            role="menuitemradio"
+                                            aria-checked={opt === consensus}
+                                            onClick={() => {
+                                                setConsensus(opt)
+                                                setConsensusOpen(false)
+                                                if (typeof window !== 'undefined') localStorage.setItem('consensus', opt)
+                                                const first = MENUS[opt][0]?.href || '/'
+                                                router.push(first)
+                                            }}
+                                            className={`group flex w-full items-center justify-between gap-3 px-3 py-2 rounded-lg text-sm hover:bg-gray-100 dark:hover:bg-gray-800 ${opt === consensus ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100' : 'text-gray-700 dark:text-gray-200'}`}
+                                        >
+                                            <span className="flex-1 text-left inline-flex items-center gap-2">
+                                                {CONSENSUS_ICON[opt]}
+                                                <span>{opt}</span>
+                                            </span>
+                                            {opt === consensus && (
+                                                <span aria-hidden
+                                                      className="ml-2 inline-block h-1.5 w-1.5 rounded-full bg-emerald-500"/>
+                                            )}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                         <div className="relative" ref={menuRef}>
                             <button
                                 onClick={() => setMenuOpen((v) => !v)}
@@ -254,6 +356,16 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                                 </div>
                             )}
                         </div>
+                        <Link
+                            href="/pricing"
+                            className="inline-flex items-center text-sm font-medium px-3 py-1.5 md:px-4 rounded-full whitespace-nowrap bg-gradient-to-r from-emerald-500 to-lime-500 text-white shadow-sm hover:opacity-90 transition-opacity dark:from-emerald-400 dark:to-lime-400"
+                        >
+                            价格
+                        </Link>
+                        <button
+                            onClick={() => setLoginOpen(true)}
+                            className="bg-black text-white px-3 py-1.5 md:px-4 rounded-full text-sm whitespace-nowrap">登录/注册
+                        </button>
 
                         {/* 移动端导航开关 */}
                         <button
@@ -278,7 +390,7 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                 <div className="md:hidden border-b border-gray-200 dark:border-[#1f232b] bg-gray-50 dark:bg-[#111317]"
                      id="mobile-nav">
                     <div className="px-3 py-2 space-y-1">
-                        {MENU_ITEMS.map((item) => {
+                        {menuItems.map((item) => {
                             const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
                             return (
                                 <Link
