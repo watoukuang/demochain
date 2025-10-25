@@ -268,7 +268,7 @@ export default function Glossary(): React.ReactElement {
         <div className="flex min-h-screen bg-gray-50 dark:bg-[#0f1115]">
             {/* 左侧分类导航 */}
             <div
-                className="w-64 bg-white dark:bg-[#1a1d24] border-r border-gray-200 dark:border-[#2a2c31] flex flex-col sticky top-0 h-screen overflow-y-auto shadow-lg dark:shadow-2xl">
+                className="w-64 bg-white dark:bg-[#1a1d24] border-r border-gray-200 dark:border-[#2a2c31] flex flex-col sticky top-0 h-screen overflow-y-auto shadow-lg dark:shadow-2xl rounded">
                 {/* 标题和搜索 */}
                 <div className="p-6 border-b border-gray-200 dark:border-[#2a2c31]">
                     {/* 搜索框 */}
