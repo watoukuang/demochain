@@ -28,7 +28,7 @@ export default function PosDelegation(): React.ReactElement {
             <div className="p-2 text-sm bg-gray-50 dark:bg-gray-700">委托列表</div>
             <ul className="divide-y dark:divide-gray-700">
               {delegators.map((d,i)=> (
-                <li key={i} className="px-3 py-2 text-sm">{d.from} -> {d.to} : {d.amt}</li>
+                <li key={i} className="px-3 py-2 text-sm">{d.from} {'->'} {d.to} : {d.amt}</li>
               ))}
             </ul>
           </div>

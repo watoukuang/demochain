@@ -19,7 +19,7 @@ export default function BftNodes(): React.ReactElement {
               <button key={n.id} onClick={()=>toggle(n.id)} className={`px-3 py-2 rounded border text-sm ${n.faulty? 'bg-red-500 text-white' : 'bg-green-500 text-white'}`}>{n.id} {n.faulty? '故障' : '正常'}</button>
             ))}
           </div>
-          <div className="mt-4 text-sm text-gray-700 dark:text-gray-300">故障节点：{faulty} / {nodes.length}（> n/3 将无法达成共识）</div>
+          <div className="mt-4 text-sm text-gray-700 dark:text-gray-300">故障节点：{faulty} / {nodes.length}（{'>'} n/3 将无法达成共识）</div>
         </div>
       </div>
     </div>

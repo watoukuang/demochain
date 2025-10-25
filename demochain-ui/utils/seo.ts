@@ -27,7 +27,7 @@ export const pageSEO: Record<string, Partial<SEOConfig>> = {
     keywords:
       '区块链演示,POW,POS,DPoS,BFT,POH,哈希,区块,链视图,教育,学习',
   },
-  // POW
+  // POW  
   '/block': { title: '区块 - DemoChain', description: '可视化区块结构与字段组成，理解区块如何链接与验证。' },
   '/blockchain': { title: '区块链 - DemoChain', description: '观察区块串联、哈希难度与链一致性的动态变化。' },
   '/distribution': { title: '分布式 - DemoChain', description: '模拟分布式网络与挖矿过程，直观认识去中心化。' },
