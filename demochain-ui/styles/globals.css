@@ -73,4 +73,21 @@
   .card {
     @apply relative bg-white p-4 rounded-xl border border-gray-200 transition-shadow hover:shadow-md dark:bg-[#1e1e1e] dark:border-[#2d2d30] dark:text-gray-200;
   }
+
+  /* 隐藏滚动条但保持滚动功能 */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari and Opera */
+  }
+
+  /* 文本截断 */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 }

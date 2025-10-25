@@ -177,7 +177,7 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                 className="sticky top-0 z-40 relative py-4 border-b border-gray-100 bg-white/85 backdrop-blur supports-[backdrop-filter]:bg-white/70 dark:border-gray-800 dark:bg-[#121212]/85">
                 <div
                     className="px-4 lg:px-12 max-w-screen-2xl mx-auto w-full relative flex justify-between items-center">
-                    <div className="flex items-center">
+                    <div className="flex items-center flex-1">
                         <button
                             onClick={toggleSidebar}
                             className="mr-3 lg:hidden"
@@ -197,26 +197,45 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                         bg-clip-text text-transparent drop-shadow-sm">Demo Chain</span>
                         </Link>
 
-                        {/* 桌面端水平导航（绝对居中于容器） */}
-                        <div className="hidden md:block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                            <div className="flex items-center space-x-3">
-                                {menuItems.map((item) => {
-                                    const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
-                                    return (
-                                        <Link
-                                            key={item.name}
-                                            href={item.href}
-                                            className={`px-5 py-2.5 rounded-lg text-base font-semibold tracking-wide flex items-center space-x-2 transition-all duration-200 ${
-                                                isActive
-                                                    ? 'text-orange-600 dark:text-orange-400'
-                                                    : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#1a1d24]'
-                                            }`}
-                                        >
-                                            {item.icon}
-                                            <span>{item.name}</span>
-                                        </Link>
-                                    );
-                                })}
+                        {/* 桌面端导航 */}
+                        <div className="hidden md:flex flex-1 justify-end mr-3">
+                            <div className="flex items-baseline">
+                                <div className="flex space-x-1 overflow-x-auto scrollbar-hide">
+                                    {menuItems.map((item) => {
+                                        const isActive = pathname === item.href;
+                                        return (
+                                            <Link
+                                                key={item.name}
+                                                href={item.href}
+                                                className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap flex items-center space-x-2 transition-all duration-200 ${
+                                                    isActive
+                                                        ? 'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20'
+                                                        : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#1a1d24]'
+                                                }`}
+                                            >
+                                                {item.icon}
+                                                <span>{item.name}</span>
+                                            </Link>
+                                        );
+                                    })}
+                                    <Link
+                                        href="/glossary"
+                                        className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap flex items-center space-x-2 transition-all duration-200 ${
+                                            pathname === '/glossary'
+                                                ? 'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20'
+                                                : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#1a1d24]'
+                                        }`}
+                                    >
+                                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                                            <path d="M8 7h8"/>
+                                            <path d="M8 11h8"/>
+                                            <path d="M8 15h6"/>
+                                        </svg>
+                                        <span>名词</span>
+                                    </Link>
+                                </div>
                             </div>
                         </div>
                     </div>

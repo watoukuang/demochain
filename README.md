@@ -4,12 +4,12 @@
 
 - 构建前端镜像
 ```shell
-docker build -t apitool-ui:latest .
+docker build -t demochain-ui:latest .
 ```
 
 - 启动服务
 ```shell
-docker run --name apitool-ui --restart=always -p 3002:3000 apitool-ui:latest
+docker run --name demochain-ui --restart=always -p 3002:3000 demochain-ui:latest
 ```
 
 

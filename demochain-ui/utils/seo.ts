@@ -56,6 +56,8 @@ export const pageSEO: Record<string, Partial<SEOConfig>> = {
   '/poh/chain': { title: 'POH 区块链 - DemoChain', description: '按时间顺序产块的链视图。' },
   // Pricing
   '/pricing': { title: '定价 - DemoChain', description: '免费版与付费会员：月度 $3、年度 $10、终身 $15，付费均可访问全部演示。' },
+  // Glossary
+  '/glossary': { title: '名词解释 - DemoChain', description: '区块链核心术语详解：POW、POS、DPoS、BFT、POH 等共识机制，智能合约、代币经济学等技术概念。' },
 };
 
 // 获取页面 SEO 配置
