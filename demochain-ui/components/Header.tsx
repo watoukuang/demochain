@@ -14,14 +14,14 @@ import TokenIcon from './icons/TokenIcon';
 const MENU_ITEMS: { name: string; href: string; icon: React.ReactNode }[] = [
     {
         name: '哈希',
-        href: '/hash',
+        href: '/',
         icon: (
             <HashIcon className="w-5 h-5" />
         ),
     },
     {
         name: '区块',
-        href: '/mock',
+        href: '/block',
         icon: (
             <BlockIcon className="w-5 h-5" />
         ),
@@ -144,7 +144,7 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                             <Logo/>
                             <span
                                 className="text-xl md:text-2xl font-bold tracking-wide leading-none select-none bg-gradient-to-r from-orange-500 to-purple-600 dark:from-orange-400 dark:to-purple-400
-                        bg-clip-text text-transparent drop-shadow-sm">DemoChain</span>
+                        bg-clip-text text-transparent drop-shadow-sm">Demo Chain</span>
                         </Link>
 
                         {/* 桌面端水平导航（绝对居中于容器） */}
