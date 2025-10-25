@@ -5,6 +5,69 @@ import {HeaderProps} from '../types';
 import Logo from './icons/Logo';
 import LoginModal from './LoginModal';
 
+const MENU_ITEMS: { name: string; href: string; icon: React.ReactNode }[] = [
+    {
+        name: '哈希',
+        href: '/hash',
+        icon: (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+            </svg>
+        ),
+    },
+    {
+        name: '区块',
+        href: '/mock',
+        icon: (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      d="M15 17h5l-5 5v-5zM4 19h5v-5H4v5zM13 7h5l-5-5v5zM4 1h5v5H4V1z"/>
+            </svg>
+        ),
+    },
+    {
+        name: '区块链',
+        href: '/question',
+        icon: (
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+            </svg>
+        ),
+    },
+    {
+        name: '分布式',
+        href: '/question',
+        icon: (
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+            </svg>
+        ),
+    },
+    {
+        name: '币基',
+        href: '/question',
+        icon: (
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+            </svg>
+        ),
+    },
+    {
+        name: '代币',
+        href: '/question',
+        icon: (
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+            </svg>
+        ),
+    },
+];
+
 export default function Header({toggleSidebar}: HeaderProps): React.ReactElement {
     // Theme state: 'light' | 'dark' | 'system'
     const [theme, setTheme] = useState<'light' | 'dark' | 'system'>(() => {
@@ -23,39 +86,7 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
     const router = useRouter();
     const {pathname} = router;
 
-    // Horizontal navigation menu
-    const menuItems: { name: string; href: string; icon: React.ReactNode }[] = [
-        {
-            name: '接口测试',
-            href: '/',
-            icon: (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                          d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-                </svg>
-            ),
-        },
-        {
-            name: '接口模拟',
-            href: '/mock',
-            icon: (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                          d="M15 17h5l-5 5v-5zM4 19h5v-5H4v5zM13 7h5l-5-5v5zM4 1h5v5H4V1z"/>
-                </svg>
-            ),
-        },
-        {
-            name: '问题反馈',
-            href: '/question',
-            icon: (
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path
-                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
-                </svg>
-            ),
-        },
-    ];
+    const isDarkMode = theme === 'dark' || (theme === 'system' && systemDark);
 
     // Apply theme based on preference and system setting
     useEffect(() => {
@@ -125,13 +156,13 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                             <Logo/>
                             <span
                                 className="text-xl md:text-2xl font-bold tracking-wide leading-none select-none bg-gradient-to-r from-orange-500 to-purple-600 dark:from-orange-400 dark:to-purple-400
-                        bg-clip-text text-transparent drop-shadow-sm">ApiTool</span>
+                        bg-clip-text text-transparent drop-shadow-sm">DemoChain</span>
                         </Link>
 
                         {/* 桌面端水平导航（绝对居中于容器） */}
                         <div className="hidden md:block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
                             <div className="flex items-center space-x-3">
-                                {menuItems.map((item) => {
+                                {MENU_ITEMS.map((item) => {
                                     const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
                                     return (
                                         <Link
@@ -161,7 +192,7 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                                 aria-expanded={menuOpen}
                                 aria-haspopup="menu"
                             >
-                                {(theme === 'dark' || (theme === 'system' && systemDark)) ? (
+                                {isDarkMode ? (
                                     <svg className="h-5 w-5 text-gray-200" fill="none" viewBox="0 0 24 24"
                                          stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -187,8 +218,6 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                                         aria-checked={theme === 'light'}
                                         onClick={() => {
                                             setTheme('light');
-                                            localStorage.setItem('theme', 'light');
-                                            document.documentElement.classList.remove('dark');
                                             setMenuOpen(false);
                                         }}
                                         className={`group flex w-full items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-gray-100 dark:hover:bg-gray-800 ${theme === 'light' ? 'bg-gray-100 dark:bg-gray-800' : ''}`}
@@ -206,8 +235,6 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                                         aria-checked={theme === 'dark'}
                                         onClick={() => {
                                             setTheme('dark');
-                                            localStorage.setItem('theme', 'dark');
-                                            document.documentElement.classList.add('dark');
                                             setMenuOpen(false);
                                         }}
                                         className={`group flex w-full items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-gray-100 dark:hover:bg-gray-800 ${theme === 'dark' ? 'bg-gray-100 dark:bg-gray-800' : ''}`}
@@ -225,8 +252,6 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                                         aria-checked={theme === 'system'}
                                         onClick={() => {
                                             setTheme('system');
-                                            localStorage.setItem('theme', 'system');
-                                            document.documentElement.classList.toggle('dark', window.matchMedia('(prefers-color-scheme: dark)').matches);
                                             setMenuOpen(false);
                                         }}
                                         className={`group flex w-full items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-gray-100 dark:hover:bg-gray-800 ${theme === 'system' ? 'bg-gray-100 dark:bg-gray-800' : ''}`}
@@ -265,7 +290,7 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                 <div className="md:hidden border-b border-gray-200 dark:border-[#1f232b] bg-gray-50 dark:bg-[#111317]"
                      id="mobile-nav">
                     <div className="px-3 py-2 space-y-1">
-                        {menuItems.map((item) => {
+                        {MENU_ITEMS.map((item) => {
                             const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
                             return (
                                 <Link
@@ -289,3 +314,4 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
         </>
     );
 }
+
