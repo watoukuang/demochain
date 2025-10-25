@@ -9,7 +9,7 @@ docker build -t demochain-ui:latest .
 
 - 启动服务
 ```shell
-docker run --name demochain-ui --restart=always -p 3002:3000 demochain-ui:latest
+docker run --name demochain-ui --restart=always -p 3005:3000 demochain-ui:latest
 ```
 
 
