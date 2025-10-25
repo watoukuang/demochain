@@ -4,66 +4,54 @@ import {useRouter} from 'next/router';
 import {HeaderProps} from '../types';
 import Logo from './icons/Logo';
 import LoginModal from './LoginModal';
+import HashIcon from './icons/HashIcon';
+import BlockIcon from './icons/BlockIcon';
+import ChainIcon from './icons/ChainIcon';
+import NetworkIcon from './icons/NetworkIcon';
+import CoinIcon from './icons/CoinIcon';
+import TokenIcon from './icons/TokenIcon';
 
 const MENU_ITEMS: { name: string; href: string; icon: React.ReactNode }[] = [
     {
         name: '哈希',
         href: '/hash',
         icon: (
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                      d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-            </svg>
+            <HashIcon className="w-5 h-5" />
         ),
     },
     {
         name: '区块',
         href: '/mock',
         icon: (
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                      d="M15 17h5l-5 5v-5zM4 19h5v-5H4v5zM13 7h5l-5-5v5zM4 1h5v5H4V1z"/>
-            </svg>
+            <BlockIcon className="w-5 h-5" />
         ),
     },
     {
         name: '区块链',
         href: '/question',
         icon: (
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path
-                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
-            </svg>
+            <ChainIcon className="w-5 h-5" />
         ),
     },
     {
         name: '分布式',
         href: '/question',
         icon: (
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path
-                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
-            </svg>
+            <NetworkIcon className="w-5 h-5" />
         ),
     },
     {
         name: '币基',
         href: '/question',
         icon: (
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path
-                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
-            </svg>
+            <CoinIcon className="w-5 h-5" />
         ),
     },
     {
         name: '代币',
         href: '/question',
         icon: (
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path
-                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
-            </svg>
+            <TokenIcon className="w-5 h-5" />
         ),
     },
 ];
