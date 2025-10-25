@@ -16,44 +16,44 @@ const MENU_ITEMS: { name: string; href: string; icon: React.ReactNode }[] = [
         name: '哈希',
         href: '/',
         icon: (
-            <HashIcon className="w-5 h-5" />
+            <HashIcon className="w-5 h-5"/>
         ),
     },
     {
         name: '区块',
         href: '/block',
         icon: (
-            <BlockIcon className="w-5 h-5" />
+            <BlockIcon className="w-5 h-5"/>
         ),
     },
     {
         name: '区块链',
-        href: '/question',
+        href: '/blockchain',
         icon: (
-            <ChainIcon className="w-5 h-5" />
+            <ChainIcon className="w-5 h-5"/>
         ),
     },
     {
         name: '分布式',
-        href: '/question',
+        href: '/distribution',
         icon: (
-            <NetworkIcon className="w-5 h-5" />
-        ),
-    },
-    {
-        name: '币基',
-        href: '/question',
-        icon: (
-            <CoinIcon className="w-5 h-5" />
+            <NetworkIcon className="w-5 h-5"/>
         ),
     },
     {
         name: '代币',
-        href: '/question',
+        href: '/token',
         icon: (
-            <TokenIcon className="w-5 h-5" />
+            <TokenIcon className="w-5 h-5"/>
         ),
     },
+    {
+        name: '币基',
+        href: '/coinbase',
+        icon: (
+            <CoinIcon className="w-5 h-5"/>
+        ),
+    }
 ];
 
 export default function Header({toggleSidebar}: HeaderProps): React.ReactElement {
