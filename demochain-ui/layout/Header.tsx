@@ -3,7 +3,7 @@ import Link from 'next/link';
 import {useRouter} from 'next/router';
 import {HeaderProps} from '../types';
 import Logo from '../components/icons/Logo';
-import LoginModal from '../components/LoginModal';
+import LoginModal from '../components/login/index';
 import HashIcon from '../components/icons/HashIcon';
 import BlockIcon from '../components/icons/BlockIcon';
 import ChainIcon from '../components/icons/ChainIcon';
@@ -418,7 +418,10 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                         </button>
                     </div>
                 </div>
-                <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)}/>
+                <LoginModal 
+                    open={loginOpen} 
+                    onClose={() => setLoginOpen(false)}
+                />
             </header>
 
             {/* 移动端菜单 */}

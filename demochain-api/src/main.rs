@@ -4,6 +4,7 @@ mod utils;
 mod app;
 mod bootstrap;
 mod router;
+mod handlers;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
