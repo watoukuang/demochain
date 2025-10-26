@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { login as apiLogin, register as apiRegister } from '../api/auth';
 
 interface LoginModalProps {
   open: boolean;
@@ -9,6 +10,11 @@ interface LoginModalProps {
 export default function LoginModal({ open, onClose }: LoginModalProps): React.ReactElement | null {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const [mode, setMode] = React.useState<'login' | 'signup'>('login');
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [confirm, setConfirm] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
   const googleUrl = (typeof window !== 'undefined' && (window as any).NEXT_PUBLIC_GOOGLE_OAUTH_URL) || process.env.NEXT_PUBLIC_GOOGLE_OAUTH_URL || '/api/auth/google';
 
   const onGoogle = () => {
@@ -34,11 +40,30 @@ export default function LoginModal({ open, onClose }: LoginModalProps): React.Re
     if (e.target === e.currentTarget) onClose();
   };
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: 接入你的后端登录逻辑
-    // 这里先做个示例：关闭弹框
-    onClose();
+    setError(null);
+    if (mode === 'signup' && password !== confirm) {
+      setError('两次输入的密码不一致');
+      return;
+    }
+    try {
+      setLoading(true);
+      const res = mode === 'login'
+        ? await apiLogin({ email, password })
+        : await apiRegister({ email, password });
+      if (res?.token) {
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('auth_token', res.token);
+          window.dispatchEvent(new CustomEvent('auth:login', { detail: { email } }));
+        }
+      }
+      onClose();
+    } catch (err: any) {
+      setError(err?.message || '请求失败');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return createPortal(
@@ -101,6 +126,8 @@ export default function LoginModal({ open, onClose }: LoginModalProps): React.Re
               className="w-full rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500
                          bg-white text-gray-900 border-gray-300
                          dark:bg-[#141518] dark:text-gray-100 dark:border-[#2a2c31]"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div className="pt-2 border-t border-gray-200 dark:border-[#2a2c31]">
@@ -117,6 +144,8 @@ export default function LoginModal({ open, onClose }: LoginModalProps): React.Re
               className="w-full rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500
                          bg-white text-gray-900 border-gray-300
                          dark:bg-[#141518] dark:text-gray-100 dark:border-[#2a2c31]"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
 
@@ -130,6 +159,8 @@ export default function LoginModal({ open, onClose }: LoginModalProps): React.Re
                 className="w-full rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500
                            bg-white text-gray-900 border-gray-300
                            dark:bg-[#141518] dark:text-gray-100 dark:border-[#2a2c31]"
+                value={confirm}
+                onChange={(e) => setConfirm(e.target.value)}
               />
             </div>
           )}
@@ -153,11 +184,16 @@ export default function LoginModal({ open, onClose }: LoginModalProps): React.Re
               type="submit"
               className="inline-flex md:w-auto items-center justify-center rounded-lg bg-black text-white px-4 py-2 text-sm font-medium border border-transparent
                          hover:opacity-90 dark:bg-[#ffffff] dark:text-black"
+              disabled={loading}
             >
-              {mode === 'login' ? '登录' : '注册'}
+              {loading ? '请稍候...' : (mode === 'login' ? '登录' : '注册')}
             </button>
           </div>
         </form>
+
+        {error && (
+          <p className="mt-2 text-[12px] text-red-500">{error}</p>
+        )}
 
         <p className="mt-3 text-[12px] text-gray-500 dark:text-gray-500">登录/注册即表示你同意用户协议和隐私政策</p>
       </div>

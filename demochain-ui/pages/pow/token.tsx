@@ -2,10 +2,10 @@
 
 import React, { useMemo, useRef, useState, useCallback } from 'react'
 import * as CryptoJS from 'crypto-js'
-import type { MiniBlock, Tx, ComputerBoard, StepStatus } from '../types/block'
-import BlockChainFull from '../components/coinbase/BlockChainFull'
-import TokenCfg, { type TokenCfgRef } from '../components/token/TokenCfg'
-import Computer from '../components/coinbase/Computer'
+import type { MiniBlock, Tx, ComputerBoard, StepStatus } from '../../types/block'
+import BlockChainFull from '../../components/coinbase/BlockChainFull'
+import TokenCfg, { type TokenCfgRef } from '../../components/token/TokenCfg'
+import Computer from '../../components/coinbase/Computer'
 
 export default function TokenPage(): React.ReactElement {
   const [difficulty, setDifficulty] = useState<number>(4)

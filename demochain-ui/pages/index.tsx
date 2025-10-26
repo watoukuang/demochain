@@ -1,5 +1,5 @@
 import React from 'react';
-import Hash from './hash';
+import Hash from './pow/hash';
 
 export default function Home(): React.ReactElement {
     return (

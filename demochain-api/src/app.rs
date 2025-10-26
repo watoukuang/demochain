@@ -2,6 +2,7 @@ use std::net::SocketAddr;
 
 use axum::Router;
 use sqlx::SqlitePool;
+use tokio::net::TcpListener;
 use tracing::{error, info};
 
 #[derive(Clone)]
@@ -23,14 +24,13 @@ pub fn new() -> Router<AppState> {
 pub async fn serve(addr: SocketAddr, state: AppState) -> anyhow::Result<()> {
     let app = new().with_state(state);
     info!("starting server on http://{}", addr);
-    let listener = tokio::net::TcpListener::bind(addr).await?;
+    let listener = TcpListener::bind(addr).await?;
     axum::serve(listener, app).await.map_err(|e| {
         error!(error = %e, "server error");
         e.into()
     })
 }
 
-// Spring 风格入口：app::run() 完成初始化并启动服务
 pub async fn run() -> anyhow::Result<()> {
     let (state, addr) = init().await?;
     serve(addr, state).await

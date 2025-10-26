@@ -15,12 +15,12 @@ type Consensus = 'POW' | 'POS' | 'DPoS' | 'BFT' | 'POH'
 
 const MENUS: Record<Consensus, { name: string; href: string; icon: React.ReactNode }[]> = {
     POW: [
-        {name: '哈希', href: '/', icon: (<HashIcon className="w-5 h-5"/>)},
-        {name: '区块', href: '/block', icon: (<BlockIcon className="w-5 h-5"/>)},
-        {name: '区块链', href: '/blockchain', icon: (<ChainIcon className="w-5 h-5"/>)},
-        {name: '分布式', href: '/distribution', icon: (<NetworkIcon className="w-5 h-5"/>)},
-        {name: '代币', href: '/token', icon: (<TokenIcon className="w-5 h-5"/>)},
-        {name: '币基', href: '/coinbase', icon: (<CoinIcon className="w-5 h-5"/>)},
+        {name: '哈希', href: '/pow/hash', icon: (<HashIcon className="w-5 h-5"/>)},
+        {name: '区块', href: '/pow/block', icon: (<BlockIcon className="w-5 h-5"/>)},
+        {name: '区块链', href: '/pow/blockchain', icon: (<ChainIcon className="w-5 h-5"/>)},
+        {name: '分布式', href: '/pow/distribution', icon: (<NetworkIcon className="w-5 h-5"/>)},
+        {name: '代币', href: '/pow/token', icon: (<TokenIcon className="w-5 h-5"/>)},
+        {name: '币基', href: '/pow/coinbase', icon: (<CoinIcon className="w-5 h-5"/>)},
     ],
     POS: [
         {name: '质押池', href: '/pos/staking', icon: (<CoinIcon className="w-5 h-5"/>)},
@@ -99,6 +99,7 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [consensusOpen, setConsensusOpen] = useState(false);
     const consensusRef = useRef<HTMLDivElement | null>(null);
+    const [authEmail, setAuthEmail] = useState<string | null>(null);
 
     // Router for active nav highlighting
     const router = useRouter();
@@ -151,6 +152,39 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
             return () => mediaQuery.removeListener(handleSystemThemeChange);
         }
     }, [theme]);
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const token = localStorage.getItem('auth_token');
+        const email = localStorage.getItem('auth_email');
+        if (token) setAuthEmail(email || '');
+        const onLogin = (e: any) => {
+            try {
+                const detail = (e && e.detail) || {};
+                if (detail?.email) localStorage.setItem('auth_email', detail.email);
+                setAuthEmail(detail?.email || localStorage.getItem('auth_email') || '');
+            } catch {}
+        };
+        const onLogout = () => {
+            setAuthEmail(null);
+        };
+        window.addEventListener('auth:login' as any, onLogin);
+        window.addEventListener('auth:logout' as any, onLogout);
+        return () => {
+            window.removeEventListener('auth:login' as any, onLogin);
+            window.removeEventListener('auth:logout' as any, onLogout);
+        };
+    }, []);
+
+    const onLogout = () => {
+        if (typeof window === 'undefined') return;
+        try {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('auth_email');
+            window.dispatchEvent(new CustomEvent('auth:logout'));
+            setAuthEmail(null);
+        } catch {}
+    };
 
     // 点击外部关闭菜单
     useEffect(() => {
@@ -376,15 +410,25 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                             )}
                         </div>
                         <Link
-                            href="/pricing"
+                            href="/sys/pricing"
                             className="inline-flex items-center text-sm font-medium px-3 py-1.5 md:px-4 rounded-full whitespace-nowrap bg-gradient-to-r from-emerald-500 to-lime-500 text-white shadow-sm hover:opacity-90 transition-opacity dark:from-emerald-400 dark:to-lime-400"
                         >
                             价格
                         </Link>
-                        <button
-                            onClick={() => setLoginOpen(true)}
-                            className="bg-black text-white px-3 py-1.5 md:px-4 rounded-full text-sm whitespace-nowrap">登录/注册
-                        </button>
+                        {authEmail ? (
+                            <div className="flex items-center gap-2">
+                                <span className="hidden md:inline text-sm text-gray-700 dark:text-gray-300 max-w-[160px] truncate">{authEmail}</span>
+                                <button
+                                    onClick={onLogout}
+                                    className="bg-gray-900 text-white px-3 py-1.5 md:px-4 rounded-full text-sm whitespace-nowrap dark:bg-white dark:text-black"
+                                >退出</button>
+                            </div>
+                        ) : (
+                            <button
+                                onClick={() => setLoginOpen(true)}
+                                className="bg-black text-white px-3 py-1.5 md:px-4 rounded-full text-sm whitespace-nowrap"
+                            >登录/注册</button>
+                        )}
 
                         {/* 移动端导航开关 */}
                         <button
