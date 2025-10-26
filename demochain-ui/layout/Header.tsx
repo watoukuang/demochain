@@ -2,25 +2,25 @@ import React, {useEffect, useRef, useState} from 'react';
 import Link from 'next/link';
 import {useRouter} from 'next/router';
 import {HeaderProps} from '../types';
-import Logo from './icons/Logo';
-import LoginModal from './LoginModal';
-import HashIcon from './icons/HashIcon';
-import BlockIcon from './icons/BlockIcon';
-import ChainIcon from './icons/ChainIcon';
-import NetworkIcon from './icons/NetworkIcon';
-import CoinIcon from './icons/CoinIcon';
-import TokenIcon from './icons/TokenIcon';
+import Logo from '../components/icons/Logo';
+import LoginModal from '../components/LoginModal';
+import HashIcon from '../components/icons/HashIcon';
+import BlockIcon from '../components/icons/BlockIcon';
+import ChainIcon from '../components/icons/ChainIcon';
+import NetworkIcon from '../components/icons/NetworkIcon';
+import CoinIcon from '../components/icons/CoinIcon';
+import TokenIcon from '../components/icons/TokenIcon';
 
 type Consensus = 'POW' | 'POS' | 'DPoS' | 'BFT' | 'POH'
 
 const MENUS: Record<Consensus, { name: string; href: string; icon: React.ReactNode }[]> = {
     POW: [
         {name: '哈希', href: '/', icon: (<HashIcon className="w-5 h-5"/>)},
-        {name: '区块', href: '/block', icon: (<BlockIcon className="w-5 h-5"/>)},
-        {name: '区块链', href: '/blockchain', icon: (<ChainIcon className="w-5 h-5"/>)},
-        {name: '分布式', href: '/distribution', icon: (<NetworkIcon className="w-5 h-5"/>)},
-        {name: '代币', href: '/token', icon: (<TokenIcon className="w-5 h-5"/>)},
-        {name: '币基', href: '/coinbase', icon: (<CoinIcon className="w-5 h-5"/>)},
+        {name: '区块', href: '/pow/block', icon: (<BlockIcon className="w-5 h-5"/>)},
+        {name: '区块链', href: '/pow/blockchain', icon: (<ChainIcon className="w-5 h-5"/>)},
+        {name: '分布式', href: '/pow/distribution', icon: (<NetworkIcon className="w-5 h-5"/>)},
+        {name: '代币', href: '/pow/token', icon: (<TokenIcon className="w-5 h-5"/>)},
+        {name: '币基', href: '/pow/coinbase', icon: (<CoinIcon className="w-5 h-5"/>)},
     ],
     POS: [
         {name: '质押池', href: '/pos/staking', icon: (<CoinIcon className="w-5 h-5"/>)},
@@ -190,7 +190,19 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                         </button>
 
                         {/* 品牌Logo和标题 - 在所有屏幕尺寸下都显示 */}
-                        <Link href="/" className="flex items-center gap-2">
+                        <Link
+                            href="/"
+                            className="flex items-center gap-2"
+                            onClick={() => {
+                                // 点击 logo 时重置为 POW 共识
+                                setConsensus('POW')
+                                if (typeof window !== 'undefined') {
+                                    localStorage.setItem('consensus', 'POW')
+                                    // 触发自定义事件通知首页更新
+                                    window.dispatchEvent(new Event('consensusChanged'))
+                                }
+                            }}
+                        >
                             <Logo/>
                             <span
                                 className="text-xl md:text-2xl font-bold tracking-wide leading-none select-none bg-gradient-to-r from-orange-500 to-purple-600 dark:from-orange-400 dark:to-purple-400
@@ -226,7 +238,8 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                                                 : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#1a1d24]'
                                         }`}
                                     >
-                                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                             strokeWidth="2">
                                             <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
                                             <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
                                             <path d="M8 7h8"/>
@@ -274,9 +287,13 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                                             onClick={() => {
                                                 setConsensus(opt)
                                                 setConsensusOpen(false)
-                                                if (typeof window !== 'undefined') localStorage.setItem('consensus', opt)
-                                                const first = MENUS[opt][0]?.href || '/'
-                                                router.push(first)
+                                                if (typeof window !== 'undefined') {
+                                                    localStorage.setItem('consensus', opt)
+                                                    // 触发自定义事件通知首页更新
+                                                    window.dispatchEvent(new Event('consensusChanged'))
+                                                }
+                                                // 无论选择什么共识机制，都跳转到首页
+                                                router.push('/')
                                             }}
                                             className={`group flex w-full items-center justify-between gap-3 px-3 py-2 rounded-lg text-sm hover:bg-gray-100 dark:hover:bg-gray-800 ${opt === consensus ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100' : 'text-gray-700 dark:text-gray-200'}`}
                                         >

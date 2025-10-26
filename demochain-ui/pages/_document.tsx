@@ -9,13 +9,13 @@ class MyDocument extends Document {
           <meta charSet="utf-8"/>
           
           {/* 默认 SEO - 可被页面级覆盖 */}
-          <meta name="description" content="WsTool - 专业的WebSocket测试与开发工具平台，提供消息发送、数据订阅、连接管理等功能"/>
-          <meta name="keywords" content="WebSocket,WS工具,消息发送,数据订阅,连接管理,实时通信,开发工具"/>
-          <meta name="author" content="WsTool"/>
+          <meta name="description" content="DemoChain - 区块链在线演示与学习平台，提供哈希、区块、区块链、POW/POS/DPoS/BFT/POH 等交互式演示"/>
+          <meta name="keywords" content="区块链,哈希,SHA-256,工作量证明,POW,POS,DPoS,BFT,POH,挖矿,代币,教学,演示"/>
+          <meta name="author" content="DemoChain"/>
           <meta name="viewport" content="width=device-width, initial-scale=1"/>
           
           {/* Open Graph 默认值 */}
-          <meta property="og:site_name" content="WsTool"/>
+          <meta property="og:site_name" content="DemoChain"/>
           <meta property="og:type" content="website"/>
           <meta property="og:locale" content="zh_CN"/>
           
