@@ -52,10 +52,10 @@ function MyApp({ Component, pageProps }: AppProps): React.ReactElement {
               '@context': 'https://schema.org',
               '@type': 'WebSite',
               name: 'DemoChain',
-              url: 'https://demochain.com',
+              url: 'https://demochain.org',
               potentialAction: {
                 '@type': 'SearchAction',
-                target: 'https://demochain.com/?q={search_term_string}',
+                target: 'https://demochain.org/?q={search_term_string}',
                 'query-input': 'required name=search_term_string',
               },
             }),
