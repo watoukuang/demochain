@@ -10,6 +10,8 @@ import ChainIcon from '../components/icons/ChainIcon';
 import NetworkIcon from '../components/icons/NetworkIcon';
 import CoinIcon from '../components/icons/CoinIcon';
 import TokenIcon from '../components/icons/TokenIcon';
+import { useAuth } from '../src/shared/hooks/useAuth';
+import { logout } from '../src/shared/api/auth';
 
 type Consensus = 'POW' | 'POS' | 'DPoS' | 'BFT' | 'POH'
 
@@ -99,26 +101,39 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [consensusOpen, setConsensusOpen] = useState(false);
     const consensusRef = useRef<HTMLDivElement | null>(null);
-
-    // Router for active nav highlighting
+    // 添加用户菜单状态
+    const [userMenuOpen, setUserMenuOpen] = useState(false);
+    const userMenuRef = useRef<HTMLDivElement | null>(null);
+    
+    // 添加一个状态来跟踪是否已挂载（用于解决hydration问题）
+    const [isMounted, setIsMounted] = useState(false);
+    const [currentPathname, setCurrentPathname] = useState('');
+    
+    // 获取用户认证状态
+    const { user, isAuthenticated, logout: handleLogout } = useAuth();
     const router = useRouter();
-    const {pathname} = router;
 
     // 共识选择与菜单（避免 SSR 水合不一致：初始固定为 POW，挂载后再同步 localStorage）
     const [consensus, setConsensus] = useState<Consensus>('POW');
     const menuItems = MENUS[consensus];
+    
+    // 标记组件已挂载（用于解决hydration问题）
+    useEffect(() => {
+        setIsMounted(true);
+        setCurrentPathname(router.pathname);
+    }, [router.pathname]);
 
     useEffect(() => {
-        if (typeof window === 'undefined') return;
+        if (typeof window === 'undefined' || !isMounted) return;
         const saved = (localStorage.getItem('consensus') as Consensus) || 'POW';
         if (saved !== consensus) setConsensus(saved);
-    }, []);
+    }, [isMounted]);
 
-    const isDarkMode = theme === 'dark' || (theme === 'system' && systemDark);
+    const isDarkMode = isMounted ? (theme === 'dark' || (theme === 'system' && systemDark)) : null;
 
     // Apply theme based on preference and system setting
     useEffect(() => {
-        if (typeof window === 'undefined') return;
+        if (typeof window === 'undefined' || !isMounted) return;
 
         const root = document.documentElement;
         const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
@@ -150,7 +165,7 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
             mediaQuery.addListener(handleSystemThemeChange);
             return () => mediaQuery.removeListener(handleSystemThemeChange);
         }
-    }, [theme]);
+    }, [theme, isMounted]);
 
     // 点击外部关闭菜单
     useEffect(() => {
@@ -171,6 +186,27 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
         if (consensusOpen) document.addEventListener('mousedown', handler);
         return () => document.removeEventListener('mousedown', handler);
     }, [consensusOpen]);
+
+    // 点击外部关闭用户菜单
+    useEffect(() => {
+        const handler = (e: MouseEvent) => {
+            if (!userMenuRef.current) return;
+            if (!userMenuRef.current.contains(e.target as Node)) setUserMenuOpen(false);
+        };
+        if (userMenuOpen) document.addEventListener('mousedown', handler);
+        return () => document.removeEventListener('mousedown', handler);
+    }, [userMenuOpen]);
+
+    // 处理用户登出
+    const handleUserLogout = async () => {
+        try {
+            await handleLogout();
+            setUserMenuOpen(false);
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
+    };
+
     return (
         <>
             <header
@@ -213,8 +249,8 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                         <div className="hidden md:flex flex-1 justify-end mr-3">
                             <div className="flex items-baseline">
                                 <div className="flex space-x-1 overflow-x-auto scrollbar-hide">
-                                    {menuItems.map((item) => {
-                                        const isActive = pathname === item.href;
+                                    {isMounted && menuItems.map((item) => {
+                                        const isActive = currentPathname === item.href;
                                         return (
                                             <Link
                                                 key={item.name}
@@ -230,24 +266,26 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                                             </Link>
                                         );
                                     })}
-                                    <Link
-                                        href="/glossary"
-                                        className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap flex items-center space-x-2 transition-all duration-200 ${
-                                            pathname === '/glossary'
-                                                ? 'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20'
-                                                : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#1a1d24]'
-                                        }`}
-                                    >
-                                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                             strokeWidth="2">
-                                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-                                            <path d="M8 7h8"/>
-                                            <path d="M8 11h8"/>
-                                            <path d="M8 15h6"/>
-                                        </svg>
-                                        <span>名词</span>
-                                    </Link>
+                                    {isMounted && (
+                                        <Link
+                                            href="/glossary"
+                                            className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap flex items-center space-x-2 transition-all duration-200 ${
+                                                currentPathname === '/glossary'
+                                                    ? 'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20'
+                                                    : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#1a1d24]'
+                                            }`}
+                                        >
+                                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                 strokeWidth="2">
+                                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                                                <path d="M8 7h8"/>
+                                                <path d="M8 11h8"/>
+                                                <path d="M8 15h6"/>
+                                            </svg>
+                                            <span>名词</span>
+                                        </Link>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -318,13 +356,22 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                                 aria-expanded={menuOpen}
                                 aria-haspopup="menu"
                             >
-                                {isDarkMode ? (
-                                    <svg className="h-5 w-5 text-gray-200" fill="none" viewBox="0 0 24 24"
-                                         stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                              d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
-                                    </svg>
+                                {isDarkMode !== null ? (
+                                    isDarkMode ? (
+                                        <svg className="h-5 w-5 text-gray-200" fill="none" viewBox="0 0 24 24"
+                                             stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                                        </svg>
+                                    ) : (
+                                        <svg className="h-5 w-5 text-gray-700" fill="none" viewBox="0 0 24 24"
+                                             stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                                  d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                                        </svg>
+                                    )
                                 ) : (
+                                    // 默认渲染（用于服务端渲染时保持一致）
                                     <svg className="h-5 w-5 text-gray-700" fill="none" viewBox="0 0 24 24"
                                          stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -398,10 +445,51 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                         >
                             价格
                         </Link>
-                        <button
-                            onClick={() => setLoginOpen(true)}
-                            className="bg-black text-white px-3 py-1.5 md:px-4 rounded-full text-sm whitespace-nowrap">登录/注册
-                        </button>
+                        
+                        {/* 用户菜单 */}
+                        {isAuthenticated ? (
+                            <div className="relative" ref={userMenuRef}>
+                                <button
+                                    onClick={() => setUserMenuOpen(v => !v)}
+                                    className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-black text-white text-sm whitespace-nowrap"
+                                    aria-haspopup="menu"
+                                    aria-expanded={userMenuOpen}
+                                >
+                                    <span className="w-6 h-6 rounded-full bg-white text-black flex items-center justify-center text-xs font-bold">
+                                        {user?.email?.charAt(0).toUpperCase() || 'U'}
+                                    </span>
+                                    <span className="hidden md:inline">
+                                        {user?.username || user?.email?.split('@')[0] || '用户'}
+                                    </span>
+                                </button>
+                                
+                                {userMenuOpen && (
+                                    <div 
+                                        role="menu"
+                                        aria-label="用户菜单"
+                                        className="absolute right-0 mt-2 w-48 rounded-2xl border bg-white/98 backdrop-blur-sm shadow-lg ring-1 ring-black/5 p-2
+                                            border-gray-200 dark:bg-[#1e1e1e] dark:border-[#2d2d30] dark:ring-white/5 dark:text-gray-200 z-50"
+                                    >
+                                        <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-800">
+                                            {user?.email}
+                                        </div>
+                                        <button
+                                            onClick={handleUserLogout}
+                                            className="w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+                                        >
+                                            登出
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <button
+                                onClick={() => setLoginOpen(true)}
+                                className="bg-black text-white px-3 py-1.5 md:px-4 rounded-full text-sm whitespace-nowrap"
+                            >
+                                登录/注册
+                            </button>
+                        )}
 
                         {/* 移动端导航开关 */}
                         <button
@@ -421,16 +509,20 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                 <LoginModal 
                     open={loginOpen} 
                     onClose={() => setLoginOpen(false)}
+                    onSuccess={() => {
+                        // 登录成功后关闭模态框
+                        setLoginOpen(false);
+                    }}
                 />
             </header>
 
             {/* 移动端菜单 */}
-            {mobileMenuOpen && (
+            {mobileMenuOpen && isMounted && (
                 <div className="md:hidden border-b border-gray-200 dark:border-[#1f232b] bg-gray-50 dark:bg-[#111317]"
                      id="mobile-nav">
                     <div className="px-3 py-2 space-y-1">
                         {menuItems.map((item) => {
-                            const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+                            const isActive = currentPathname === item.href || currentPathname.startsWith(item.href + '/');
                             return (
                                 <Link
                                     key={item.name}
@@ -453,4 +545,3 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
         </>
     );
 }
-

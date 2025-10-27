@@ -1,107 +1,82 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {createPortal} from 'react-dom';
 import {login, register, LoginRequest, RegisterRequest} from '../../src/shared/api/auth';
 
 interface LoginModalProps {
     open: boolean;
     onClose: () => void;
-    onSuccess?: (user: any) => void; // 登录成功回调
+    onSuccess?: (user: any) => void;
 }
 
-export default function Index({open, onClose, onSuccess}: LoginModalProps): React.ReactElement | null {
-    const rootRef = useRef<HTMLDivElement | null>(null);
+export default function LoginModal({open, onClose, onSuccess}: LoginModalProps) {
+    const [mounted, setMounted] = useState(false);
     const [mode, setMode] = useState<'login' | 'signup'>('login');
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string>('');
-
-    // 表单数据
+    const [error, setError] = useState('');
     const [formState, setFormState] = useState({
         email: '',
         password: '',
         confirmPassword: '',
     });
 
-    const googleUrl = (typeof window !== 'undefined' && (window as any).NEXT_PUBLIC_GOOGLE_OAUTH_URL) || process.env.NEXT_PUBLIC_GOOGLE_OAUTH_URL || '/api/auth/google';
+    // 仅在客户端挂载后启用 portal
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    // 监听 ESC 关闭
+    useEffect(() => {
+        if (!open) return;
+        const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+        document.addEventListener('keydown', onKey);
+        return () => document.removeEventListener('keydown', onKey);
+    }, [open, onClose]);
+
+    if (!mounted || !open) return null;
+
+    const googleUrl =
+        process.env.NEXT_PUBLIC_GOOGLE_OAUTH_URL || '/api/auth/google';
 
     const onGoogle = () => {
         try {
-            window.location.href = googleUrl as string;
+            window.location.href = googleUrl;
         } catch (e) {
             console.error('Google OAuth redirect failed:', e);
         }
     };
 
-    // Esc 关闭
-    useEffect(() => {
-        const onKey = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') onClose();
-        };
-        if (open) document.addEventListener('keydown', onKey);
-        return () => document.removeEventListener('keydown', onKey);
-    }, [open, onClose]);
-
-    if (!open) return null;
-
-    const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (e.target === e.currentTarget) onClose();
-    };
-
-    // 重置表单
     const resetForm = () => {
-        setFormState({
-            email: '',
-            password: '',
-            confirmPassword: '',
-        });
+        setFormState({email: '', password: '', confirmPassword: ''});
         setError('');
     };
 
-    // 切换模式时重置表单
     const handleModeChange = (newMode: 'login' | 'signup') => {
         setMode(newMode);
         resetForm();
     };
 
-    // 表单输入处理
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
-        setFormState(prev => ({
-            ...prev,
-            [name]: value,
-        }));
-        // 清除错误信息
+        setFormState(prev => ({...prev, [name]: value}));
         if (error) setError('');
     };
 
-    // 表单验证
     const validateForm = (): boolean => {
-        if (!formState.email || !formState.password) {
-            setError('请填写邮箱和密码');
-            return false;
-        }
+        const {email, password, confirmPassword} = formState;
 
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formState.email)) {
-            setError('请输入有效的邮箱地址');
-            return false;
-        }
-
-        if (formState.password.length < 6) {
-            setError('密码长度至少为6位');
-            return false;
-        }
-
-        if (mode === 'signup' && formState.password !== formState.confirmPassword) {
-            setError('两次输入的密码不一致');
-            return false;
-        }
+        if (!email || !password) return setError('请填写邮箱和密码'), false;
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+            return setError('请输入有效的邮箱地址'), false;
+        if (password.length < 6)
+            return setError('密码长度至少为6位'), false;
+        if (mode === 'signup' && password !== confirmPassword)
+            return setError('两次输入的密码不一致'), false;
 
         return true;
     };
 
-    // 表单提交
     const submit = async (e: React.FormEvent) => {
         e.preventDefault();
-
         if (!validateForm()) return;
 
         setLoading(true);
@@ -109,45 +84,38 @@ export default function Index({open, onClose, onSuccess}: LoginModalProps): Reac
 
         try {
             if (mode === 'login') {
-                const loginData: LoginRequest = {
+                const req: LoginRequest = {
                     email: formState.email,
                     password: formState.password,
                 };
-                const response = await login(loginData);
-
-                // 登录成功
-                onSuccess?.(response.user);
-                onClose();
-                resetForm();
+                const res = await login(req);
+                onSuccess?.(res.user);
             } else {
-                const registerData: RegisterRequest = {
+                const req: RegisterRequest = {
                     email: formState.email,
                     password: formState.password,
                 };
-                const response = await register(registerData);
-
-                // 注册成功
-                onSuccess?.(response.user);
-                onClose();
-                resetForm();
+                const res = await register(req);
+                onSuccess?.(res.user);
             }
+            resetForm();
+            onClose();
         } catch (err: any) {
-            setError(err.message || '操作失败，请重试');
+            const msg =
+                err?.response?.data?.message ||
+                err?.message ||
+                '操作失败，请重试';
+            setError(msg);
         } finally {
             setLoading(false);
         }
     };
 
     return createPortal(
-        <div
-            className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 backdrop-blur-[1px]"
-            onClick={handleBackdropClick}
-        >
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 backdrop-blur-[1px]">
             <div
-                ref={rootRef}
                 role="dialog"
                 aria-modal="true"
-                aria-label="登录"
                 className="w-[92%] max-w-md rounded-2xl border bg-white shadow-[0_10px_30px_rgba(0,0,0,0.08)] ring-1 ring-black/5
                    border-gray-200 p-5 md:p-6 relative
                    dark:bg-[#1f2125] dark:border-[#2a2c31] dark:text-gray-100 dark:ring-white/5"
@@ -160,12 +128,16 @@ export default function Index({open, onClose, onSuccess}: LoginModalProps): Reac
                     ✕
                 </button>
 
-                <h2 className="text-xl md:text-2xl font-bold">{mode === 'login' ? '登录' : '注册'}</h2>
+                <h2 className="text-xl md:text-2xl font-bold">
+                    {mode === 'login' ? '登录' : '注册'}
+                </h2>
                 <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                    {mode === 'login' ? '登录后可收藏内容并解锁更多功能' : '创建一个新账户以开始使用我们的服务'}
+                    {mode === 'login'
+                        ? '登录后可收藏内容并解锁更多功能'
+                        : '创建一个新账户以开始使用我们的服务'}
                 </p>
 
-                {/* 第三方登录 */}
+                {/* Google 登录 */}
                 <div className="mt-4">
                     <button
                         type="button"
@@ -192,7 +164,6 @@ export default function Index({open, onClose, onSuccess}: LoginModalProps): Reac
                     </div>
                 </div>
 
-                {/* 错误提示 */}
                 {error && (
                     <div
                         className="mt-4 p-3 rounded-lg bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-800">
@@ -212,16 +183,18 @@ export default function Index({open, onClose, onSuccess}: LoginModalProps): Reac
                             disabled={loading}
                             placeholder="your@email.com"
                             className="w-full rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500
-                         bg-white text-gray-900 border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed
-                         dark:bg-[#141518] dark:text-gray-100 dark:border-[#2a2c31]"
+               bg-white text-gray-900 border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed
+               dark:bg-[#141518] dark:text-gray-100 dark:border-[#2a2c31]"
                         />
                     </div>
+
                     <div className="pt-2 border-t border-gray-200 dark:border-[#2a2c31]">
                         <div className="flex items-center justify-between mb-1">
                             <label className="text-sm">密码</label>
                             {mode === 'login' && (
-                                <a className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
-                                   href="#">忘记密码?</a>
+                                <a href="#" className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline">
+                                    忘记密码?
+                                </a>
                             )}
                         </div>
                         <input
@@ -233,8 +206,8 @@ export default function Index({open, onClose, onSuccess}: LoginModalProps): Reac
                             disabled={loading}
                             placeholder="•••••••"
                             className="w-full rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500
-                         bg-white text-gray-900 border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed
-                         dark:bg-[#141518] dark:text-gray-100 dark:border-[#2a2c31]"
+               bg-white text-gray-900 border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed
+               dark:bg-[#141518] dark:text-gray-100 dark:border-[#2a2c31]"
                         />
                     </div>
 
@@ -250,13 +223,12 @@ export default function Index({open, onClose, onSuccess}: LoginModalProps): Reac
                                 disabled={loading}
                                 placeholder="再次输入密码"
                                 className="w-full rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500
-                           bg-white text-gray-900 border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed
-                           dark:bg-[#141518] dark:text-gray-100 dark:border-[#2a2c31]"
+                 bg-white text-gray-900 border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed
+                 dark:bg-[#141518] dark:text-gray-100 dark:border-[#2a2c31]"
                             />
                         </div>
                     )}
 
-                    {/* 底部操作区：左侧切换、右侧提交按钮 */}
                     <div className="mt-3 flex items-center justify-between gap-3">
                         <div className="text-sm text-gray-600 dark:text-gray-400">
                             {mode === 'login' ? (
@@ -285,20 +257,33 @@ export default function Index({open, onClose, onSuccess}: LoginModalProps): Reac
                                 </>
                             )}
                         </div>
+
                         <button
                             type="submit"
                             disabled={loading}
-                            className="inline-flex md:w-auto items-center justify-center rounded-lg bg-black text-white px-4 py-2 text-sm font-medium border border-transparent
-                         hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-[#ffffff] dark:text-black"
+                            className="inline-flex items-center justify-center rounded-lg bg-black text-white px-4 py-2 text-sm font-medium border border-transparent
+               hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-white dark:text-black"
                         >
                             {loading ? (
                                 <>
-                                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white dark:text-black"
-                                         fill="none" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                                strokeWidth="4"></circle>
-                                        <path className="opacity-75" fill="currentColor"
-                                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    <svg
+                                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-white dark:text-black"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <circle
+                                            className="opacity-25"
+                                            cx="12"
+                                            cy="12"
+                                            r="10"
+                                            stroke="currentColor"
+                                            strokeWidth="4"
+                                        ></circle>
+                                        <path
+                                            className="opacity-75"
+                                            fill="currentColor"
+                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                        ></path>
                                     </svg>
                                     {mode === 'login' ? '登录中...' : '注册中...'}
                                 </>
@@ -309,7 +294,9 @@ export default function Index({open, onClose, onSuccess}: LoginModalProps): Reac
                     </div>
                 </form>
 
-                <p className="mt-3 text-[12px] text-gray-500 dark:text-gray-500">登录/注册即表示你同意用户协议和隐私政策</p>
+                <p className="mt-3 text-[12px] text-gray-500 dark:text-gray-500">
+                    登录/注册即表示你同意用户协议和隐私政策
+                </p>
             </div>
         </div>,
         document.body
