@@ -28,7 +28,7 @@ const generateQRCode = (address: string, amount: number, network: string) => {
 };
 
 // 生成钱包深链接
-const generateDeepLink = (address: string, amount: number, method: PaymentMethod) => {
+const generateDeepLink = (address: string, amount: number, method: string) => {
     switch (method) {
         case 'usdt_trc20':
             return `tronlink://transfer?to=${address}&amount=${amount}&token=TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t`;
@@ -47,30 +47,35 @@ export async function createOrderAPI(payload: CreateOrderPayload): Promise<Creat
     if (payload.plan === 'free') {
         throw new Error('免费计划无需支付');
     }
-    const res = await request.post<CreatePaymentResponse>('/api/order/create', payload);
+    // 转换前端 payload 为后端期望的格式
+    const backendPayload = {
+        plan: payload.plan,
+        network: payload.network
+    };
+    const res = await request.post<any>('/api/order/create', backendPayload);
     if (!res.success || !res.data) throw new Error(res.message || '创建订单失败');
-    // 后端字段为 snake_case，前端类型为 camelCase，这里做一次映射
-    const {order, qr_code, deep_link} = res.data as any;
+    // 新后端直接返回 Order（包含 qr_code、deep_link）
+    const o: any = res.data;
     const mapped: CreatePaymentResponse = {
         order: {
-            id: order.id,
-            userId: order.user_id,
-            plan: order.plan,
-            amount: order.amount,
-            currency: order.currency,
-            paymentMethod: order.payment_method,
-            status: order.status,
-            paymentAddress: order.payment_address,
-            paymentAmount: order.payment_amount,
-            createdAt: order.created_at,
-            expiresAt: order.expires_at,
-            txHash: order.tx_hash ?? undefined,
-            paidAt: order.paid_at ?? undefined,
-            confirmations: order.confirmations ?? undefined,
-            confirmedAt: order.confirmed_at ?? undefined,
+            id: o.id,
+            userId: o.user_id,
+            plan: o.plan,
+            amount: o.amount,
+            currency: o.currency,
+            paymentMethod: o.network, // 后端字段 network
+            status: o.state,          // 后端字段 state
+            paymentAddress: o.payment_address,
+            paymentAmount: o.payment_amount,
+            createdAt: o.created,     // 后端字段 created
+            expiresAt: o.expires,     // 后端字段 expires
+            txHash: o.tx_hash ?? undefined,
+            paidAt: o.paid ?? undefined,
+            confirmations: o.confirmations ?? undefined,
+            confirmedAt: o.confirmed ?? undefined,
         },
-        qrCode: qr_code,
-        deepLink: deep_link,
+        qrCode: o.qr_code,
+        deepLink: o.deep_link,
     };
     return mapped;
 }

@@ -36,6 +36,7 @@ class RequestService {
             const response = await fetch(`${this.baseURL}${url}`, {
                 ...fetchOptions,
                 headers: reqHeaders,
+                // Bearer-only: 不强制 Cookie，保留 include 兼容其他接口（如需完全去掉可改为 'same-origin'）
                 credentials: 'include',
                 signal: controller.signal,
             });

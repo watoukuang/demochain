@@ -10,13 +10,13 @@ pub struct JwtService;
 impl JwtService {
     pub fn generate_token(user_id: String, email: String) -> Result<String> {
         let claims = Claims::new(user_id, email, TOKEN_EXPIRY_SECONDS);
-        
+
         encode(
             &Header::default(),
             &claims,
             &EncodingKey::from_secret(JWT_SECRET.as_ref()),
         )
-        .map_err(|e| anyhow!("Failed to generate token: {}", e))
+            .map_err(|e| anyhow!("Failed to generate token: {}", e))
     }
 
     pub fn verify_token(token: &str) -> Result<Claims> {
@@ -25,8 +25,8 @@ impl JwtService {
             &DecodingKey::from_secret(JWT_SECRET.as_ref()),
             &Validation::default(),
         )
-        .map(|data| data.claims)
-        .map_err(|e| anyhow!("Invalid token: {}", e))
+            .map(|data| data.claims)
+            .map_err(|e| anyhow!("Invalid token: {}", e))
     }
 
     #[allow(dead_code)]
@@ -39,7 +39,7 @@ impl JwtService {
     }
 }
 
-// JWT 中间件提取器
+// JWT 中间件提取器（只支持 Authorization: Bearer <token>）
 use axum::{
     extract::FromRequestParts,
     http::{request::Parts, StatusCode},
@@ -73,4 +73,66 @@ where
 
         Ok(AuthUser(claims))
     }
+}
+
+// 新增：既支持 Cookie 中的 token，也支持 Authorization: Bearer
+use axum_extra::headers;
+
+#[allow(dead_code)]
+pub struct AuthUserAny(pub Claims);
+
+#[axum::async_trait]
+impl<S> FromRequestParts<S> for AuthUserAny
+where
+    S: Send + Sync,
+{
+    type Rejection = StatusCode;
+
+    async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
+        // 1) 优先从 Cookie: token 获取
+        if let Ok(TypedHeader(cookie)) = parts.extract::<TypedHeader<headers::Cookie>>().await {
+            if let Some(tok) = cookie.get("token") {
+                if let Ok(claims) = JwtService::verify_token(tok) {
+                    return Ok(AuthUserAny(claims));
+                }
+            }
+        }
+
+        // 2) 回退到 Authorization: Bearer
+        if let Ok(TypedHeader(Authorization(bearer))) = parts
+            .extract::<TypedHeader<Authorization<Bearer>>>()
+            .await
+        {
+            if let Ok(claims) = JwtService::verify_token(bearer.token()) {
+                return Ok(AuthUserAny(claims));
+            }
+        }
+
+        Err(StatusCode::UNAUTHORIZED)
+    }
+}
+
+// 全局辅助：从请求中提取 user_id（Cookie 或 Authorization），失败返回 401
+#[allow(dead_code)]
+pub async fn get_user_id_from_request(parts: &mut Parts) -> Result<String, StatusCode> {
+    // Cookie
+    if let Ok(TypedHeader(cookie)) = parts.extract::<TypedHeader<headers::Cookie>>().await {
+        if let Some(tok) = cookie.get("token") {
+            if let Ok(claims) = JwtService::verify_token(tok) {
+                return Ok(claims.sub);
+            }
+        }
+    }
+
+    // Authorization
+    if let Ok(TypedHeader(Authorization(bearer))) = parts
+        .extract::<TypedHeader<Authorization<Bearer>>>()
+        .await
+    {
+        if let Ok(claims) = JwtService::verify_token(bearer.token()) {
+            return Ok(claims.sub);
+        }
+    }
+
+    Err(StatusCode::UNAUTHORIZED)
 }
