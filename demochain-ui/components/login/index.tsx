@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {createPortal} from 'react-dom';
 import {login, register, LoginRequest, RegisterRequest} from '../../src/shared/api/auth';
-import {useToast} from '@/src/shared/components/toast';
+import {useToast} from 'components/toast';
 
 interface LoginModalProps {
     open: boolean;
