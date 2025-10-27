@@ -10,8 +10,8 @@ import ChainIcon from '../components/icons/ChainIcon';
 import NetworkIcon from '../components/icons/NetworkIcon';
 import CoinIcon from '../components/icons/CoinIcon';
 import TokenIcon from '../components/icons/TokenIcon';
-import { useAuth } from '../src/shared/hooks/useAuth';
-import { logout } from '../src/shared/api/auth';
+import {useAuth} from '../src/shared/hooks/useAuth';
+import {logout} from '../src/shared/api/auth';
 
 type Consensus = 'POW' | 'POS' | 'DPoS' | 'BFT' | 'POH'
 
@@ -104,19 +104,19 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
     // 添加用户菜单状态
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const userMenuRef = useRef<HTMLDivElement | null>(null);
-    
+
     // 添加一个状态来跟踪是否已挂载（用于解决hydration问题）
     const [isMounted, setIsMounted] = useState(false);
     const [currentPathname, setCurrentPathname] = useState('');
-    
+
     // 获取用户认证状态
-    const { user, isAuthenticated, logout: handleLogout } = useAuth();
+    const {user, isAuthenticated, logout: handleLogout} = useAuth();
     const router = useRouter();
 
     // 共识选择与菜单（避免 SSR 水合不一致：初始固定为 POW，挂载后再同步 localStorage）
     const [consensus, setConsensus] = useState<Consensus>('POW');
     const menuItems = MENUS[consensus];
-    
+
     // 标记组件已挂载（用于解决hydration问题）
     useEffect(() => {
         setIsMounted(true);
@@ -275,10 +275,12 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                                                     : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#1a1d24]'
                                             }`}
                                         >
-                                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor"
                                                  strokeWidth="2">
                                                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                                                <path
+                                                    d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
                                                 <path d="M8 7h8"/>
                                                 <path d="M8 11h8"/>
                                                 <path d="M8 15h6"/>
@@ -445,7 +447,7 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                         >
                             价格
                         </Link>
-                        
+
                         {/* 用户菜单 */}
                         {isAuthenticated ? (
                             <div className="relative" ref={userMenuRef}>
@@ -455,22 +457,24 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                                     aria-haspopup="menu"
                                     aria-expanded={userMenuOpen}
                                 >
-                                    <span className="w-6 h-6 rounded-full bg-white text-black flex items-center justify-center text-xs font-bold">
+                                    <span
+                                        className="w-6 h-6 rounded-full bg-white text-black flex items-center justify-center text-xs font-bold">
                                         {user?.email?.charAt(0).toUpperCase() || 'U'}
                                     </span>
                                     <span className="hidden md:inline">
                                         {user?.username || user?.email?.split('@')[0] || '用户'}
                                     </span>
                                 </button>
-                                
+
                                 {isAuthenticated && userMenuOpen && (
-                                    <div 
+                                    <div
                                         role="menu"
                                         aria-label="用户菜单"
                                         className="absolute right-0 mt-2 w-48 rounded-2xl border bg-white/98 backdrop-blur-sm shadow-lg ring-1 ring-black/5 p-2
                                             border-gray-200 dark:bg-[#1e1e1e] dark:border-[#2d2d30] dark:ring-white/5 dark:text-gray-200 z-50"
                                     >
-                                        <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-800">
+                                        <div
+                                            className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-800">
                                             {user?.email}
                                         </div>
                                         <button
@@ -506,14 +510,7 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                         </button>
                     </div>
                 </div>
-                <LoginModal 
-                    open={loginOpen} 
-                    onClose={() => setLoginOpen(false)}
-                    onSuccess={() => {
-                        // 登录成功后关闭模态框
-                        setLoginOpen(false);
-                    }}
-                />
+                <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} onSuccess={() => setLoginOpen(false)}/>
             </header>
 
             {/* 移动端菜单 */}
