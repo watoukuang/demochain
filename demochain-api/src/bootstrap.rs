@@ -1,14 +1,19 @@
 use std::net::SocketAddr;
 use crate::app::AppState;
-use dotenvy::dotenv;
+use dotenvy::{dotenv, from_filename};
 use sqlx::sqlite::SqlitePoolOptions;
 use sqlx::SqlitePool;
 use tracing::info;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 
 pub async fn initialize() -> anyhow::Result<(AppState, SocketAddr)> {
-    // 加载环境变量（.env.development）
-    dotenv().ok();
+    // 加载环境变量：优先 .env，其次 env.development / env.production（如果存在）
+    // 不存在则静默忽略，使用默认值
+    if dotenv().is_err() {
+        // 尝试开发/生产环境文件
+        let _ = from_filename("env.development");
+        let _ = from_filename("env.production");
+    }
 
     // 初始化日志与追踪（tracing）
     tracing_subscriber::registry()
@@ -16,12 +21,21 @@ pub async fn initialize() -> anyhow::Result<(AppState, SocketAddr)> {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
+    // 默认使用本地 data 目录下的 SQLite 文件
     let database_url = std::env::var("DATABASE_URL")
-        .unwrap_or_else(|_| "sqlite://develpo.db?mode=rw".to_string());
+        .unwrap_or_else(|_| "sqlite://./data/demochain.db".to_string());
     let port: u16 = std::env::var("PORT")
         .ok()
         .and_then(|s| s.parse().ok())
         .unwrap_or(8181);
+    // 对本地 SQLite 路径，确保父目录存在（如 ./data）
+    if let Some(stripped) = database_url.strip_prefix("sqlite://") {
+        use std::path::Path;
+        if let Some(parent) = Path::new(stripped.split('?').next().unwrap_or(stripped)).parent() {
+            let _ = std::fs::create_dir_all(parent);
+        }
+    }
+
     // 建立数据库连接池
     let pool: SqlitePool = SqlitePoolOptions::new()
         .max_connections(5)
@@ -33,7 +47,7 @@ pub async fn initialize() -> anyhow::Result<(AppState, SocketAddr)> {
 
     let state = AppState { db: pool };
     let addr = SocketAddr::from(([0, 0, 0, 0], port));
-    info!("initialized with addr=http://{}", addr);
+    info!("initialized with addr=http://{} database_url={}", addr, database_url);
     Ok((state, addr))
 }
 

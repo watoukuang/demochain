@@ -6,7 +6,8 @@ use axum::{
 use serde::{Deserialize, Serialize};
 
 use crate::app::AppState;
-use crate::models::{ApiResponse, Idea, LaunchRequest};
+use crate::models::{Idea, LaunchRequest};
+use crate::models::r::Response;
 
 #[derive(Deserialize)]
 pub struct IdeaQuery {
@@ -20,7 +21,7 @@ pub struct IdeaQuery {
 pub async fn page_ideas(
     State(state): State<AppState>,
     Query(params): Query<IdeaQuery>,
-) -> Result<Json<ApiResponse<Vec<Idea>>>, StatusCode> {
+) -> Result<Json<Response<Vec<Idea>>>, StatusCode> {
     let page = params.page.unwrap_or(1);
     let limit = params.limit.unwrap_or(20).min(100); // 最大100条
     let offset = (page - 1) * limit;
@@ -71,7 +72,7 @@ pub async fn page_ideas(
         }
     };
 
-    Ok(Json(ApiResponse {
+    Ok(Json(Response {
         success: true,
         data: Some(ideas),
         message: None,
@@ -92,7 +93,7 @@ fn build_icon_uri(icon_hash: &str) -> Option<String> {
 pub async fn get_idea_by_id(
     State(state): State<AppState>,
     Path(id): Path<i64>,
-) -> Result<Json<ApiResponse<Idea>>, StatusCode> {
+) -> Result<Json<Response<Idea>>, StatusCode> {
     let idea: Idea = sqlx::query_as::<_, Idea>(
         "SELECT \
             id, \
@@ -112,7 +113,7 @@ pub async fn get_idea_by_id(
         .await
         .map_err(|_| StatusCode::NOT_FOUND)?;
 
-    Ok(Json(ApiResponse {
+    Ok(Json(Response {
         success: true,
         data: Some(idea),
         message: None,
@@ -123,7 +124,7 @@ pub async fn get_idea_by_id(
 pub async fn launch(
     State(state): State<AppState>,
     Json(req): Json<LaunchRequest>,
-) -> Result<Json<ApiResponse<()>>, StatusCode> {
+) -> Result<Json<Response<()>>, StatusCode> {
     let tags_json = tags_to_json(&req.tags);
     let icon_uri = "https://haveanidea.me/ipfs";
     sqlx::query(r#"
@@ -142,7 +143,7 @@ pub async fn launch(
         .execute(&state.db)
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-    Ok(Json(ApiResponse {
+    Ok(Json(Response {
         success: true,
         data: None,
         message: Some("Idea submitted successfully".to_string()),
