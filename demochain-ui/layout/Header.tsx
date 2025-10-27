@@ -298,14 +298,11 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                                             }`}
                                         >
                                             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none"
-                                                 stroke="currentColor"
-                                                 strokeWidth="2">
-                                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                                                <path
-                                                    d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-                                                <path d="M8 7h8"/>
-                                                <path d="M8 11h8"/>
-                                                <path d="M8 15h6"/>
+                                                 stroke="currentColor" strokeWidth="2">
+                                                <rect x="5" y="3" width="14" height="18" rx="2"/>
+                                                <path d="M8 8h8"/>
+                                                <path d="M8 12h8"/>
+                                                <path d="M8 16h6"/>
                                             </svg>
                                             <span>文章</span>
                                         </Link>
@@ -463,11 +460,10 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                                 </div>
                             )}
                         </div>
-                        <Link
-                            href="/pricing"
-                            className="inline-flex items-center text-sm font-medium px-3 py-1.5 md:px-4 rounded-full whitespace-nowrap bg-gradient-to-r from-emerald-500 to-lime-500 text-white shadow-sm hover:opacity-90 transition-opacity dark:from-emerald-400 dark:to-lime-400"
+                        <Link href="/pricing"
+                              className="inline-flex items-center text-sm font-medium px-3 py-1.5 md:px-4 rounded-full whitespace-nowrap bg-gradient-to-r from-emerald-500 to-lime-500 text-white shadow-sm hover:opacity-90 transition-opacity dark:from-emerald-400 dark:to-lime-400"
                         >
-                            价格
+                            订阅
                         </Link>
 
                         {/* 用户菜单 */}
@@ -475,7 +471,7 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                             <div className="relative" ref={userMenuRef}>
                                 <button
                                     onClick={() => setUserMenuOpen(v => !v)}
-                                    className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-black text-white text-sm whitespace-nowrap"
+                                    className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm whitespace-nowrap bg-white/80 text-gray-900 border border-gray-200 shadow-sm hover:bg-white dark:hover:bg-white/20 dark:bg-white/10 dark:text-white dark:border-white/10 backdrop-blur-sm transition-colors"
                                     aria-haspopup="menu"
                                     aria-expanded={userMenuOpen}
                                 >
@@ -489,15 +485,10 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                                 </button>
 
                                 {isAuthenticated && userMenuOpen && (
-                                    <div
-                                        role="menu"
-                                        aria-label="用户菜单"
-                                        className="absolute right-0 mt-2 w-48 rounded-2xl border bg-white/98 backdrop-blur-sm shadow-lg ring-1 ring-black/5 p-2
-                                            border-gray-200 dark:bg-[#1e1e1e] dark:border-[#2d2d30] dark:ring-white/5 dark:text-gray-200 z-50"
-                                    >
+                                    <div role="menu" aria-label="用户菜单" className="absolute right-0 mt-2 w-48 rounded-2xl border bg-white/98 backdrop-blur-sm shadow-lg ring-1 ring-black/5 p-2
+                                            border-gray-200 dark:bg-[#1e1e1e] dark:border-[#2d2d30] dark:ring-white/5 dark:text-gray-200 z-50">
                                         <div
-                                            className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-800">
-                                            {user?.email}
+                                            className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-800">{user?.email}
                                         </div>
                                         <button
                                             onClick={handleUserLogout}
@@ -511,7 +502,7 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                         ) : (
                             <button
                                 onClick={() => setLoginOpen(true)}
-                                className="bg-black text-white px-3 py-1.5 md:px-4 rounded-full text-sm whitespace-nowrap"
+                                className="px-3 py-1.5 md:px-4 rounded-full text-sm whitespace-nowrap bg-white/90 text-gray-900 border border-gray-200 shadow-sm hover:bg-white dark:hover:bg-white/20 dark:bg-white/10 dark:text-white dark:border-white/10 backdrop-blur-sm transition-colors"
                             >
                                 登录/注册
                             </button>
@@ -591,11 +582,10 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                         >
                             <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                  strokeWidth="2">
-                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-                                <path d="M8 7h8"/>
-                                <path d="M8 11h8"/>
-                                <path d="M8 15h6"/>
+                                <rect x="5" y="3" width="14" height="18" rx="2"/>
+                                <path d="M8 8h8"/>
+                                <path d="M8 12h8"/>
+                                <path d="M8 16h6"/>
                             </svg>
                             <span>文章</span>
                         </Link>
