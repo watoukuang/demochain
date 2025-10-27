@@ -1,11 +1,10 @@
-// 请求响应接口
 export interface ApiResponse<T = any> {
-    code: number;
-    message: string;
-    data: T;
+    success: boolean;
+    data: T | null;
+    message?: string | null;
+    code?: number | null;
 }
 
-// 请求配置接口
 export interface RequestConfig {
     headers?: Record<string, string>;
     timeout?: number;
@@ -13,162 +12,96 @@ export interface RequestConfig {
 }
 
 class RequestService {
-    private baseURL: string;
+    private baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://demochain.org:8085';
 
-    constructor() {
-        this.baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://demochain.org:8085';
-    }
-
-    private async request<T = any>(
-        url: string,
-        options: RequestInit & RequestConfig = {}
-    ): Promise<ApiResponse<T>> {
+    private async request<T>(url: string, options: RequestInit & RequestConfig = {}): Promise<ApiResponse<T>> {
         const {headers = {}, timeout = 10000, skipErrorHandler, ...fetchOptions} = options;
 
-        // 添加默认 headers
-        const defaultHeaders: Record<string, string> = {
+        // 构建请求头
+        const reqHeaders: Record<string, string> = {
             'Content-Type': 'application/json',
+            'Accept': 'application/json',
         };
-
-        // 合并用户提供的 headers
-        Object.assign(defaultHeaders, headers);
-
-        // 从 localStorage 获取 token
+        Object.assign(reqHeaders, headers);
         if (typeof window !== 'undefined') {
             const token = localStorage.getItem('auth_token');
-            if (token) {
-                defaultHeaders.Authorization = `Bearer ${token}`;
-            }
+            if (token) reqHeaders.Authorization = `Bearer ${token}`;
         }
 
+        // 超时控制
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), timeout);
 
         try {
             const response = await fetch(`${this.baseURL}${url}`, {
                 ...fetchOptions,
-                headers: defaultHeaders,
+                headers: reqHeaders,
                 credentials: 'include',
                 signal: controller.signal,
             });
 
-            clearTimeout(timeoutId);
+            // 后端统一返回 { success, data, message, code }
+            let parsed: ApiResponse<T> | null = null;
+            try {
+                parsed = await response.json();
+            } catch {
+                parsed = null;
+            }
 
+            // 错误处理
             if (!response.ok) {
-                // HTTP 错误处理
-                let errorMessage = `请求失败 (${response.status})`;
-
-                try {
-                    const errorData = await response.json();
-                    errorMessage = errorData.message || errorMessage;
-                } catch {
-                    // 忽略 JSON 解析错误
-                }
-
-                // 401 未授权处理
+                const errMsg = (parsed && typeof parsed === 'object' && parsed.message) ? parsed.message! : `请求失败 (${response.status})`;
                 if (response.status === 401) {
                     if (typeof window !== 'undefined') {
                         localStorage.removeItem('auth_token');
                         localStorage.removeItem('user_info');
                     }
-                    errorMessage = '登录已过期，请重新登录';
+                    throw new Error('登录已过期，请重新登录');
                 }
-
-                throw new Error(errorMessage);
+                throw new Error(errMsg);
             }
 
-            const data = await response.json();
-
-            // 如果后端返回的是标准格式
-            if (data && typeof data === 'object' && 'code' in data) {
-                if (data.code === 200 || data.code === 0) {
-                    return data;
-                } else {
-                    throw new Error(data.message || '请求失败');
-                }
+            // 直接返回后端统一结构
+            if (parsed && typeof parsed === 'object' && 'success' in parsed) {
+                return parsed as ApiResponse<T>;
             }
-
-            // 如果后端直接返回数据，包装成标准格式
-            return {
-                code: 200,
-                message: 'success',
-                data: data,
-            };
+            // 极端情况（无可解析内容）
+            return {success: true, data: null, message: null, code: null};
         } catch (error: any) {
-            clearTimeout(timeoutId);
-
-            if (error.name === 'AbortError') {
-                throw new Error('请求超时');
-            }
-
-            if (!skipErrorHandler) {
-                console.error('Request error:', error);
-            }
-
+            if (error.name === 'AbortError') throw new Error('请求超时');
+            if (!skipErrorHandler) console.error('Request error:', error);
             throw error;
+        } finally {
+            clearTimeout(timeoutId);
         }
     }
 
-    // GET 请求
-    public get<T = any>(url: string, config?: RequestConfig): Promise<ApiResponse<T>> {
-        // 添加时间戳防止缓存
+    get<T>(url: string, config?: RequestConfig): Promise<ApiResponse<T>> {
         const separator = url.includes('?') ? '&' : '?';
-        const urlWithTimestamp = `${url}${separator}_t=${Date.now()}`;
-
-        return this.request<T>(urlWithTimestamp, {
-            method: 'GET',
-            ...config,
-        });
+        return this.request<T>(`${url}${separator}_t=${Date.now()}`, {method: 'GET', ...config});
     }
 
-    // POST 请求
-    public post<T = any>(url: string, data?: any, config?: RequestConfig): Promise<ApiResponse<T>> {
-        return this.request<T>(url, {
-            method: 'POST',
-            body: data ? JSON.stringify(data) : undefined,
-            ...config,
-        });
+    post<T>(url: string, data?: any, config?: RequestConfig): Promise<ApiResponse<T>> {
+        return this.request<T>(url, {method: 'POST', body: data ? JSON.stringify(data) : undefined, ...config});
     }
 
-    // PUT 请求
-    public put<T = any>(url: string, data?: any, config?: RequestConfig): Promise<ApiResponse<T>> {
-        return this.request<T>(url, {
-            method: 'PUT',
-            body: data ? JSON.stringify(data) : undefined,
-            ...config,
-        });
+    put<T>(url: string, data?: any, config?: RequestConfig): Promise<ApiResponse<T>> {
+        return this.request<T>(url, {method: 'PUT', body: data ? JSON.stringify(data) : undefined, ...config});
     }
 
-    // DELETE 请求
-    public delete<T = any>(url: string, config?: RequestConfig): Promise<ApiResponse<T>> {
-        return this.request<T>(url, {
-            method: 'DELETE',
-            ...config,
-        });
+    delete<T>(url: string, config?: RequestConfig): Promise<ApiResponse<T>> {
+        return this.request<T>(url, {method: 'DELETE', ...config});
     }
 
-    // PATCH 请求
-    public patch<T = any>(url: string, data?: any, config?: RequestConfig): Promise<ApiResponse<T>> {
-        return this.request<T>(url, {
-            method: 'PATCH',
-            body: data ? JSON.stringify(data) : undefined,
-            ...config,
-        });
+    patch<T>(url: string, data?: any, config?: RequestConfig): Promise<ApiResponse<T>> {
+        return this.request<T>(url, {method: 'PATCH', body: data ? JSON.stringify(data) : undefined, ...config});
     }
 
-    // 上传文件
-    public upload<T = any>(url: string, formData: FormData, config?: RequestConfig): Promise<ApiResponse<T>> {
+    upload<T>(url: string, formData: FormData, config?: RequestConfig): Promise<ApiResponse<T>> {
         const {headers = {}, ...restConfig} = config || {};
-        // 移除 Content-Type，让浏览器自动设置
         const uploadHeaders = {...headers};
         delete uploadHeaders['Content-Type'];
-
-        return this.request<T>(url, {
-            method: 'POST',
-            body: formData,
-            headers: uploadHeaders,
-            ...restConfig,
-        });
+        return this.request<T>(url, {method: 'POST', body: formData, headers: uploadHeaders, ...restConfig});
     }
 }
 

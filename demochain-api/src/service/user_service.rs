@@ -36,8 +36,7 @@ pub async fn register_user(
         id,
         req.email,
         password_hash
-    )
-        .execute(pool)
+    ).execute(pool)
         .await
         .with_context(|| "failed to insert user")?;
 

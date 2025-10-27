@@ -74,6 +74,7 @@ pub async fn page_ideas(
         success: true,
         data: Some(ideas),
         message: None,
+        code: Some(200),
     }))
 }
 
@@ -112,6 +113,7 @@ pub async fn get_idea_by_id(
         success: true,
         data: Some(idea),
         message: None,
+        code: Some(200),
     }))
 }
 
@@ -142,5 +144,6 @@ pub async fn launch(
         success: true,
         data: None,
         message: Some("Idea submitted successfully".to_string()),
+        code: Some(200),
     }))
 }

@@ -80,6 +80,36 @@ export default function LoginModal({open, onClose, onSuccess}: LoginModalProps) 
         return true;
     };
 
+    const handleLogin = async (email: string, password: string) => {
+        const req: LoginRequest = { email, password };
+        const res = await login(req);
+        onSuccess?.(res.user);
+        toast.success('登录成功');
+        resetForm();
+        onClose();
+    };
+
+    const handleSignup = async (email: string, password: string) => {
+        const req: RegisterRequest = { email, password };
+        const res = await register(req);
+        onSuccess?.(res.user);
+        toast.success('注册成功');
+        setMode('login');
+        setFormState(prev => ({
+            email: prev.email,
+            password: '',
+            confirmPassword: '',
+        }));
+    };
+
+    const handleSubmitSuccess = async (email: string, password: string) => {
+        if (mode === 'login') {
+            await handleLogin(email, password);
+        } else {
+            await handleSignup(email, password);
+        }
+    };
+
     const submit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!validateForm()) return;
@@ -88,31 +118,7 @@ export default function LoginModal({open, onClose, onSuccess}: LoginModalProps) 
         setError('');
 
         try {
-            if (mode === 'login') {
-                const req: LoginRequest = {
-                    email: formState.email,
-                    password: formState.password,
-                };
-                const res = await login(req);
-                onSuccess?.(res.user);
-                toast.success('登录成功');
-                resetForm();
-                onClose();
-            } else {
-                const req: RegisterRequest = {
-                    email: formState.email,
-                    password: formState.password,
-                };
-                const res = await register(req);
-                onSuccess?.(res.user);
-                toast.success('注册成功');
-                setMode('login');
-                setFormState(prev => ({
-                    email: prev.email,
-                    password: '',
-                    confirmPassword: '',
-                }));
-            }
+            await handleSubmitSuccess(formState.email, formState.password);
         } catch (err: any) {
             const msg = err?.response?.data?.message || err?.message || '操作失败，请重试';
             setError(msg);

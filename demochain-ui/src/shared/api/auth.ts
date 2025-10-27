@@ -12,6 +12,13 @@ export interface RegisterRequest {
     confirmPassword?: string;
 }
 
+// 统一的 API 响应格式（与请求工具保持一致）
+export interface ApiResponse<T> {
+    success: boolean;
+    data: T | null;
+    message: string | null;
+}
+
 // 响应数据类型
 export interface User {
     id: string;
@@ -30,36 +37,34 @@ export interface AuthResponse {
 
 // 登录
 export async function login(data: LoginRequest): Promise<AuthResponse> {
-    const response = await request.post<AuthResponse>('/api/auth/login', data);
-
-    // 登录成功后保存 token 和用户信息
-    if (response.data && response.data.token) {
-        if (typeof window !== 'undefined') {
-            localStorage.setItem('auth_token', response.data.token);
-            localStorage.setItem('user_info', JSON.stringify(response.data.user));
-            // 通知全局认证状态已变更
-            window.dispatchEvent(new Event('authChanged'));
-        }
+    const resp = await request.post<AuthResponse>('/api/auth/login', data);
+    if (!resp.success) {
+        throw new Error(resp.message || '登录失败');
     }
-
-    return response.data;
+    const authData = resp.data;
+    if (!authData) throw new Error('登录响应数据为空');
+    if (authData.token && typeof window !== 'undefined') {
+        localStorage.setItem('auth_token', authData.token);
+        localStorage.setItem('user_info', JSON.stringify(authData.user));
+        window.dispatchEvent(new Event('authChanged'));
+    }
+    return authData;
 }
 
 // 注册
 export async function register(data: RegisterRequest): Promise<AuthResponse> {
-    const response = await request.post<AuthResponse>('/api/auth/register', data);
-
-    // 注册成功后保存 token 和用户信息
-    if (response.data && response.data.token) {
-        if (typeof window !== 'undefined') {
-            localStorage.setItem('auth_token', response.data.token);
-            localStorage.setItem('user_info', JSON.stringify(response.data.user));
-            // 通知全局认证状态已变更
-            window.dispatchEvent(new Event('authChanged'));
-        }
+    const resp = await request.post<AuthResponse>('/api/auth/register', data);
+    if (!resp.success) {
+        throw new Error(resp.message || '注册失败');
     }
-
-    return response.data;
+    const authData = resp.data;
+    if (!authData) throw new Error('注册响应数据为空');
+    if (authData.token && typeof window !== 'undefined') {
+        localStorage.setItem('auth_token', authData.token);
+        localStorage.setItem('user_info', JSON.stringify(authData.user));
+        window.dispatchEvent(new Event('authChanged'));
+    }
+    return authData;
 }
 
 // 登出
@@ -81,22 +86,24 @@ export async function logout(): Promise<void> {
 
 // 获取当前用户信息
 export async function getCurrentUser(): Promise<User> {
-    const response = await request.get<User>('/api/auth/me');
-    return response.data;
+    const resp = await request.get<User>('/api/auth/me');
+    if (!resp.success) throw new Error(resp.message || '获取用户信息失败');
+    const userData = resp.data;
+    if (!userData) throw new Error('用户信息为空');
+    return userData;
 }
 
 // 刷新 token
 export async function refreshToken(): Promise<AuthResponse> {
-    const response = await request.post<AuthResponse>('/api/auth/refresh');
-
-    if (response.data && response.data.token) {
-        if (typeof window !== 'undefined') {
-            localStorage.setItem('auth_token', response.data.token);
-            localStorage.setItem('user_info', JSON.stringify(response.data.user));
-        }
+    const resp = await request.post<AuthResponse>('/api/auth/refresh');
+    if (!resp.success) throw new Error(resp.message || '刷新 token 失败');
+    const authData = resp.data;
+    if (!authData) throw new Error('刷新 token 响应数据为空');
+    if (authData.token && typeof window !== 'undefined') {
+        localStorage.setItem('auth_token', authData.token);
+        localStorage.setItem('user_info', JSON.stringify(authData.user));
     }
-
-    return response.data;
+    return authData;
 }
 
 // 修改密码
