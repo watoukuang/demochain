@@ -1,0 +1,6 @@
+/Users/xukui/demo-workspace/demochain/demochain-api/target/debug/deps/libunicode_categories-b309a789d060c1ed.rmeta: /Users/xukui/.cargo/registry/src/index.crates.io-6f17d22bba15001f/unicode_categories-0.1.1/src/lib.rs /Users/xukui/.cargo/registry/src/index.crates.io-6f17d22bba15001f/unicode_categories-0.1.1/src/tables.rs
+
+/Users/xukui/demo-workspace/demochain/demochain-api/target/debug/deps/unicode_categories-b309a789d060c1ed.d: /Users/xukui/.cargo/registry/src/index.crates.io-6f17d22bba15001f/unicode_categories-0.1.1/src/lib.rs /Users/xukui/.cargo/registry/src/index.crates.io-6f17d22bba15001f/unicode_categories-0.1.1/src/tables.rs
+
+/Users/xukui/.cargo/registry/src/index.crates.io-6f17d22bba15001f/unicode_categories-0.1.1/src/lib.rs:
+/Users/xukui/.cargo/registry/src/index.crates.io-6f17d22bba15001f/unicode_categories-0.1.1/src/tables.rs:

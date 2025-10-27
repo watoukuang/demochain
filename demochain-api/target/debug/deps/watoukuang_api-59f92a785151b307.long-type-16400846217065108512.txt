@@ -1,0 +1,1 @@
+fn(axum::Json<RegisterRequest>) -> impl std::future::Future<Output = Result<r::Response<&'static str>, axum::http::StatusCode>> {auth::register}
