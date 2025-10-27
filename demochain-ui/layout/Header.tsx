@@ -463,7 +463,7 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                                     </span>
                                 </button>
                                 
-                                {userMenuOpen && (
+                                {isAuthenticated && userMenuOpen && (
                                     <div 
                                         role="menu"
                                         aria-label="用户菜单"
