@@ -1,0 +1,76 @@
+use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
+use anyhow::{Result, anyhow};
+use crate::models::user::Claims;
+
+const JWT_SECRET: &str = "your-secret-key-change-in-production";
+const TOKEN_EXPIRY_SECONDS: i64 = 24 * 60 * 60; // 24 hours
+
+pub struct JwtService;
+
+impl JwtService {
+    pub fn generate_token(user_id: String, email: String) -> Result<String> {
+        let claims = Claims::new(user_id, email, TOKEN_EXPIRY_SECONDS);
+        
+        encode(
+            &Header::default(),
+            &claims,
+            &EncodingKey::from_secret(JWT_SECRET.as_ref()),
+        )
+        .map_err(|e| anyhow!("Failed to generate token: {}", e))
+    }
+
+    pub fn verify_token(token: &str) -> Result<Claims> {
+        decode::<Claims>(
+            token,
+            &DecodingKey::from_secret(JWT_SECRET.as_ref()),
+            &Validation::default(),
+        )
+        .map(|data| data.claims)
+        .map_err(|e| anyhow!("Invalid token: {}", e))
+    }
+
+    #[allow(dead_code)]
+    pub fn extract_bearer_token(auth_header: &str) -> Result<&str> {
+        if auth_header.starts_with("Bearer ") {
+            Ok(&auth_header[7..])
+        } else {
+            Err(anyhow!("Invalid authorization header format"))
+        }
+    }
+}
+
+// JWT 中间件提取器
+use axum::{
+    extract::FromRequestParts,
+    http::{request::Parts, StatusCode},
+    RequestPartsExt,
+};
+use axum_extra::{
+    headers::{authorization::Bearer, Authorization},
+    TypedHeader,
+};
+
+#[allow(dead_code)]
+pub struct AuthUser(pub Claims);
+
+#[axum::async_trait]
+impl<S> FromRequestParts<S> for AuthUser
+where
+    S: Send + Sync,
+{
+    type Rejection = StatusCode;
+
+    async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
+        // 尝试从 Authorization header 获取 token
+        let TypedHeader(Authorization(bearer)) = parts
+            .extract::<TypedHeader<Authorization<Bearer>>>()
+            .await
+            .map_err(|_| StatusCode::UNAUTHORIZED)?;
+
+        // 验证 token
+        let claims = JwtService::verify_token(bearer.token())
+            .map_err(|_| StatusCode::UNAUTHORIZED)?;
+
+        Ok(AuthUser(claims))
+    }
+}

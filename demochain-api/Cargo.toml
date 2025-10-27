@@ -1,0 +1,27 @@
+[package]
+name = "watoukuang-api"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+axum = { version = "0.7", features = ["macros", "tokio"] }
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+sqlx = { version = "=0.7.3", features = ["runtime-tokio", "sqlite", "macros", "chrono", "uuid"] }
+dotenvy = "0.15"
+tower-http = { version = "0.5", features = ["cors", "trace"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+anyhow = "1"
+warp = "0.4.2"
+futures = "0.3.31"
+serde_json = "1.0.145"
+chrono = { version = "0.4.31", features = ["serde"] }
+base64ct = "=1.7.3"
+home = "=0.5.11"
+# 认证相关依赖
+bcrypt = "0.15"
+jsonwebtoken = "9"
+uuid = { version = "1.0", features = ["v4", "serde"] }
+axum-extra = { version = "0.9", features = ["typed-header"] }
+headers = "0.4"
