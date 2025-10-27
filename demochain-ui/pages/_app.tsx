@@ -5,6 +5,7 @@ import Head from 'next/head';
 import Index from '../layout';
 import {getPageSEO} from '@/src/shared/utils/seo';
 import '../styles/globals.css';
+import { ToastProvider } from '@/src/shared/components/toast';
 
 function Application({Component, pageProps}: AppProps): React.ReactElement {
     const router = useRouter();
@@ -63,9 +64,11 @@ function Application({Component, pageProps}: AppProps): React.ReactElement {
                 />
             </Head>
 
-            <Index>
-                <Component {...pageProps} />
-            </Index>
+            <ToastProvider>
+                <Index>
+                    <Component {...pageProps} />
+                </Index>
+            </ToastProvider>
         </>
     );
 }

@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {createPortal} from 'react-dom';
 import {login, register, LoginRequest, RegisterRequest} from '../../src/shared/api/auth';
+import {useToast} from '@/src/shared/components/toast';
 
 interface LoginModalProps {
     open: boolean;
@@ -44,6 +45,9 @@ export default function LoginModal({open, onClose, onSuccess}: LoginModalProps) 
             console.error('Google OAuth redirect failed:', e);
         }
     };
+
+    // 全局 Toast
+    const toast = useToast();
 
     const resetForm = () => {
         setFormState({email: '', password: '', confirmPassword: ''});
@@ -90,6 +94,9 @@ export default function LoginModal({open, onClose, onSuccess}: LoginModalProps) 
                 };
                 const res = await login(req);
                 onSuccess?.(res.user);
+                toast.success('登录成功');
+                resetForm();
+                onClose();
             } else {
                 const req: RegisterRequest = {
                     email: formState.email,
@@ -97,14 +104,16 @@ export default function LoginModal({open, onClose, onSuccess}: LoginModalProps) 
                 };
                 const res = await register(req);
                 onSuccess?.(res.user);
+                toast.success('注册成功');
+                setMode('login');
+                setFormState(prev => ({
+                    email: prev.email,
+                    password: '',
+                    confirmPassword: '',
+                }));
             }
-            resetForm();
-            onClose();
         } catch (err: any) {
-            const msg =
-                err?.response?.data?.message ||
-                err?.message ||
-                '操作失败，请重试';
+            const msg = err?.response?.data?.message || err?.message || '操作失败，请重试';
             setError(msg);
         } finally {
             setLoading(false);
