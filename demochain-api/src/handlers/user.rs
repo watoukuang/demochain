@@ -11,7 +11,7 @@ pub async fn register(
     let response = user_service::register_user(&state.db, payload)
         .await
         .map_err(|e| {
-            let status = if e.to_string().contains("邮箱已被注册") {
+            let status = if e.to_string().contains("邮箱已被注册!") {
                 StatusCode::CONFLICT
             } else {
                 StatusCode::INTERNAL_SERVER_ERROR

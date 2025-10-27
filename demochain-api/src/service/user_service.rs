@@ -1,7 +1,7 @@
 use sqlx::SqlitePool;
 use chrono::{Utc, DateTime};
 use anyhow::{Context, Result, bail};
-use crate::models::user::{User, LoginRequest, RegisterRequest, AuthResponse, UserInfo};
+use crate::models::user::{User, LoginRequest, RegisterRequest, AuthResponse, UserDetails};
 use crate::utils::{jwt::JwtService, password::PasswordService};
 
 fn gen_id() -> String {
@@ -13,10 +13,7 @@ pub async fn register_user(
     req: RegisterRequest,
 ) -> Result<AuthResponse> {
     // 检查邮箱是否已存在
-    let existing = sqlx::query!(
-        "SELECT id FROM users WHERE email = ?1",
-        req.email
-    )
+    let existing = sqlx::query!("SELECT id FROM users WHERE email = ?1",req.email)
         .fetch_optional(pool)
         .await
         .with_context(|| "failed to check existing email")?;
@@ -53,13 +50,13 @@ pub async fn register_user(
 
     Ok(AuthResponse {
         token,
-        user: UserInfo {
+        user: UserDetails {
             id: user.id.clone(),
             email: user.email.clone(),
             username: user.username.clone(),
             avatar: user.avatar.clone(),
-            created_at: user.created,
-            updated_at: user.updated,
+            created: user.created,
+            updated: user.updated,
         },
         expires_in: Some(24 * 60 * 60), // 24小时
     })
@@ -100,13 +97,13 @@ pub async fn login_user(
 
     Ok(AuthResponse {
         token,
-        user: UserInfo {
+        user: UserDetails {
             id: user.id.clone(),
             email: user.email.clone(),
             username: user.username.clone(),
             avatar: user.avatar.clone(),
-            created_at: user.created,
-            updated_at: user.updated,
+            created: user.created,
+            updated: user.updated,
         },
         expires_in: Some(24 * 60 * 60),
     })

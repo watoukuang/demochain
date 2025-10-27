@@ -28,30 +28,30 @@ pub struct RegisterRequest {
 #[derive(Debug, Serialize)]
 pub struct AuthResponse {
     pub token: String,
-    pub user: UserInfo,
+    pub user: UserDetails,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub expires_in: Option<i64>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct UserInfo {
+pub struct UserDetails {
     pub id: String,
     pub email: String,
     pub username: Option<String>,
     pub avatar: Option<String>,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
+    pub created: DateTime<Utc>,
+    pub updated: DateTime<Utc>,
 }
 
-impl From<User> for UserInfo {
+impl From<User> for UserDetails {
     fn from(user: User) -> Self {
         Self {
             id: user.id,
             email: user.email,
             username: user.username,
             avatar: user.avatar,
-            created_at: user.created,
-            updated_at: user.updated,
+            created: user.created,
+            updated: user.updated,
         }
     }
 }
