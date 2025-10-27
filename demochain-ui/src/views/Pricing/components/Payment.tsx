@@ -208,9 +208,12 @@ export default function Payment({isOpen, onClose, plan, onSuccess}: PaymentProps
                                                 </div>
                                             </div>
                                             {selectedMethod === network.id && (
-                                                <div className="w-5 h-5 rounded-full flex items-center justify-center bg-blue-500 text-white">
+                                                <div
+                                                    className="w-5 h-5 rounded-full flex items-center justify-center bg-blue-500 text-white">
                                                     <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                        <path fillRule="evenodd"
+                                                              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                              clipRule="evenodd"/>
                                                     </svg>
                                                 </div>
                                             )}
@@ -243,7 +246,8 @@ export default function Payment({isOpen, onClose, plan, onSuccess}: PaymentProps
                             </div>
 
                             {/* 支付信息 */}
-                            <div className="bg-gray-50 dark:bg-white/[0.06] rounded-lg p-3 space-y-3 border border-gray-200 dark:border-white/10">
+                            <div
+                                className="bg-gray-50 dark:bg-white/[0.06] rounded-lg p-3 space-y-3 border border-gray-200 dark:border-white/10">
                                 <div className="flex justify-between">
                                     <span className="text-gray-600 dark:text-gray-400">订单号:</span>
                                     <span className="font-mono text-sm">{paymentOrder.id}</span>
@@ -264,7 +268,8 @@ export default function Payment({isOpen, onClose, plan, onSuccess}: PaymentProps
                                     收款地址
                                 </label>
                                 <div className="flex items-center gap-3">
-                                    <div className="flex items-center gap-2 flex-1 h-9 px-3 rounded-lg border border-gray-300 dark:border-white/10 bg-gray-50 dark:bg-white/[0.06] overflow-hidden">
+                                    <div
+                                        className="flex items-center gap-2 flex-1 h-9 px-3 rounded-lg border border-gray-300 dark:border-white/10 bg-gray-50 dark:bg-white/[0.06] overflow-hidden">
                                         <span className="font-mono text-sm text-gray-900 dark:text-gray-100 truncate">
                                             {paymentOrder.paymentAddress}
                                         </span>
@@ -281,7 +286,8 @@ export default function Payment({isOpen, onClose, plan, onSuccess}: PaymentProps
 
                             {/* 二维码 */}
                             <div className="text-center">
-                                <div className="inline-block p-3 rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.04]">
+                                <div
+                                    className="inline-block p-3 rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.04]">
                                     <img src={qrCode} alt="Payment QR Code" className="w-40 h-40"/>
                                 </div>
                                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
