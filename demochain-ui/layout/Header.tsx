@@ -476,7 +476,7 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                                     aria-expanded={userMenuOpen}
                                 >
                                     <span
-                                        className="w-6 h-6 rounded-full bg-white text-black flex items-center justify-center text-xs font-bold">
+                                        className="w-6 h-6 rounded-full bg-gray-200 text-black flex items-center justify-center text-xs font-bold">
                                         {user?.email?.charAt(0).toUpperCase() || 'U'}
                                     </span>
                                     <span className="hidden md:inline">
