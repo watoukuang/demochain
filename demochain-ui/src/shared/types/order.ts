@@ -56,7 +56,7 @@ export interface PaymentOrder {
 }
 
 // 支付请求
-export interface AddOrderPayload {
+export interface CreateOrderPayload {
     plan: SubscriptionPlan;
     network: Network;
     returnUrl?: string;

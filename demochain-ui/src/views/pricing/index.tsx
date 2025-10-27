@@ -73,19 +73,31 @@ const plans = [
 ];
 
 const faqs = [
-    { q: '免费版有什么限制？', a: '免费版只能访问 POW 相关的所有演示功能，包括哈希、区块、区块链、分布式挖矿、代币转账和币基奖励。无法访问 POS、DPoS、BFT、POH 等其他共识机制。' },
-    { q: '会员版本有什么区别吗？', a: '所有付费会员（月度、年度、终身）享受完全相同的功能，可以访问所有共识机制演示，没有任何功能上的区别对待。' },
-    { q: '为什么终身会员这么便宜？', a: '我们希望让更多人能够长期学习区块链技术。终身会员 $15 的价格让您永久享受所有功能，包括未来可能新增的共识机制和功能。' },
-    { q: '支持哪些付款方式？', a: '支持 PayPal、信用卡、借记卡等国际主流支付方式。' },
-    { q: '可以申请退款吗？', a: '所有付费计划支持 7 天无理由退款。如有任何问题，请通过邮件联系我们。' },
-    { q: '提供技术支持吗？', a: '我们不提供技术支持服务。平台设计简单易用，如遇到使用问题，建议查看演示说明或重新尝试操作。' },
-    { q: '会有新功能更新吗？', a: '是的，我们会持续更新和改进平台功能。所有付费会员都能免费享受功能更新，无需额外付费。' },
+    {
+        q: '免费版有什么限制？',
+        a: '免费版只能访问 POW 相关的所有演示功能，包括哈希、区块、区块链、分布式挖矿、代币转账和币基奖励。无法访问 POS、DPoS、BFT、POH 等其他共识机制。'
+    },
+    {
+        q: '会员版本有什么区别吗？',
+        a: '所有付费会员（月度、年度、终身）享受完全相同的功能，可以访问所有共识机制演示，没有任何功能上的区别对待。'
+    },
+    {
+        q: '为什么终身会员这么便宜？',
+        a: '我们希望让更多人能够长期学习区块链技术。终身会员 $15 的价格让您永久享受所有功能，包括未来可能新增的共识机制和功能。'
+    },
+    {q: '支持哪些付款方式？', a: '支持 PayPal、信用卡、借记卡等国际主流支付方式。'},
+    {q: '可以申请退款吗？', a: '所有付费计划支持 7 天无理由退款。如有任何问题，请通过邮件联系我们。'},
+    {q: '提供技术支持吗？', a: '我们不提供技术支持服务。平台设计简单易用，如遇到使用问题，建议查看演示说明或重新尝试操作。'},
+    {q: '会有新功能更新吗？', a: '是的，我们会持续更新和改进平台功能。所有付费会员都能免费享受功能更新，无需额外付费。'},
 ];
 
 export default function Pricing(): React.ReactElement {
     const {success} = useToast();
     const [billing, setBilling] = useState<'monthly' | 'yearly'>('monthly');
-    const [payment, setPayment] = useState<{ isOpen: boolean; plan: SubscriptionPlan | null; }>({isOpen: false, plan: null});
+    const [payment, setPayment] = useState<{ isOpen: boolean; plan: SubscriptionPlan | null; }>({
+        isOpen: false,
+        plan: null
+    });
 
     const discount = billing === 'yearly' ? '（节省高达 20%）' : '';
 
@@ -132,7 +144,8 @@ export default function Pricing(): React.ReactElement {
                          className={`rounded-2xl border bg白/80 backdrop-blur p-5 dark:bg-[#15161a]/80 dark:border-[#2a2c31] ${i === 2 ? 'ring-2 ring-orange-500 dark:ring-orange-400' : ''}`}>
                         <div className="flex items-center justify-between mb-3">
                             <h3 className="text-lg font-semibold">{p.name}</h3>
-                            {p.badge && <span className={`text-xs px-2 py-0.5 rounded text-white ${i === 1 ? 'bg-red-500' : i === 2 ? 'bg-orange-500' : 'bg-purple-500'}`}>{p.badge}</span>}
+                            {p.badge && <span
+                                className={`text-xs px-2 py-0.5 rounded text-white ${i === 1 ? 'bg-red-500' : i === 2 ? 'bg-orange-500' : 'bg-purple-500'}`}>{p.badge}</span>}
                         </div>
                         <div className="mb-4">
                             <span className="text-3xl font-extrabold">${p.price}</span>
@@ -142,12 +155,14 @@ export default function Pricing(): React.ReactElement {
                             {p.features.map((f, idx) => (
                                 <li key={idx} className="flex items-center justify-between">
                                     <span className="flex items-center gap-2">
-                                        <span className={f.value === '✓' ? 'text-emerald-500' : f.value === '✗' ? 'text-red-500' : 'text-emerald-500'}>
+                                        <span
+                                            className={f.value === '✓' ? 'text-emerald-500' : f.value === '✗' ? 'text-red-500' : 'text-emerald-500'}>
                                             {f.value === '✓' ? '✓' : f.value === '✗' ? '✗' : '✓'}
                                         </span>
                                         {f.label}
                                     </span>
-                                    {f.value !== '✓' && f.value !== '✗' && <span className="opacity-80">{f.value}</span>}
+                                    {f.value !== '✓' && f.value !== '✗' &&
+                                        <span className="opacity-80">{f.value}</span>}
                                 </li>
                             ))}
                         </ul>
@@ -169,7 +184,8 @@ export default function Pricing(): React.ReactElement {
                 <h2 className="text-2xl font-bold mb-4 text-center">常见问题解答</h2>
                 <div className="space-y-3">
                     {faqs.map((f, i) => (
-                        <details key={i} className="rounded-2xl border p-4 bg-white/70 dark:bg-[#15161a]/70 dark:border-[#2a2c31]">
+                        <details key={i}
+                                 className="rounded-2xl border p-4 bg-white/70 dark:bg-[#15161a]/70 dark:border-[#2a2c31]">
                             <summary className="cursor-pointer list-none font-medium flex items-center justify-between">
                                 <span>{f.q}</span>
                                 <span className="opacity-60">+</span>
@@ -184,7 +200,8 @@ export default function Pricing(): React.ReactElement {
             <section className="mb-12">
                 <h2 className="text-2xl font-bold mb-6 text-center">功能对比</h2>
                 <div className="overflow-x-auto">
-                    <table className="w-full rounded-2xl border bg-white/80 backdrop-blur dark:bg-[#15161a]/80 dark:border-[#2a2c31]">
+                    <table
+                        className="w-full rounded-2xl border bg-white/80 backdrop-blur dark:bg-[#15161a]/80 dark:border-[#2a2c31]">
                         <thead>
                         <tr className="border-b dark:border-[#2a2c31]">
                             <th className="text-left p-4 font-semibold">功能特性</th>
@@ -244,21 +261,26 @@ export default function Pricing(): React.ReactElement {
 
             {/* 支付说明 */}
             <section className="mb-12">
-                <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl p-8 text-center border border-blue-200 dark:border-blue-800">
+                <div
+                    className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl p-8 text-center border border-blue-200 dark:border-blue-800">
                     <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">💰 支付方式</h2>
-                    <p className="text-gray-600 dark:text-gray-400 mb-6">我们支持 USDT 加密货币支付，安全便捷，全球通用</p>
+                    <p className="text-gray-600 dark:text-gray-400 mb-6">我们支持 USDT
+                        加密货币支付，安全便捷，全球通用</p>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
-                        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                        <div
+                            className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
                             <div className="text-green-500 text-2xl mb-2">🔗</div>
                             <h3 className="font-semibold text-gray-900 dark:text白 mb-1">USDT (TRC-20)</h3>
                             <p className="text-sm text-gray-600 dark:text-gray-400">TRON 网络，低手续费</p>
                         </div>
-                        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                        <div
+                            className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
                             <div className="text-blue-500 text-2xl mb-2">⚡</div>
                             <h3 className="font-semibold text-gray-900 dark:text白 mb-1">USDT (ERC-20)</h3>
                             <p className="text-sm text-gray-600 dark:text-gray-400">以太坊网络，安全可靠</p>
                         </div>
-                        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                        <div
+                            className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
                             <div className="text-yellow-500 text-2xl mb-2">🚀</div>
                             <h3 className="font-semibold text-gray-900 dark:text白 mb-1">USDT (BEP-20)</h3>
                             <p className="text-sm text-gray-600 dark:text-gray-400">BSC 网络，快速确认</p>
@@ -270,7 +292,8 @@ export default function Pricing(): React.ReactElement {
             {/* 联系 CTA */}
             <section className="text-center">
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">有疑问或建议？</p>
-                <Link href="mailto:hello@demochain.com" className="inline-flex items-center rounded-xl border px-4 py-2 hover:bg-gray-50 dark:border-[#2a2c31] dark:hover:bg-[#1a1d24]">联系我们</Link>
+                <Link href="mailto:hello@demochain.com"
+                      className="inline-flex items-center rounded-xl border px-4 py-2 hover:bg-gray-50 dark:border-[#2a2c31] dark:hover:bg-[#1a1d24]">联系我们</Link>
             </section>
 
             {/* 支付弹窗 */}

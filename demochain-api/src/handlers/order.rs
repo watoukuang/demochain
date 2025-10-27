@@ -1,23 +1,16 @@
-use axum::{extract::Path, Json};
+use crate::app::AppState;
+use crate::models::order::{CreateOrderDTO, CreatePaymentRequest, CreatePaymentResponse, OrderVO, PaymentOrder};
 use crate::models::r::Response;
-use crate::models::payment::{CreatePaymentRequest, CreatePaymentResponse, PaymentOrder};
-use chrono::{Duration, Utc};
+use crate::service::order_service;
+use axum::extract::State;
+use axum::{extract::Path, Json};
+use chrono::Utc;
 use once_cell::sync::Lazy;
 use std::collections::HashMap;
 use std::sync::RwLock;
-use uuid::Uuid;
 
 static ORDERS: Lazy<RwLock<HashMap<String, PaymentOrder>>> = Lazy::new(|| RwLock::new(HashMap::new()));
 
-// 简单价格表，与前端保持一致
-fn price_for_plan(plan: &str) -> Option<f64> {
-    match plan {
-        "monthly" => Some(3.0),
-        "yearly" => Some(10.0),
-        "lifetime" => Some(15.0),
-        _ => None,
-    }
-}
 
 // 简单地址映射
 fn address_for_method(method: &str) -> Option<&'static str> {
@@ -47,53 +40,28 @@ fn generate_deeplink(address: &str, amount: f64, method: &str) -> String {
     }
 }
 
-pub async fn create_order(Json(req): Json<CreatePaymentRequest>) -> Json<Response<CreatePaymentResponse>> {
-    if req.plan == "free" {
-        return Json(Response { success: false, data: None, message: Some("免费计划无需支付".into()), code: Some(400) });
+pub async fn create(
+    State(state): State<AppState>,
+    Json(payload): Json<CreateOrderDTO>,
+) -> Json<Response<OrderVO>> {
+    match order_service::create(&state.db, payload).await {
+        Ok(order_vo) => Json(Response {
+            success: true,
+            data: Some(order_vo),
+            message: Some("注册成功".to_string()),
+            code: Some(200),
+        }),
+        Err(e) => {
+            let msg = e.to_string();
+            let code = if msg.contains("邮箱已被注册!") { 409 } else { 500 };
+            Json(Response {
+                success: false,
+                data: None,
+                message: Some(msg),
+                code: Some(code),
+            })
+        }
     }
-    let amount = match price_for_plan(&req.plan) {
-        Some(p) => p,
-        None => return Json(Response { success: false, data: None, message: Some("不支持的套餐".into()), code: Some(400) }),
-    };
-    let addr = match address_for_method(&req.payment_method) {
-        Some(a) => a,
-        None => return Json(Response { success: false, data: None, message: Some("不支持的支付方式".into()), code: Some(400) }),
-    };
-
-    let id = Uuid::new_v4().to_string();
-    let now = Utc::now();
-    let order = PaymentOrder {
-        id: id.clone(),
-        user_id: "current_user".into(),
-        plan: req.plan.clone(),
-        amount,
-        currency: "USDT".into(),
-        payment_method: req.payment_method.clone(),
-        status: "created".into(),
-        payment_address: addr.into(),
-        payment_amount: amount,
-        created_at: now,
-        expires_at: now + Duration::minutes(30),
-        tx_hash: None,
-        paid_at: None,
-        confirmations: None,
-        confirmed_at: None,
-    };
-
-    let qr_code = generate_qr(addr, amount, &req.payment_method);
-    let deep_link = generate_deeplink(addr, amount, &req.payment_method);
-
-    {
-        let mut map = ORDERS.write().unwrap();
-        map.insert(id.clone(), order.clone());
-    }
-
-    Json(Response {
-        success: true,
-        data: Some(CreatePaymentResponse { order, qr_code, deep_link }),
-        message: Some("订单创建成功".into()),
-        code: Some(200),
-    })
 }
 
 pub async fn get_order(Path(id): Path<String>) -> Json<Response<PaymentOrder>> {

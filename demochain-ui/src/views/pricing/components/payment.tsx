@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import {AddOrderPayload, Network, PaymentOrder} from '@/src/shared/types/order';
+import {CreateOrderPayload, Network, PaymentOrder} from '@/src/shared/types/order';
 import {SubscriptionPlan} from '@/src/shared/types/subscription';
-import {checkOrderStatus, AddOrderAPI} from '@/src/shared/api/order';
+import {checkOrderStatus, createOrderAPI} from '@/src/shared/api/order';
 import {useToast} from '@/components/toast';
 import StepHeader from './step-header';
 import SelectStep from './select-step';
@@ -91,8 +91,11 @@ export default function Payment({isOpen, onClose, plan, onSuccess}: PaymentProps
         if (!planInfo) return;
         setLoading(true);
         try {
-            const payload: AddOrderPayload = {plan, network: selectedNetwork};
-            const response = await AddOrderAPI(payload);
+            const payload: CreateOrderPayload = {
+                plan,
+                network: selectedNetwork
+            };
+            const response = await createOrderAPI(payload);
             setPaymentOrder(response.order);
             setQrCode(response.qrCode);
             setDeepLink(response.deepLink);

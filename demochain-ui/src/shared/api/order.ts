@@ -1,10 +1,9 @@
 import {
-    CreatePaymentRequest,
+    CreateOrderPayload,
     CreatePaymentResponse,
     PaymentOrder,
     VerifyPaymentRequest,
-    VerifyPaymentResponse,
-    PaymentMethod, AddOrderPayload
+    VerifyPaymentResponse
 } from '../types/order';
 import request from '../utils/request';
 
@@ -43,7 +42,7 @@ const generateDeepLink = (address: string, amount: number, method: PaymentMethod
 };
 
 // 创建支付订单（后端）
-export async function AddOrderAPI(payload: AddOrderPayload): Promise<CreatePaymentResponse> {
+export async function createOrderAPI(payload: CreateOrderPayload): Promise<CreatePaymentResponse> {
     // 免费计划不需要支付
     if (payload.plan === 'free') {
         throw new Error('免费计划无需支付');
