@@ -3,7 +3,4 @@ pub mod idea;
 pub mod user;
 
 pub use idea::{Idea, LaunchRequest};
-pub use user::{
-    AuthResponse, ChangePasswordRequest, Claims, LoginRequest, RegisterRequest,
-    User, UserInfo,
-};
+// Note: re-export user types only when needed to avoid unused import warnings

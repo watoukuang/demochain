@@ -3,7 +3,7 @@ use axum::{
     http::StatusCode,
     Json,
 };
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 
 use crate::app::AppState;
 use crate::models::{Idea, LaunchRequest};
@@ -27,7 +27,7 @@ pub async fn page_ideas(
     let offset = (page - 1) * limit;
 
     // Build SQL strictly with current schema columns to avoid missing-column errors
-    let mut sql = "SELECT \
+    let base_sql = "SELECT \
             id, \
             title, \
             description, \
@@ -38,13 +38,11 @@ pub async fn page_ideas(
             deployer, \
             CAST(created AS TEXT) AS created, \
             cf_mode \
-        FROM ideas WHERE 1=1".to_string();
+        FROM ideas WHERE 1=1";
 
     // Dynamic filters
-    let mut qb = sqlx::QueryBuilder::new(sql);
-    let mut first_filter = true; // not strictly needed since we start with WHERE 1=1
+    let mut qb = sqlx::QueryBuilder::new(base_sql);
     if let Some(chain) = &params.chain {
-        let _ = &first_filter; // silence unused
         qb.push(" AND chain = ");
         qb.push_bind(chain);
     }
@@ -85,10 +83,7 @@ fn tags_to_json(tags: &Option<Vec<String>>) -> Option<String> {
         .map(|t| serde_json::to_string(t).unwrap_or_else(|_| "[]".to_string()))
 }
 
-#[inline]
-fn build_icon_uri(icon_hash: &str) -> Option<String> {
-    if icon_hash.is_empty() { None } else { Some(format!("ipfs://{}", icon_hash)) }
-}
+// removed unused helper build_icon_uri
 
 pub async fn get_idea_by_id(
     State(state): State<AppState>,

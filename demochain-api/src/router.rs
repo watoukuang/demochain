@@ -16,6 +16,7 @@ pub fn build_router() -> Router<AppState> {
     Router::new()
         .merge(health_router())
         .merge(ideas_router())
+        .merge(auth_router())
 }
 
 fn health_router() -> Router<AppState> {
@@ -29,13 +30,9 @@ fn ideas_router() -> Router<AppState> {
         .route("/api/idea/launch", post(idea::launch))
 }
 
-// fn auth_router() -> Router<AppState> {
-//     Router::new().route("/api/auth/register", post(handlers::register))
-
-// .route("/api/auth/login", post(handlers::login))
-// .route("/api/auth/logout", post(handlers::logout))
-// .route("/api/auth/me", get(handlers::me))
-// .route("/api/auth/refresh", post(handlers::refresh_token))
-// .route("/api/auth/change-password", post(handlers::change_password))
-// }
+fn auth_router() -> Router<AppState> {
+    Router::new()
+        .route("/api/auth/register", post(handlers::user::register))
+        .route("/api/auth/login", post(handlers::user::login))
+}
 

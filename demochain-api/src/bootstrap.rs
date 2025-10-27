@@ -2,7 +2,7 @@ use std::net::SocketAddr;
 use crate::app::AppState;
 use sqlx::{SqlitePool, sqlite::SqlitePoolOptions};
 use tracing::info;
-use dotenvy::{dotenv, from_filename};
+use dotenvy::dotenv;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 
 #[derive(Clone, Debug)]
@@ -16,7 +16,7 @@ impl AppConfig {
         dotenv().ok();
         let database_url = std::env::var("DATABASE_URL")
             .unwrap_or_else(|_| "sqlite://./data/demochain.db".to_string());
-        let port = std::env::var("PORT").ok().and_then(|s| s.parse().ok()).unwrap_or(8181);
+        let port = std::env::var("PORT").ok().and_then(|s| s.parse().ok()).unwrap_or(8085);
         Self { database_url, port }
     }
 }
@@ -94,8 +94,4 @@ pub async fn initialize() -> anyhow::Result<(AppState, SocketAddr)> {
     let addr = SocketAddr::from(([0, 0, 0, 0], cfg.port));
     info!("initialized with addr=http://{} database_url={}", addr, cfg.database_url);
     Ok((state, addr))
-}
-
-struct AppState {
-    db: SqlitePool,
 }
