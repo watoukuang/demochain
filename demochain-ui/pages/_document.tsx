@@ -12,7 +12,6 @@ class MyDocument extends Document {
           <meta name="description" content="DemoChain - 区块链在线演示与学习平台，提供哈希、区块、区块链、POW/POS/DPoS/BFT/POH 等交互式演示"/>
           <meta name="keywords" content="区块链,哈希,SHA-256,工作量证明,POW,POS,DPoS,BFT,POH,挖矿,代币,教学,演示"/>
           <meta name="author" content="DemoChain"/>
-          <meta name="viewport" content="width=device-width, initial-scale=1"/>
           
           {/* Open Graph 默认值 */}
           <meta property="og:site_name" content="DemoChain"/>

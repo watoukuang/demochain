@@ -1,1 +1,1 @@
-export {default} from '../src/views/Pricing'
+export {default} from '../src/views/pricing'

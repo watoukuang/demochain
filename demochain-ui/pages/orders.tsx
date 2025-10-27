@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import Head from 'next/head';
-import {PaymentOrder} from '@/src/shared/types/payment';
-import {getUserOrders} from '@/src/shared/api/payment';
+import {PaymentOrder} from '@/src/shared/types/order';
+import {getUserOrders} from '@/src/shared/api/order';
 import {useAuth} from '@/src/shared/hooks/useAuth';
 
 export default function OrdersPage() {

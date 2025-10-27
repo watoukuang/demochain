@@ -1,4 +1,4 @@
-import { USDTNetwork, PaymentConfig } from '../types/payment';
+import { USDTNetwork, PaymentConfig } from '../types/order';
 
 // USDT 网络配置
 export const USDT_NETWORKS: USDTNetwork[] = [

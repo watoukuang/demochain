@@ -54,7 +54,7 @@ export const pageSEO: Record<string, Partial<SEOConfig>> = {
   '/poh/vdf': { title: 'POH VDF 演示 - DemoChain', description: '通过哈希链近似演示 VDF 延迟函数。' },
   '/poh/parallel': { title: 'POH 并行验证 - DemoChain', description: '队列 + 工作者示意并行验证思路。' },
   '/poh/chain': { title: 'POH 区块链 - DemoChain', description: '按时间顺序产块的链视图。' },
-  // Pricing
+  // pricing
   '/pricing': { title: '定价 - DemoChain', description: '免费版与付费会员：月度 $3、年度 $10、终身 $15，付费均可访问全部演示。' },
   // Glossary
   '/glossary': { title: '名词解释 - DemoChain', description: '区块链核心术语详解：POW、POS、DPoS、BFT、POH 等共识机制，智能合约、代币经济学等技术概念。' },
