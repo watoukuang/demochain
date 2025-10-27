@@ -36,35 +36,35 @@ export interface AuthResponse {
 }
 
 // 登录
-export async function login(data: LoginRequest): Promise<AuthResponse> {
-    const resp = await request.post<AuthResponse>('/api/auth/login', data);
+export async function login(payload: LoginRequest): Promise<AuthResponse> {
+    const resp = await request.post<AuthResponse>('/api/auth/login', payload);
     if (!resp.success) {
         throw new Error(resp.message || '登录失败');
     }
-    const authData = resp.data;
-    if (!authData) throw new Error('登录响应数据为空');
-    if (authData.token && typeof window !== 'undefined') {
-        localStorage.setItem('auth_token', authData.token);
-        localStorage.setItem('user_info', JSON.stringify(authData.user));
+    const data = resp.data;
+    if (!data) throw new Error('登录响应数据为空');
+    if (data.token && typeof window !== 'undefined') {
+        localStorage.setItem('auth_token', data.token);
+        localStorage.setItem('user_info', JSON.stringify(data.user));
         window.dispatchEvent(new Event('authChanged'));
     }
-    return authData;
+    return data;
 }
 
 // 注册
-export async function register(data: RegisterRequest): Promise<AuthResponse> {
-    const resp = await request.post<AuthResponse>('/api/auth/register', data);
+export async function register(payload: RegisterRequest): Promise<AuthResponse> {
+    const resp = await request.post<AuthResponse>('/api/auth/register', payload);
     if (!resp.success) {
         throw new Error(resp.message || '注册失败');
     }
-    const authData = resp.data;
-    if (!authData) throw new Error('注册响应数据为空');
-    if (authData.token && typeof window !== 'undefined') {
-        localStorage.setItem('auth_token', authData.token);
-        localStorage.setItem('user_info', JSON.stringify(authData.user));
+    const data = resp.data;
+    if (!data) throw new Error('注册响应数据为空');
+    if (data.token && typeof window !== 'undefined') {
+        localStorage.setItem('auth_token', data.token);
+        localStorage.setItem('user_info', JSON.stringify(data.user));
         window.dispatchEvent(new Event('authChanged'));
     }
-    return authData;
+    return data;
 }
 
 // 登出

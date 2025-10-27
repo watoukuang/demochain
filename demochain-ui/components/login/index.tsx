@@ -81,7 +81,7 @@ export default function LoginModal({open, onClose, onSuccess}: LoginModalProps) 
     };
 
     const handleLogin = async (email: string, password: string) => {
-        const req: LoginRequest = { email, password };
+        const req: LoginRequest = {email, password};
         const res = await login(req);
         onSuccess?.(res.user);
         toast.success('登录成功');
@@ -90,10 +90,10 @@ export default function LoginModal({open, onClose, onSuccess}: LoginModalProps) 
     };
 
     const handleSignup = async (email: string, password: string) => {
-        const req: RegisterRequest = { email, password };
+        const req: RegisterRequest = {email, password};
         const res = await register(req);
         onSuccess?.(res.user);
-        toast.success('注册成功');
+        toast.success('!注册成功');
         setMode('login');
         setFormState(prev => ({
             email: prev.email,
@@ -116,7 +116,6 @@ export default function LoginModal({open, onClose, onSuccess}: LoginModalProps) 
 
         setLoading(true);
         setError('');
-
         try {
             await handleSubmitSuccess(formState.email, formState.password);
         } catch (err: any) {

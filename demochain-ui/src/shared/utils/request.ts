@@ -1,4 +1,4 @@
-export interface ApiResponse<T = any> {
+export interface Response<T = any> {
     success: boolean;
     data: T | null;
     message?: string | null;
@@ -14,7 +14,7 @@ export interface RequestConfig {
 class RequestService {
     private baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://demochain.org:8085';
 
-    private async request<T>(url: string, options: RequestInit & RequestConfig = {}): Promise<ApiResponse<T>> {
+    private async request<T>(url: string, options: RequestInit & RequestConfig = {}): Promise<Response<T>> {
         const {headers = {}, timeout = 10000, skipErrorHandler, ...fetchOptions} = options;
 
         // 构建请求头
@@ -41,7 +41,7 @@ class RequestService {
             });
 
             // 后端统一返回 { success, data, message, code }
-            let parsed: ApiResponse<T> | null = null;
+            let parsed: Response<T> | null = null;
             try {
                 parsed = await response.json();
             } catch {
@@ -63,7 +63,7 @@ class RequestService {
 
             // 直接返回后端统一结构
             if (parsed && typeof parsed === 'object' && 'success' in parsed) {
-                return parsed as ApiResponse<T>;
+                return parsed as Response<T>;
             }
             // 极端情况（无可解析内容）
             return {success: true, data: null, message: null, code: null};
@@ -76,28 +76,28 @@ class RequestService {
         }
     }
 
-    get<T>(url: string, config?: RequestConfig): Promise<ApiResponse<T>> {
+    get<T>(url: string, config?: RequestConfig): Promise<Response<T>> {
         const separator = url.includes('?') ? '&' : '?';
         return this.request<T>(`${url}${separator}_t=${Date.now()}`, {method: 'GET', ...config});
     }
 
-    post<T>(url: string, data?: any, config?: RequestConfig): Promise<ApiResponse<T>> {
+    post<T>(url: string, data?: any, config?: RequestConfig): Promise<Response<T>> {
         return this.request<T>(url, {method: 'POST', body: data ? JSON.stringify(data) : undefined, ...config});
     }
 
-    put<T>(url: string, data?: any, config?: RequestConfig): Promise<ApiResponse<T>> {
+    put<T>(url: string, data?: any, config?: RequestConfig): Promise<Response<T>> {
         return this.request<T>(url, {method: 'PUT', body: data ? JSON.stringify(data) : undefined, ...config});
     }
 
-    delete<T>(url: string, config?: RequestConfig): Promise<ApiResponse<T>> {
+    delete<T>(url: string, config?: RequestConfig): Promise<Response<T>> {
         return this.request<T>(url, {method: 'DELETE', ...config});
     }
 
-    patch<T>(url: string, data?: any, config?: RequestConfig): Promise<ApiResponse<T>> {
+    patch<T>(url: string, data?: any, config?: RequestConfig): Promise<Response<T>> {
         return this.request<T>(url, {method: 'PATCH', body: data ? JSON.stringify(data) : undefined, ...config});
     }
 
-    upload<T>(url: string, formData: FormData, config?: RequestConfig): Promise<ApiResponse<T>> {
+    upload<T>(url: string, formData: FormData, config?: RequestConfig): Promise<Response<T>> {
         const {headers = {}, ...restConfig} = config || {};
         const uploadHeaders = {...headers};
         delete uploadHeaders['Content-Type'];
