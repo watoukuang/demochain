@@ -1,1 +1,0 @@
-cargo:rustc-env=MIME_TYPES_GENERATED_PATH=/Users/xukui/demo-workspace/demochain/demochain-api/target/debug/build/mime_guess-1737fa5553ba8394/out/mime_types_generated.rs

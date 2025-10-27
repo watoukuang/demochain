@@ -1,1 +1,0 @@
-fn(axum::extract::State<AppState>, axum::Json<LaunchRequest>) -> impl futures::Future<Output = Result<axum::Json<{type error}>, axum::http::StatusCode>> {launch}
