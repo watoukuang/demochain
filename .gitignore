@@ -41,3 +41,4 @@ pnpm-debug.log*
 /demochain-api/data/
 /demochain-api/Cargo.lock
 /demochain-api/target/
+/demochain-api/dist/
