@@ -10,8 +10,8 @@ import ChainIcon from '../components/icons/ChainIcon';
 import NetworkIcon from '../components/icons/NetworkIcon';
 import CoinIcon from '../components/icons/CoinIcon';
 import TokenIcon from '../components/icons/TokenIcon';
+import NameIcon from '../components/icons/NameIcon';
 import {useAuth} from '../src/shared/hooks/useAuth';
-import {logout} from '../src/shared/api/auth';
 
 type Consensus = 'POW' | 'POS' | 'DPoS' | 'BFT' | 'POH'
 
@@ -225,18 +225,13 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                         </button>
 
                         {/* 品牌Logo和标题 - 在所有屏幕尺寸下都显示 */}
-                        <Link
-                            href="/"
-                            className="flex items-center gap-2"
-                            onClick={() => {
-                                // 点击 logo 时重置为 POW 共识
-                                setConsensus('POW')
-                                if (typeof window !== 'undefined') {
-                                    localStorage.setItem('consensus', 'POW')
-                                    // 触发自定义事件通知首页更新
-                                    window.dispatchEvent(new Event('consensusChanged'))
-                                }
-                            }}
+                        <Link href="/" className="flex items-center gap-2" onClick={() => {
+                            setConsensus('POW')
+                            if (typeof window !== 'undefined') {
+                                localStorage.setItem('consensus', 'POW')
+                                window.dispatchEvent(new Event('consensusChanged'))
+                            }
+                        }}
                         >
                             <Logo/>
                             <span
@@ -274,16 +269,7 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                                                     : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#1a1d24]'
                                             }`}
                                         >
-                                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none"
-                                                 stroke="currentColor"
-                                                 strokeWidth="2">
-                                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                                                <path
-                                                    d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-                                                <path d="M8 7h8"/>
-                                                <path d="M8 11h8"/>
-                                                <path d="M8 15h6"/>
-                                            </svg>
+                                            <NameIcon/>
                                             <span>名词</span>
                                         </Link>
 
@@ -560,14 +546,7 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                             }`}
                             onClick={() => setMobileMenuOpen(false)}
                         >
-                            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                 strokeWidth="2">
-                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-                                <path d="M8 7h8"/>
-                                <path d="M8 11h8"/>
-                                <path d="M8 15h6"/>
-                            </svg>
+                            <NameIcon/>
                             <span>名词</span>
                         </Link>
 
