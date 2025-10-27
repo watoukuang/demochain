@@ -2,20 +2,22 @@ import React, {useEffect, useRef, useState} from 'react';
 import Link from 'next/link';
 import {useRouter} from 'next/router';
 import {HeaderProps} from '../types';
-import Logo from './icons/Logo';
-import LoginModal from './LoginModal';
-import HashIcon from './icons/HashIcon';
-import BlockIcon from './icons/BlockIcon';
-import ChainIcon from './icons/ChainIcon';
-import NetworkIcon from './icons/NetworkIcon';
-import CoinIcon from './icons/CoinIcon';
-import TokenIcon from './icons/TokenIcon';
+import Logo from '../components/icons/Logo';
+import LoginModal from '../components/login/index';
+import HashIcon from '../components/icons/HashIcon';
+import BlockIcon from '../components/icons/BlockIcon';
+import ChainIcon from '../components/icons/ChainIcon';
+import NetworkIcon from '../components/icons/NetworkIcon';
+import CoinIcon from '../components/icons/CoinIcon';
+import TokenIcon from '../components/icons/TokenIcon';
+import NameIcon from '../components/icons/NameIcon';
+import {useAuth} from '../src/shared/hooks/useAuth';
 
 type Consensus = 'POW' | 'POS' | 'DPoS' | 'BFT' | 'POH'
 
 const MENUS: Record<Consensus, { name: string; href: string; icon: React.ReactNode }[]> = {
     POW: [
-        {name: '哈希', href: '/pow/hash', icon: (<HashIcon className="w-5 h-5"/>)},
+        {name: '哈希', href: '/', icon: (<HashIcon className="w-5 h-5"/>)},
         {name: '区块', href: '/pow/block', icon: (<BlockIcon className="w-5 h-5"/>)},
         {name: '区块链', href: '/pow/blockchain', icon: (<ChainIcon className="w-5 h-5"/>)},
         {name: '分布式', href: '/pow/distribution', icon: (<NetworkIcon className="w-5 h-5"/>)},
@@ -85,7 +87,6 @@ const CONSENSUS_ICON: Record<Consensus, React.ReactNode> = {
 }
 
 export default function Header({toggleSidebar}: HeaderProps): React.ReactElement {
-    // Theme state: 'light' | 'dark' | 'system'
     const [theme, setTheme] = useState<'light' | 'dark' | 'system'>(() => {
         if (typeof window === 'undefined') return 'system';
         return (localStorage.getItem('theme') as 'light' | 'dark' | 'system') || 'system';
@@ -99,27 +100,39 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [consensusOpen, setConsensusOpen] = useState(false);
     const consensusRef = useRef<HTMLDivElement | null>(null);
-    const [authEmail, setAuthEmail] = useState<string | null>(null);
+    // 添加用户菜单状态
+    const [userMenuOpen, setUserMenuOpen] = useState(false);
+    const userMenuRef = useRef<HTMLDivElement | null>(null);
 
-    // Router for active nav highlighting
+    // 添加一个状态来跟踪是否已挂载（用于解决hydration问题）
+    const [isMounted, setIsMounted] = useState(false);
+    const [currentPathname, setCurrentPathname] = useState('');
+
+    // 获取用户认证状态
+    const {user, isAuthenticated, logout: handleLogout} = useAuth();
     const router = useRouter();
-    const {pathname} = router;
 
     // 共识选择与菜单（避免 SSR 水合不一致：初始固定为 POW，挂载后再同步 localStorage）
     const [consensus, setConsensus] = useState<Consensus>('POW');
     const menuItems = MENUS[consensus];
 
+    // 标记组件已挂载（用于解决hydration问题）
     useEffect(() => {
-        if (typeof window === 'undefined') return;
+        setIsMounted(true);
+        setCurrentPathname(router.pathname);
+    }, [router.pathname]);
+
+    useEffect(() => {
+        if (typeof window === 'undefined' || !isMounted) return;
         const saved = (localStorage.getItem('consensus') as Consensus) || 'POW';
         if (saved !== consensus) setConsensus(saved);
-    }, []);
+    }, [isMounted]);
 
-    const isDarkMode = theme === 'dark' || (theme === 'system' && systemDark);
+    const isDarkMode = isMounted ? (theme === 'dark' || (theme === 'system' && systemDark)) : null;
 
     // Apply theme based on preference and system setting
     useEffect(() => {
-        if (typeof window === 'undefined') return;
+        if (typeof window === 'undefined' || !isMounted) return;
 
         const root = document.documentElement;
         const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
@@ -151,40 +164,7 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
             mediaQuery.addListener(handleSystemThemeChange);
             return () => mediaQuery.removeListener(handleSystemThemeChange);
         }
-    }, [theme]);
-
-    useEffect(() => {
-        if (typeof window === 'undefined') return;
-        const token = localStorage.getItem('auth_token');
-        const email = localStorage.getItem('auth_email');
-        if (token) setAuthEmail(email || '');
-        const onLogin = (e: any) => {
-            try {
-                const detail = (e && e.detail) || {};
-                if (detail?.email) localStorage.setItem('auth_email', detail.email);
-                setAuthEmail(detail?.email || localStorage.getItem('auth_email') || '');
-            } catch {}
-        };
-        const onLogout = () => {
-            setAuthEmail(null);
-        };
-        window.addEventListener('auth:login' as any, onLogin);
-        window.addEventListener('auth:logout' as any, onLogout);
-        return () => {
-            window.removeEventListener('auth:login' as any, onLogin);
-            window.removeEventListener('auth:logout' as any, onLogout);
-        };
-    }, []);
-
-    const onLogout = () => {
-        if (typeof window === 'undefined') return;
-        try {
-            localStorage.removeItem('auth_token');
-            localStorage.removeItem('auth_email');
-            window.dispatchEvent(new CustomEvent('auth:logout'));
-            setAuthEmail(null);
-        } catch {}
-    };
+    }, [theme, isMounted]);
 
     // 点击外部关闭菜单
     useEffect(() => {
@@ -205,6 +185,27 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
         if (consensusOpen) document.addEventListener('mousedown', handler);
         return () => document.removeEventListener('mousedown', handler);
     }, [consensusOpen]);
+
+    // 点击外部关闭用户菜单
+    useEffect(() => {
+        const handler = (e: MouseEvent) => {
+            if (!userMenuRef.current) return;
+            if (!userMenuRef.current.contains(e.target as Node)) setUserMenuOpen(false);
+        };
+        if (userMenuOpen) document.addEventListener('mousedown', handler);
+        return () => document.removeEventListener('mousedown', handler);
+    }, [userMenuOpen]);
+
+    // 处理用户登出
+    const handleUserLogout = async () => {
+        try {
+            await handleLogout();
+            setUserMenuOpen(false);
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
+    };
+
     return (
         <>
             <header
@@ -224,7 +225,14 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                         </button>
 
                         {/* 品牌Logo和标题 - 在所有屏幕尺寸下都显示 */}
-                        <Link href="/" className="flex items-center gap-2">
+                        <Link href="/" className="flex items-center gap-2" onClick={() => {
+                            setConsensus('POW')
+                            if (typeof window !== 'undefined') {
+                                localStorage.setItem('consensus', 'POW')
+                                window.dispatchEvent(new Event('consensusChanged'))
+                            }
+                        }}
+                        >
                             <Logo/>
                             <span
                                 className="text-xl md:text-2xl font-bold tracking-wide leading-none select-none bg-gradient-to-r from-orange-500 to-purple-600 dark:from-orange-400 dark:to-purple-400
@@ -235,8 +243,8 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                         <div className="hidden md:flex flex-1 justify-end mr-3">
                             <div className="flex items-baseline">
                                 <div className="flex space-x-1 overflow-x-auto scrollbar-hide">
-                                    {menuItems.map((item) => {
-                                        const isActive = pathname === item.href;
+                                    {isMounted && menuItems.map((item) => {
+                                        const isActive = currentPathname === item.href;
                                         return (
                                             <Link
                                                 key={item.name}
@@ -252,23 +260,39 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                                             </Link>
                                         );
                                     })}
-                                    <Link
-                                        href="/glossary"
-                                        className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap flex items-center space-x-2 transition-all duration-200 ${
-                                            pathname === '/glossary'
-                                                ? 'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20'
-                                                : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#1a1d24]'
-                                        }`}
-                                    >
-                                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-                                            <path d="M8 7h8"/>
-                                            <path d="M8 11h8"/>
-                                            <path d="M8 15h6"/>
-                                        </svg>
-                                        <span>名词</span>
-                                    </Link>
+                                    {isMounted && (
+                                        <Link
+                                            href="/glossary"
+                                            className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap flex items-center space-x-2 transition-all duration-200 ${
+                                                currentPathname === '/glossary'
+                                                    ? 'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20'
+                                                    : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#1a1d24]'
+                                            }`}
+                                        >
+                                            <NameIcon/>
+                                            <span>名词</span>
+                                        </Link>
+
+                                    )}
+                                    {isMounted && (
+                                        <Link
+                                            href="/article"
+                                            className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap flex items-center space-x-2 transition-all duration-200 ${
+                                                currentPathname === '/article' || currentPathname.startsWith('/article/')
+                                                    ? 'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20'
+                                                    : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#1a1d24]'
+                                            }`}
+                                        >
+                                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" strokeWidth="2">
+                                                <rect x="5" y="3" width="14" height="18" rx="2"/>
+                                                <path d="M8 8h8"/>
+                                                <path d="M8 12h8"/>
+                                                <path d="M8 16h6"/>
+                                            </svg>
+                                            <span>文章</span>
+                                        </Link>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -308,9 +332,13 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                                             onClick={() => {
                                                 setConsensus(opt)
                                                 setConsensusOpen(false)
-                                                if (typeof window !== 'undefined') localStorage.setItem('consensus', opt)
-                                                const first = MENUS[opt][0]?.href || '/'
-                                                router.push(first)
+                                                if (typeof window !== 'undefined') {
+                                                    localStorage.setItem('consensus', opt)
+                                                    // 触发自定义事件通知首页更新
+                                                    window.dispatchEvent(new Event('consensusChanged'))
+                                                }
+                                                // 无论选择什么共识机制，都跳转到首页
+                                                router.push('/')
                                             }}
                                             className={`group flex w-full items-center justify-between gap-3 px-3 py-2 rounded-lg text-sm hover:bg-gray-100 dark:hover:bg-gray-800 ${opt === consensus ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100' : 'text-gray-700 dark:text-gray-200'}`}
                                         >
@@ -335,13 +363,22 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                                 aria-expanded={menuOpen}
                                 aria-haspopup="menu"
                             >
-                                {isDarkMode ? (
-                                    <svg className="h-5 w-5 text-gray-200" fill="none" viewBox="0 0 24 24"
-                                         stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                              d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
-                                    </svg>
+                                {isDarkMode !== null ? (
+                                    isDarkMode ? (
+                                        <svg className="h-5 w-5 text-gray-200" fill="none" viewBox="0 0 24 24"
+                                             stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                                        </svg>
+                                    ) : (
+                                        <svg className="h-5 w-5 text-gray-700" fill="none" viewBox="0 0 24 24"
+                                             stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                                  d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                                        </svg>
+                                    )
                                 ) : (
+                                    // 默认渲染（用于服务端渲染时保持一致）
                                     <svg className="h-5 w-5 text-gray-700" fill="none" viewBox="0 0 24 24"
                                          stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -409,25 +446,52 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                                 </div>
                             )}
                         </div>
-                        <Link
-                            href="/sys/pricing"
-                            className="inline-flex items-center text-sm font-medium px-3 py-1.5 md:px-4 rounded-full whitespace-nowrap bg-gradient-to-r from-emerald-500 to-lime-500 text-white shadow-sm hover:opacity-90 transition-opacity dark:from-emerald-400 dark:to-lime-400"
+                        <Link href="/pricing"
+                              className="inline-flex items-center text-sm font-medium px-3 py-1.5 md:px-4 rounded-full whitespace-nowrap bg-gradient-to-r from-emerald-500 to-lime-500 text-white shadow-sm hover:opacity-90 transition-opacity dark:from-emerald-400 dark:to-lime-400"
                         >
-                            价格
+                            订阅
                         </Link>
-                        {authEmail ? (
-                            <div className="flex items-center gap-2">
-                                <span className="hidden md:inline text-sm text-gray-700 dark:text-gray-300 max-w-[160px] truncate">{authEmail}</span>
+
+                        {/* 用户菜单 */}
+                        {isAuthenticated ? (
+                            <div className="relative" ref={userMenuRef}>
                                 <button
-                                    onClick={onLogout}
-                                    className="bg-gray-900 text-white px-3 py-1.5 md:px-4 rounded-full text-sm whitespace-nowrap dark:bg-white dark:text-black"
-                                >退出</button>
+                                    onClick={() => setUserMenuOpen(v => !v)}
+                                    className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm whitespace-nowrap bg-white/80 text-gray-900 border border-gray-200 shadow-sm hover:bg-white dark:hover:bg-white/20 dark:bg-white/10 dark:text-white dark:border-white/10 backdrop-blur-sm transition-colors"
+                                    aria-haspopup="menu"
+                                    aria-expanded={userMenuOpen}
+                                >
+                                    <span
+                                        className="w-6 h-6 rounded-full bg-gray-200 text-black flex items-center justify-center text-xs font-bold">
+                                        {user?.email?.charAt(0).toUpperCase() || 'U'}
+                                    </span>
+                                    <span className="hidden md:inline">
+                                        {user?.username || user?.email?.split('@')[0] || '用户'}
+                                    </span>
+                                </button>
+
+                                {isAuthenticated && userMenuOpen && (
+                                    <div role="menu" aria-label="用户菜单" className="absolute right-0 mt-2 w-48 rounded-2xl border bg-white/98 backdrop-blur-sm shadow-lg ring-1 ring-black/5 p-2
+                                            border-gray-200 dark:bg-[#1e1e1e] dark:border-[#2d2d30] dark:ring-white/5 dark:text-gray-200 z-50">
+                                        <div
+                                            className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-800">{user?.email}
+                                        </div>
+                                        <button
+                                            onClick={handleUserLogout}
+                                            className="w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+                                        >
+                                            登出
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         ) : (
                             <button
                                 onClick={() => setLoginOpen(true)}
-                                className="bg-black text-white px-3 py-1.5 md:px-4 rounded-full text-sm whitespace-nowrap"
-                            >登录/注册</button>
+                                className="px-3 py-1.5 md:px-4 rounded-full text-sm whitespace-nowrap bg-white/90 text-gray-900 border border-gray-200 shadow-sm hover:bg-white dark:hover:bg-white/20 dark:bg-white/10 dark:text-white dark:border-white/10 backdrop-blur-sm transition-colors"
+                            >
+                                登录/注册
+                            </button>
                         )}
 
                         {/* 移动端导航开关 */}
@@ -445,16 +509,16 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                         </button>
                     </div>
                 </div>
-                <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)}/>
+                <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} onSuccess={() => setLoginOpen(false)}/>
             </header>
 
             {/* 移动端菜单 */}
-            {mobileMenuOpen && (
+            {mobileMenuOpen && isMounted && (
                 <div className="md:hidden border-b border-gray-200 dark:border-[#1f232b] bg-gray-50 dark:bg-[#111317]"
                      id="mobile-nav">
                     <div className="px-3 py-2 space-y-1">
                         {menuItems.map((item) => {
-                            const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+                            const isActive = currentPathname === item.href || currentPathname.startsWith(item.href + '/');
                             return (
                                 <Link
                                     key={item.name}
@@ -471,10 +535,42 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                                 </Link>
                             );
                         })}
+
+                        {/* 固定链接 */}
+                        <Link
+                            href="/glossary"
+                            className={`block px-5 py-3 rounded-lg text-lg font-semibold tracking-wide flex items-center space-x-3 transition-all duration-200 ${
+                                currentPathname === '/glossary'
+                                    ? 'text-orange-600 dark:text-orange-400'
+                                    : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#1a1d24]'
+                            }`}
+                            onClick={() => setMobileMenuOpen(false)}
+                        >
+                            <NameIcon/>
+                            <span>名词</span>
+                        </Link>
+
+                        <Link
+                            href="/article"
+                            className={`block px-5 py-3 rounded-lg text-lg font-semibold tracking-wide flex items-center space-x-3 transition-all duration-200 ${
+                                currentPathname === '/article' || currentPathname.startsWith('/article/')
+                                    ? 'text-orange-600 dark:text-orange-400'
+                                    : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#1a1d24]'
+                            }`}
+                            onClick={() => setMobileMenuOpen(false)}
+                        >
+                            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 strokeWidth="2">
+                                <rect x="5" y="3" width="14" height="18" rx="2"/>
+                                <path d="M8 8h8"/>
+                                <path d="M8 12h8"/>
+                                <path d="M8 16h6"/>
+                            </svg>
+                            <span>文章</span>
+                        </Link>
                     </div>
                 </div>
             )}
         </>
     );
 }
-

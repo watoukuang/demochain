@@ -2,11 +2,12 @@ import React from 'react';
 import {AppProps} from 'next/app';
 import {useRouter} from 'next/router';
 import Head from 'next/head';
-import Layout from '../components/Layout';
-import {getPageSEO} from '../utils/seo';
+import Index from '../layout';
+import {getPageSEO} from '@/src/shared/utils/seo';
 import '../styles/globals.css';
+import { ToastProvider } from 'components/toast';
 
-function MyApp({Component, pageProps}: AppProps): React.ReactElement {
+function Application({Component, pageProps}: AppProps): React.ReactElement {
     const router = useRouter();
     const seo = getPageSEO(router.pathname);
 
@@ -63,11 +64,13 @@ function MyApp({Component, pageProps}: AppProps): React.ReactElement {
                 />
             </Head>
 
-            <Layout>
-                <Component {...pageProps} />
-            </Layout>
+            <ToastProvider>
+                <Index>
+                    <Component {...pageProps} />
+                </Index>
+            </ToastProvider>
         </>
     );
 }
 
-export default MyApp;
+export default Application;

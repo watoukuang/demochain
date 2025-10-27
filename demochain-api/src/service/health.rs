@@ -1,6 +1,6 @@
 use axum::Json;
-use crate::models::ApiResponse;
+use crate::models::r::Response;
 
-pub async fn health() -> Json<ApiResponse<&'static str>> {
-    Json(ApiResponse { success: true, data: Some("ok"), message: None })
+pub async fn health() -> Json<Response<&'static str>> {
+    Json(Response { success: true, data: Some("ok"), message: None, code: Some(200) })
 }

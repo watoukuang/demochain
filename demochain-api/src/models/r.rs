@@ -1,18 +1,15 @@
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]
-pub struct ApiResponse<T> {
+pub struct Response<T>
+where
+    T: Serialize,
+{
     pub success: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub data: Option<T>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub message: Option<String>,
-}
-
-impl<T> ApiResponse<T> {
-    pub fn ok(data: T) -> Self {
-        Self { success: true, data: Some(data), message: None }
-    }
-
-    pub fn err(msg: impl Into<String>) -> Self {
-        Self { success: false, data: None, message: Some(msg.into()) }
-    }
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub code: Option<i32>,
 }

@@ -33,8 +33,12 @@ pnpm-debug.log*
 .next/
 
 # Rust (watoukuang-api)
-/watoukuang-api/target/
-/watoukuang-api/.sqlx/
-/watoukuang-api/*.db
-/watoukuang-api/*.sqlite*
-/watoukuang-api/*.log
+/demochain-api/target/
+/demochain-api/.sqlx/
+/demochain-api/*.db
+/demochain-api/*.sqlite*
+/demochain-api/*.log
+/demochain-api/data/
+/demochain-api/Cargo.lock
+/demochain-api/target/
+/demochain-api/dist/

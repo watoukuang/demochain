@@ -1,5 +1,5 @@
 import React from 'react';
-import Logo from './icons/Logo';
+import Logo from '../components/icons/Logo';
 
 export default function Footer(): React.ReactElement {
     return (
