@@ -87,7 +87,6 @@ const CONSENSUS_ICON: Record<Consensus, React.ReactNode> = {
 }
 
 export default function Header({toggleSidebar}: HeaderProps): React.ReactElement {
-    // Theme state: 'light' | 'dark' | 'system'
     const [theme, setTheme] = useState<'light' | 'dark' | 'system'>(() => {
         if (typeof window === 'undefined') return 'system';
         return (localStorage.getItem('theme') as 'light' | 'dark' | 'system') || 'system';
@@ -286,6 +285,29 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                                                 <path d="M8 15h6"/>
                                             </svg>
                                             <span>名词</span>
+                                        </Link>
+
+                                    )}
+                                    {isMounted && (
+                                        <Link
+                                            href="/article"
+                                            className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap flex items-center space-x-2 transition-all duration-200 ${
+                                                currentPathname === '/article' || currentPathname.startsWith('/article/')
+                                                    ? 'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20'
+                                                    : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#1a1d24]'
+                                            }`}
+                                        >
+                                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor"
+                                                 strokeWidth="2">
+                                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                                                <path
+                                                    d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                                                <path d="M8 7h8"/>
+                                                <path d="M8 11h8"/>
+                                                <path d="M8 15h6"/>
+                                            </svg>
+                                            <span>文章</span>
                                         </Link>
                                     )}
                                 </div>
@@ -536,6 +558,47 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                                 </Link>
                             );
                         })}
+
+                        {/* 固定链接 */}
+                        <Link
+                            href="/glossary"
+                            className={`block px-5 py-3 rounded-lg text-lg font-semibold tracking-wide flex items-center space-x-3 transition-all duration-200 ${
+                                currentPathname === '/glossary'
+                                    ? 'text-orange-600 dark:text-orange-400'
+                                    : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#1a1d24]'
+                            }`}
+                            onClick={() => setMobileMenuOpen(false)}
+                        >
+                            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 strokeWidth="2">
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                                <path d="M8 7h8"/>
+                                <path d="M8 11h8"/>
+                                <path d="M8 15h6"/>
+                            </svg>
+                            <span>名词</span>
+                        </Link>
+
+                        <Link
+                            href="/article"
+                            className={`block px-5 py-3 rounded-lg text-lg font-semibold tracking-wide flex items-center space-x-3 transition-all duration-200 ${
+                                currentPathname === '/article' || currentPathname.startsWith('/article/')
+                                    ? 'text-orange-600 dark:text-orange-400'
+                                    : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#1a1d24]'
+                            }`}
+                            onClick={() => setMobileMenuOpen(false)}
+                        >
+                            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 strokeWidth="2">
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                                <path d="M8 7h8"/>
+                                <path d="M8 11h8"/>
+                                <path d="M8 15h6"/>
+                            </svg>
+                            <span>文章</span>
+                        </Link>
                     </div>
                 </div>
             )}

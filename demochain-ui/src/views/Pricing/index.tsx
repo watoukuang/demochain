@@ -1,5 +1,9 @@
 import React, {useState} from 'react';
 import Link from 'next/link';
+import PaymentModal from '@/components/payment/PaymentModal';
+import { SubscriptionPlan } from '@/src/shared/types/subscription';
+import { PaymentOrder } from '@/src/shared/types/payment';
+import { useToast } from '@/components/toast';
 
 const plans = [
     {
@@ -100,8 +104,44 @@ const faqs = [
 ];
 
 export default function Pricing(): React.ReactElement {
+    const { success } = useToast();
     const [billing, setBilling] = useState<'monthly' | 'yearly'>('monthly');
+    const [paymentModal, setPaymentModal] = useState<{
+        isOpen: boolean;
+        plan: SubscriptionPlan | null;
+    }>({ isOpen: false, plan: null });
+    
     const discount = billing === 'yearly' ? '（节省高达 20%）' : '';
+
+    const handleSubscribe = (planType: string) => {
+        if (planType === '免费版') {
+            success('您已在使用免费版！');
+            return;
+        }
+        
+        let plan: SubscriptionPlan;
+        switch (planType) {
+            case '月度会员':
+                plan = 'monthly';
+                break;
+            case '年度会员':
+                plan = 'yearly';
+                break;
+            case '终身会员':
+                plan = 'lifetime';
+                break;
+            default:
+                return;
+        }
+        
+        setPaymentModal({ isOpen: true, plan });
+    };
+
+    const handlePaymentSuccess = (order: PaymentOrder) => {
+        success(`${order.plan} 订阅激活成功！`);
+        setPaymentModal({ isOpen: false, plan: null });
+        // 这里可以刷新用户订阅状态
+    };
 
     return (
         <div className="px-4 lg:px-12 max-w-screen-2xl mx-auto py-10 md:py-14">
@@ -141,8 +181,13 @@ export default function Pricing(): React.ReactElement {
                             ))}
                         </ul>
                         <button
-                            className={`w-full rounded-xl py-2.5 hover:opacity-90 ${i === 0 ? 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200' : 'bg-gradient-to-r from-orange-500 to-purple-600 text-white'}`}>
-                            {p.cta}
+                            onClick={() => handleSubscribe(p.name)}
+                            className={`w-full rounded-xl py-2.5 hover:opacity-90 transition-all duration-300 ${
+                                i === 0 
+                                    ? 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200' 
+                                    : 'bg-gradient-to-r from-orange-500 to-purple-600 text-white hover:from-orange-600 hover:to-purple-700 shadow-lg hover:shadow-xl'
+                            }`}>
+                            {i === 0 ? p.cta : `${p.cta} - ${p.price} USDT`}
                         </button>
                     </div>
                 ))}
@@ -228,12 +273,51 @@ export default function Pricing(): React.ReactElement {
                 </div>
             </section>
 
+            {/* 支付说明 */}
+            <section className="mb-12">
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl p-8 text-center border border-blue-200 dark:border-blue-800">
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                        💰 支付方式
+                    </h2>
+                    <p className="text-gray-600 dark:text-gray-400 mb-6">
+                        我们支持 USDT 加密货币支付，安全便捷，全球通用
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
+                        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                            <div className="text-green-500 text-2xl mb-2">🔗</div>
+                            <h3 className="font-semibold text-gray-900 dark:text-white mb-1">USDT (TRC-20)</h3>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">TRON 网络，低手续费</p>
+                        </div>
+                        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                            <div className="text-blue-500 text-2xl mb-2">⚡</div>
+                            <h3 className="font-semibold text-gray-900 dark:text-white mb-1">USDT (ERC-20)</h3>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">以太坊网络，安全可靠</p>
+                        </div>
+                        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                            <div className="text-yellow-500 text-2xl mb-2">🚀</div>
+                            <h3 className="font-semibold text-gray-900 dark:text-white mb-1">USDT (BEP-20)</h3>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">BSC 网络，快速确认</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* 联系 CTA */}
             <section className="text-center">
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">有疑问或建议？</p>
                 <Link href="mailto:hello@demochain.com"
                       className="inline-flex items-center rounded-xl border px-4 py-2 hover:bg-gray-50 dark:border-[#2a2c31] dark:hover:bg-[#1a1d24]">联系我们</Link>
             </section>
+
+            {/* 支付弹窗 */}
+            {paymentModal.plan && (
+                <PaymentModal
+                    isOpen={paymentModal.isOpen}
+                    plan={paymentModal.plan}
+                    onClose={() => setPaymentModal({ isOpen: false, plan: null })}
+                    onSuccess={handlePaymentSuccess}
+                />
+            )}
         </div>
     );
 }
