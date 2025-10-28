@@ -1,7 +1,7 @@
 import React from 'react';
 import {PaymentOrder} from '@/src/shared/types/order';
-import OrderRow from './OrderRow';
-import Pagination from './Pagination';
+import OrderRow from './order-row';
+import Pagination from './pagination';
 
 interface OrderTableProps {
     orders: PaymentOrder[];
