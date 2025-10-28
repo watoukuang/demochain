@@ -2,10 +2,9 @@ import React, {useState} from 'react';
 import Link from 'next/link';
 import PaymentModel from './components/payment-model';
 import {SubscriptionPlan} from '@/src/shared/types/subscription';
-import {PaymentOrder} from '@/src/shared/types/order';
 import {useToast} from '@/components/toast';
 
-const plans = [
+const combos = [
     {
         name: '免费版',
         price: '0',
@@ -99,8 +98,8 @@ export default function Pricing(): React.ReactElement {
     });
 
 
-    const handleSubscribe = (planType: string) => {
-        if (planType === '免费版') {
+    const handleSubscribe = (comboType: string) => {
+        if (comboType === '免费版') {
             success('您已在使用免费版！');
             return;
         }
@@ -109,7 +108,7 @@ export default function Pricing(): React.ReactElement {
             '年度会员': 'yearly',
             '终身会员': 'lifetime'
         };
-        const plan = planMapping[planType];
+        const plan = planMapping[comboType];
         if (!plan) return;
         setPayment({isOpen: true, plan});
     };
@@ -124,7 +123,7 @@ export default function Pricing(): React.ReactElement {
 
             {/* 价格卡片 */}
             <section className="grid md:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6 mb-12">
-                {plans.map((p, i) => (
+                {combos.map((p, i) => (
                     <div key={i}
                          className={`rounded-2xl border bg白/80 backdrop-blur p-5 dark:bg-[#15161a]/80 dark:border-[#2a2c31] ${i === 2 ? 'ring-2 ring-orange-500 dark:ring-orange-400' : ''}`}>
                         <div className="flex items-center justify-between mb-3">

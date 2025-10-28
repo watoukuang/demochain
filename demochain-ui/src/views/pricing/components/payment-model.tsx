@@ -19,7 +19,7 @@ interface PaymentProps {
     plan: SubscriptionPlan;
 }
 
-export default function PaymentModel({isOpen, onClose, plan}: PaymentProps) {
+export default function PaymentModel({isOpen, onClose, plan: planType}: PaymentProps) {
     const {success, error} = useToast();
     const [step, setStep] = useState<'select' | 'payment'>('select');
     const [selectedNetwork, setSelectedNetwork] = useState<Network>('usdt_trc20');
@@ -30,7 +30,7 @@ export default function PaymentModel({isOpen, onClose, plan}: PaymentProps) {
     const [timeLeft, setTimeLeft] = useState(0);
 
     // 获取计划信息
-    const planDetails = plan !== 'free' ? PLAN_META[plan] : null;
+    const plan = planType !== 'free' ? PLAN_META[planType] : null;
 
     // 倒计时
     useEffect(() => {
@@ -60,11 +60,11 @@ export default function PaymentModel({isOpen, onClose, plan}: PaymentProps) {
     };
 
     const handleCreateOrder = async () => {
-        if (!planDetails) return;
+        if (!plan) return;
         setLoading(true);
         try {
             const payload: CreateOrderPayload = {
-                plan,
+                plan: planType,
                 network: selectedNetwork
             };
             const response = await createOrderAPI(payload);
@@ -133,7 +133,7 @@ export default function PaymentModel({isOpen, onClose, plan}: PaymentProps) {
                 <div className="p-4">
                     {step === 'select' && (
                         <SelectStep
-                            plan={planDetails}
+                            plan={plan}
                             selectedNetwork={selectedNetwork}
                             setSelectedNetwork={setSelectedNetwork}
                             onCreate={handleCreateOrder}
