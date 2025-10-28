@@ -67,6 +67,5 @@ fn auth_router() -> Router<AppState> {
 fn payments_router() -> Router<AppState> {
     Router::new()
         .route("/api/order/create", post(handlers::order::create))
-        // .route("/api/orders/mine", get(handlers::order::list_my))
-        // .route("/api/payments/orders/:id/ws", get(handlers::order::ws))
+        .route("/api/order/page", get(handlers::order::page))
 }

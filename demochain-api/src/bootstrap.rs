@@ -45,38 +45,6 @@ async fn connect_pool(database_url: &str) -> anyhow::Result<SqlitePool> {
     Ok(pool)
 }
 
-async fn run_migrations(pool: &SqlitePool) -> anyhow::Result<()> {
-    info!("Running database script...");
-    // users 表
-    sqlx::query(
-        r#"
-        CREATE TABLE IF NOT EXISTS users (
-            id TEXT PRIMARY KEY NOT NULL,
-            email TEXT UNIQUE NOT NULL,
-            username TEXT,
-            password_hash TEXT NOT NULL,
-            avatar TEXT,
-            is_verified BOOLEAN NOT NULL DEFAULT FALSE,
-            created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-        )
-        "#,
-    )
-        .execute(pool)
-        .await?;
-
-    sqlx::query("CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)")
-        .execute(pool)
-        .await?;
-
-    sqlx::query("CREATE INDEX IF NOT EXISTS idx_users_created_at ON users(created_at)")
-        .execute(pool)
-        .await?;
-
-    info!("Database script completed successfully");
-    Ok(())
-}
-
 pub async fn initialize() -> anyhow::Result<(AppState, SocketAddr)> {
     // 1) 配置与日志
     let cfg = AppConfig::load();
@@ -86,12 +54,18 @@ pub async fn initialize() -> anyhow::Result<(AppState, SocketAddr)> {
     ensure_sqlite_dir(&cfg.database_url);
     let pool = connect_pool(&cfg.database_url).await?;
 
-    // 3) 迁移
-    run_migrations(&pool).await?;
-
-    // 4) 装配返回
+    // 3) 装配返回
     let state = AppState { db: pool };
     let addr = SocketAddr::from(([0, 0, 0, 0], cfg.port));
     info!("initialized with addr=http://{} database_url={}", addr, cfg.database_url);
     Ok((state, addr))
+}
+
+pub fn no_auth_path(path: &str) -> bool {
+    matches!(
+        path,
+        "/" | "/health" | "/api/health" |
+        "/api/auth/login" | "/api/auth/register" | "/api/auth/refresh" |
+        "/docs" | "/swagger" | "/openapi.json"
+    ) || path.starts_with("/assets/") || path.starts_with("/public/")
 }

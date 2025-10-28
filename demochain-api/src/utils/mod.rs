@@ -1,4 +1,4 @@
 pub mod time;
-pub mod jwt;
+pub mod jwt_util;
 pub mod password;
 

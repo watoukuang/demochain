@@ -1,5 +1,5 @@
 use crate::app::AppState;
-use crate::models::order::{CreateOrderDTO, Order};
+use crate::models::order::{CreateOrderDTO, Order, PageOrderDTO};
 use crate::models::r::Response;
 use crate::service::order_service;
 use axum::extract::{Extension, Query, State};
@@ -29,22 +29,14 @@ pub async fn create(
         }
     }
 }
-
-#[derive(Deserialize)]
-pub struct PageParams {
-    pub page: Option<i64>,
-    pub size: Option<i64>,
-}
-
-// GET /api/orders/mine?page=&size=
-pub async fn list_my(
+pub async fn page(
     State(state): State<AppState>,
     Extension(user_id): Extension<String>,
-    Query(p): Query<PageParams>,
+    Query(p): Query<PageOrderDTO>,
 ) -> Json<Response<Vec<Order>>> {
     let page = p.page.unwrap_or(1);
     let size = p.size.unwrap_or(10);
-    match order_service::page_orders(&state.db, &user_id, page, size).await {
+    match order_service::page(&state.db, page, size).await {
         Ok(list) => Json(Response { success: true, data: Some(list), message: None, code: Some(200) }),
         Err(e) => Json(Response { success: false, data: None, message: Some(e.to_string()), code: Some(500) }),
     }

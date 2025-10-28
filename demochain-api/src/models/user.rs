@@ -26,7 +26,7 @@ pub struct RegisterRequest {
 }
 
 #[derive(Debug, Serialize)]
-pub struct AuthResponse {
+pub struct AuthVO {
     pub token: String,
     pub user: UserDetails,
     #[serde(skip_serializing_if = "Option::is_none")]

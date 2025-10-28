@@ -2,6 +2,7 @@ use crate::models::order::{CreateOrderDTO, Order};
 use anyhow::Context;
 use chrono::{DateTime, Duration, Utc};
 use sqlx::SqlitePool;
+use crate::utils::jwt_util;
 use uuid::Uuid;
 
 fn price_for_plan(plan: &str) -> Option<f64> {
@@ -12,35 +13,38 @@ fn price_for_plan(plan: &str) -> Option<f64> {
         _ => None,
     }
 }
-pub async fn page_orders(
+pub async fn page(
     pool: &SqlitePool,
-    user_id: &str,
     page: i64,
     size: i64,
 ) -> anyhow::Result<Vec<Order>> {
     let limit = if size <= 0 { 10 } else { size };
     let page = if page <= 0 { 1 } else { page };
     let offset = (page - 1) * limit;
-
+    let user_id = match jwt_util::get_user_id() {
+        Some(uid) => uid,
+        None => return Ok(Vec::new()),
+    };
     let rows = sqlx::query!(
         r#"
-        SELECT id,
-               user_id,
-               plan,
-               amount,
-               currency,
-               network,
-               state,
-               qr_code,
-               deep_link,
-               payment_address,
-               payment_amount,
-               created,
-               expires,
-               tx_hash,
-               paid,
-               confirmations,
-               confirmed
+        SELECT 
+            COALESCE(id, '')                       AS id,
+            COALESCE(user_id, '')                  AS user_id,
+            COALESCE(plan, '')                     AS plan,
+            amount                                  AS amount,
+            COALESCE(currency, '')                 AS currency,
+            COALESCE(network, '')                  AS network,
+            COALESCE(state, '')                    AS state,
+            COALESCE(qr_code, '')                  AS qr_code,
+            COALESCE(deep_link, '')                AS deep_link,
+            COALESCE(payment_address, '')          AS payment_address,
+            payment_amount                          AS payment_amount,
+            COALESCE(created, '')                  AS created,
+            COALESCE(expires, '')                  AS expires,
+            tx_hash,
+            paid,
+            confirmations,
+            confirmed
         FROM t_order
         WHERE user_id = ?1
         ORDER BY created DESC
@@ -73,9 +77,9 @@ pub async fn page_orders(
             currency: r.currency,
             network: r.network,
             state: r.state,
-            qr_code: r.qr_code.unwrap_or_default(),
-            deep_link: r.deep_link.unwrap_or_default(),
-            payment_address: r.payment_address.unwrap_or_default(),
+            qr_code: r.qr_code,
+            deep_link: r.deep_link,
+            payment_address: r.payment_address,
             payment_amount: r.payment_amount,
             created: DateTime::parse_from_rfc3339(&r.created)
                 .ok()
@@ -206,5 +210,3 @@ pub async fn create(
 
     Ok(order)
 }
-
-// 注意：上面提供了 list_my_orders 作为分页查询，请通过 handlers 调用

@@ -1,6 +1,6 @@
-use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
-use anyhow::{Result, anyhow};
 use crate::models::user::Claims;
+use anyhow::{anyhow, Result};
+use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
 
 const JWT_SECRET: &str = "your-secret-key-change-in-production";
 const TOKEN_EXPIRY_SECONDS: i64 = 24 * 60 * 60; // 24 hours
@@ -135,4 +135,22 @@ pub async fn get_user_id_from_request(parts: &mut Parts) -> Result<String, Statu
     }
 
     Err(StatusCode::UNAUTHORIZED)
+}
+
+// ========= Task-local user id helpers =========
+tokio::task_local! {
+    static TL_USER_ID: String;
+}
+
+// Run a future within a scope that sets the current user id
+pub async fn with_user_id_scope<F, T>(uid: String, fut: F) -> T
+where
+    F: std::future::Future<Output=T>,
+{
+    TL_USER_ID.scope(uid, fut).await
+}
+
+// Get current user id from task-local storage
+pub fn get_user_id() -> Option<String> {
+    TL_USER_ID.try_with(|s| s.clone()).ok()
 }

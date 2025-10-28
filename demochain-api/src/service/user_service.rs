@@ -1,8 +1,8 @@
 use sqlx::SqlitePool;
 use chrono::{Utc, DateTime};
 use anyhow::{Context, Result, bail};
-use crate::models::user::{User, LoginRequest, RegisterRequest, AuthResponse, UserDetails};
-use crate::utils::{jwt::JwtService, password::PasswordService};
+use crate::models::user::{User, LoginRequest, RegisterRequest, AuthVO, UserDetails};
+use crate::utils::{jwt_util::JwtService, password::PasswordService};
 
 fn gen_id() -> String {
     format!("user_{}", Utc::now().timestamp_millis())
@@ -11,7 +11,7 @@ fn gen_id() -> String {
 pub async fn register_user(
     pool: &SqlitePool,
     req: RegisterRequest,
-) -> Result<AuthResponse> {
+) -> Result<AuthVO> {
     // 检查邮箱是否已存在
     let existing = sqlx::query!("SELECT id FROM users WHERE email = ?1",req.email)
         .fetch_optional(pool)
@@ -47,7 +47,7 @@ pub async fn register_user(
 
     let token = JwtService::generate_token(user.id.clone(), user.email.clone())?;
 
-    Ok(AuthResponse {
+    Ok(AuthVO {
         token,
         user: UserDetails {
             id: user.id.clone(),
@@ -57,14 +57,14 @@ pub async fn register_user(
             created: user.created,
             updated: user.updated,
         },
-        expires_in: Some(24 * 60 * 60), // 24小时
+        expires_in: Some(24 * 60 * 60),
     })
 }
 
 pub async fn login_user(
     pool: &SqlitePool,
     req: LoginRequest,
-) -> Result<AuthResponse> {
+) -> Result<AuthVO> {
     // 查找用户
     let user = sqlx::query_as!(
         User,
@@ -94,7 +94,7 @@ pub async fn login_user(
 
     let token = JwtService::generate_token(user.id.clone(), user.email.clone())?;
 
-    Ok(AuthResponse {
+    Ok(AuthVO {
         token,
         user: UserDetails {
             id: user.id.clone(),

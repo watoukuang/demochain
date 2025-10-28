@@ -7,6 +7,13 @@ pub struct CreateOrderDTO {
     pub network: String,    // "usdt_trc20" | "usdt_erc20" | "usdt_bep20"
 }
 
+#[derive(Deserialize)]
+pub struct PageOrderDTO {
+    pub page: Option<i64>,
+    pub size: Option<i64>,
+}
+
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Order {
     pub id: String,

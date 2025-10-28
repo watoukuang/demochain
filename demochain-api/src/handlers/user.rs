@@ -1,13 +1,13 @@
 use axum::{extract::State, Json};
 use crate::app::AppState;
-use crate::models::user::{RegisterRequest, LoginRequest, AuthResponse};
+use crate::models::user::{RegisterRequest, LoginRequest, AuthVO};
 use crate::models::r::Response;
 use crate::service::user_service;
 
 pub async fn register(
     State(state): State<AppState>,
     Json(payload): Json<RegisterRequest>,
-) -> Json<Response<AuthResponse>> {
+) -> Json<Response<AuthVO>> {
     match user_service::register_user(&state.db, payload).await {
         Ok(auth_response) => Json(Response {
             success: true,
@@ -31,7 +31,7 @@ pub async fn register(
 pub async fn login(
     State(state): State<AppState>,
     Json(payload): Json<LoginRequest>,
-) -> Json<Response<AuthResponse>> {
+) -> Json<Response<AuthVO>> {
     match user_service::login_user(&state.db, payload).await {
         Ok(auth_response) => Json(Response {
             success: true,
