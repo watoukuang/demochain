@@ -127,7 +127,10 @@ export default function Payment({isOpen, onClose, plan, onSuccess}: PaymentProps
 
         return () => {
             closed = true;
-            try { socket?.close(); } catch {}
+            try {
+                socket?.close();
+            } catch {
+            }
         };
     }, [paymentOrder, step, success, error, onSuccess]);
 
@@ -204,13 +207,15 @@ export default function Payment({isOpen, onClose, plan, onSuccess}: PaymentProps
             if (typeof window !== 'undefined') {
                 localStorage.setItem('pending_order', JSON.stringify(snapshot));
             }
-        } catch {}
+        } catch {
+        }
         // 2) 立即关闭弹窗，避免用户长时间停留
         onClose();
         // 3) 后台做一次轻量验证（不影响已关闭的 UI）
         try {
             void checkOrderStatus(paymentOrder.id);
-        } catch {}
+        } catch {
+        }
         // 4) 轻提示
         success('我们将后台持续为你确认链上支付，你可稍后在订单中心查看');
     };
@@ -259,7 +264,7 @@ export default function Payment({isOpen, onClose, plan, onSuccess}: PaymentProps
                                 onClick={handleManualVerify}
                                 className="inline-flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium bg-orange-600 text-white hover:bg-orange-700 disabled:opacity-50"
                             >
-                                已支付，立即验证
+                                已支付，立即查看
                             </button>
                             <div className="text-xs text-gray-500 dark:text-gray-400">
                                 链上确认可能需要时间，请耐心等待
