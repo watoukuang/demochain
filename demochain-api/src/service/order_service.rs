@@ -1,9 +1,8 @@
 use crate::models::order::{CreateOrderDTO, Order};
-use anyhow::Context;
-use chrono::{DateTime, Duration, Utc};
-use sqlx::SqlitePool;
 use crate::utils::jwt_util;
-use uuid::Uuid;
+use anyhow::Context;
+use chrono::{DateTime, Duration, NaiveDateTime, Utc};
+use sqlx::SqlitePool;
 
 fn price_for_plan(plan: &str) -> Option<f64> {
     match plan {
@@ -28,23 +27,23 @@ pub async fn page(
     let rows = sqlx::query!(
         r#"
         SELECT 
-            COALESCE(id, '')                       AS id,
-            COALESCE(user_id, '')                  AS user_id,
-            COALESCE(plan, '')                     AS plan,
-            amount                                  AS amount,
-            COALESCE(currency, '')                 AS currency,
-            COALESCE(network, '')                  AS network,
-            COALESCE(state, '')                    AS state,
-            COALESCE(qr_code, '')                  AS qr_code,
-            COALESCE(deep_link, '')                AS deep_link,
-            COALESCE(payment_address, '')          AS payment_address,
-            payment_amount                          AS payment_amount,
-            COALESCE(created, '')                  AS created,
-            COALESCE(expires, '')                  AS expires,
+            id as "id!: i64",
+            user_id,
+            plan,
+            amount,
+            currency,
+            network,
+            state,
+            qr_code,
+            deep_link,
+            payment_address,
+            payment_amount,
+            created as "created: NaiveDateTime",
+            updated as "updated: NaiveDateTime",
             tx_hash,
-            paid,
+            paid as "paid?: NaiveDateTime",
             confirmations,
-            confirmed
+            confirmed as "confirmed?: NaiveDateTime"
         FROM t_order
         WHERE user_id = ?1
         ORDER BY created DESC
@@ -60,17 +59,11 @@ pub async fn page(
 
     let mut out = Vec::with_capacity(rows.len());
     for r in rows {
-        let paid_dt = r
-            .paid
-            .as_ref()
-            .and_then(|s| DateTime::parse_from_rfc3339(s).ok().map(|dt| dt.with_timezone(&Utc)));
-        let confirmed_dt = r
-            .confirmed
-            .as_ref()
-            .and_then(|s| DateTime::parse_from_rfc3339(s).ok().map(|dt| dt.with_timezone(&Utc)));
+        let paid_dt = r.paid.map(|dt| dt.and_utc());
+        let confirmed_dt = r.confirmed.map(|dt| dt.and_utc());
 
         let order = Order {
-            id: r.id,
+            id: r.id.to_string(),
             user_id: r.user_id,
             plan: r.plan,
             amount: r.amount,
@@ -81,14 +74,8 @@ pub async fn page(
             deep_link: r.deep_link,
             payment_address: r.payment_address,
             payment_amount: r.payment_amount,
-            created: DateTime::parse_from_rfc3339(&r.created)
-                .ok()
-                .map(|dt| dt.with_timezone(&Utc))
-                .unwrap_or_else(Utc::now),
-            expires: DateTime::parse_from_rfc3339(&r.expires)
-                .ok()
-                .map(|dt| dt.with_timezone(&Utc))
-                .unwrap_or_else(|| Utc::now() + Duration::minutes(30)),
+            created: r.created.and_utc(),
+            expires: r.updated.and_utc(),
             tx_hash: r.tx_hash,
             paid: paid_dt,
             confirmations: r.confirmations.map(|v| v as u32),
@@ -147,8 +134,7 @@ pub async fn create(
     let amount = price_for_plan(&payload.plan).context("不支持的套餐")?;
     let addr = address_for_method(&payload.network).context("不支持的支付方式")?;
     let user_id = jwt_util::get_user_id().ok_or_else(|| anyhow::anyhow!("用户未登录"))?;
-    // 生成 ID、时间等
-    let id = Uuid::new_v4().to_string();
+    // 生成时间等
     let now = Utc::now();
     let qr_code = generate_qr(addr, amount, &payload.network);
     let deep_link = generate_deeplink(addr, amount, &payload.network);
@@ -159,13 +145,12 @@ pub async fn create(
     sqlx::query!(
             r#"
             INSERT INTO t_order (
-                id, user_id, plan, amount, currency, network, state,
+                user_id, plan, amount, currency, network, state,
                 qr_code, deep_link, payment_address, payment_amount,
-                created, expires
+                updated
             )
-            VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13)
+            VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)
             "#,
-            id,
             user_id,
             payload.plan,
             amount,
@@ -176,12 +161,16 @@ pub async fn create(
             deep_link,
             addr,
             amount,
-            created,
             expires
         )
         .execute(pool)
         .await
         .with_context(|| "插入订单失败")?;
+
+    // 获取自增ID
+    let row = sqlx::query!("SELECT last_insert_rowid() as \"id: i64\"").fetch_one(pool).await?;
+    let new_id: i64 = row.id;
+    let id = new_id.to_string();
 
     // 构造返回对象
     let order = Order {
