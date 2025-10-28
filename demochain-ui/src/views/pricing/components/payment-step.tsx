@@ -13,11 +13,13 @@ export default function PaymentStep({
                                         timeLeft,
                                         qrCode,
                                         copyToClipboard,
+                                        handleManualVerify,
                                     }: {
     paymentOrder: PaymentOrder;
     timeLeft: number;
     qrCode: string;
     copyToClipboard: (text: string) => void;
+    handleManualVerify: () => void;
 }) {
     return (
         <div className="space-y-4">
@@ -70,9 +72,19 @@ export default function PaymentStep({
                 <ul className="text-sm text-yellow-700 dark:text-yellow-300 space-y-1">
                     <li>• 请确保转账金额完全一致: {paymentOrder.paymentAmount} USDT</li>
                     <li>• 请使用正确的网络进行转账</li>
-                    <li>• 支付完成后系统会自动确认，请耐心等待</li>
+                    <li>• 支付完成后点击"已支付，立即查看"按钮跳转到订单页面</li>
+                    <li>• 在订单页面查看支付状态和确认结果</li>
                     <li>• 如有问题请联系客服</li>
                 </ul>
+            </div>
+
+            <div className="mt-3 flex items-center justify-center">
+                <button
+                    onClick={handleManualVerify}
+                    className="inline-flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium bg-orange-600 text-white hover:bg-orange-700 disabled:opacity-50"
+                >
+                    已支付，立即查看
+                </button>
             </div>
         </div>
     );

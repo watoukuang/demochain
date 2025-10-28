@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {CreateOrderPayload, Network, PaymentOrder} from '@/src/shared/types/order';
 import {SubscriptionPlan} from '@/src/shared/types/subscription';
-import {checkOrderStatus, createOrderAPI} from '@/src/shared/api/order';
+import {createOrderAPI} from '@/src/shared/api/order';
 import {useToast} from '@/components/toast';
 import StepHeader from './step-header';
 import SelectStep from './select-step';
@@ -85,16 +85,18 @@ export default function PaymentModel({isOpen, onClose, plan}: PaymentProps) {
         success('已复制到剪贴板');
     };
 
-    // 手动验证：用户点击“已支付，立即验证”时触发一次检查
+    // 手动验证：用户点击"已支付，立即查看"时跳转到订单页面
     const handleManualVerify = async () => {
         if (!paymentOrder) return;
 
-        // 1) 本地记录挂起订单，便于用户稍后在订单中心查看
+        // 1) 本地记录挂起订单，便于用户在订单中心查看
         try {
             const snapshot = {
                 id: paymentOrder.id,
                 network: paymentOrder.paymentMethod,
                 expiresAt: paymentOrder.expiresAt,
+                plan: paymentOrder.plan,
+                amount: paymentOrder.paymentAmount
             };
             if (typeof window !== 'undefined') {
                 localStorage.setItem('pending_order', JSON.stringify(snapshot));
@@ -102,21 +104,16 @@ export default function PaymentModel({isOpen, onClose, plan}: PaymentProps) {
         } catch {
         }
 
-        // 2) 检查订单状态
-        try {
-            const updatedOrder = await checkOrderStatus(paymentOrder.id);
-            if (updatedOrder && updatedOrder.status === 'confirmed') {
-                success('支付成功！订阅已激活');
-                onClose();
-                return;
-            }
-        } catch (err) {
-            console.error('Failed to check order status:', err);
+        // 2) 关闭弹窗
+        onClose();
+
+        // 3) 跳转到订单页面
+        if (typeof window !== 'undefined') {
+            window.location.href = '/order';
         }
 
-        // 3) 如果支付未确认，关闭弹窗并提示稍后查看
-        onClose();
-        success('订单已记录，请稍后在订单中心查看支付状态');
+        // 4) 轻提示
+        success('正在跳转到订单页面，请查看支付状态');
     };
 
     if (!isOpen) return null;
@@ -150,23 +147,9 @@ export default function PaymentModel({isOpen, onClose, plan}: PaymentProps) {
                             timeLeft={timeLeft}
                             qrCode={qrCode}
                             copyToClipboard={copyToClipboard}
+                            handleManualVerify={handleManualVerify}
                         />
                     )}
-
-                    {step === 'payment' && paymentOrder && (
-                        <div className="mt-3 flex items-center justify-between gap-3">
-                            <button
-                                onClick={handleManualVerify}
-                                className="inline-flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium bg-orange-600 text-white hover:bg-orange-700 disabled:opacity-50"
-                            >
-                                已支付，立即查看
-                            </button>
-                            <div className="text-xs text-gray-500 dark:text-gray-400">
-                                链上确认可能需要时间，请耐心等待
-                            </div>
-                        </div>
-                    )}
-
                 </div>
             </div>
         </div>
