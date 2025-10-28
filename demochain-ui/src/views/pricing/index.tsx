@@ -114,12 +114,6 @@ export default function Pricing(): React.ReactElement {
         setPayment({isOpen: true, plan});
     };
 
-    const handlePaymentSuccess = (order: PaymentOrder) => {
-        success(`${order.plan} 订阅激活成功！`);
-        setPayment({isOpen: false, plan: null});
-        // TODO: 刷新用户订阅状态
-    };
-
     return (
         <div className="px-4 lg:px-12 max-w-screen-2xl mx-auto py-10 md:py-14">
             {/* 标题 */}
@@ -287,7 +281,7 @@ export default function Pricing(): React.ReactElement {
 
             {payment.plan && (
                 <PaymentModel isOpen={payment.isOpen} plan={payment.plan}
-                              onClose={() => setPayment({isOpen: false, plan: null})} onSuccess={handlePaymentSuccess}/>
+                              onClose={() => setPayment({isOpen: false, plan: null})}/>
             )}
         </div>
     );
