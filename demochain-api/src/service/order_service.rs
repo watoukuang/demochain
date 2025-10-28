@@ -143,14 +143,10 @@ fn generate_deeplink(address: &str, amount: f64, method: &str) -> String {
 pub async fn create(
     pool: &SqlitePool,
     payload: CreateOrderDTO,
-    user_id: &str,
 ) -> anyhow::Result<Order> {
-    // 检查套餐
     let amount = price_for_plan(&payload.plan).context("不支持的套餐")?;
-
-    // 检查支付方式
     let addr = address_for_method(&payload.network).context("不支持的支付方式")?;
-
+    let user_id = jwt_util::get_user_id().ok_or_else(|| anyhow::anyhow!("用户未登录"))?;
     // 生成 ID、时间等
     let id = Uuid::new_v4().to_string();
     let now = Utc::now();

@@ -4,29 +4,14 @@ use crate::models::r::Response;
 use crate::service::order_service;
 use axum::extract::{Extension, Query, State};
 use axum::Json;
-use serde::Deserialize;
 
 pub async fn create(
     State(state): State<AppState>,
-    Extension(user_id): Extension<String>,
     Json(payload): Json<CreateOrderDTO>,
 ) -> Json<Response<Order>> {
-    match order_service::create(&state.db, payload, &user_id).await {
-        Ok(response) => Json(Response {
-            success: true,
-            data: Some(response),
-            message: Some("订单创建成功".to_string()),
-            code: Some(200),
-        }),
-        Err(e) => {
-            let msg = e.to_string();
-            Json(Response {
-                success: false,
-                data: None,
-                message: Some(msg),
-                code: Some(500),
-            })
-        }
+    match order_service::create(&state.db, payload).await {
+        Ok(response) => Json(Response { success: true, data: Some(response), message: Some("订单创建成功".to_string()), code: Some(200) }),
+        Err(e) => { Json(Response { success: false, data: None, message: Some(e.to_string()), code: Some(500) }) }
     }
 }
 pub async fn page(
