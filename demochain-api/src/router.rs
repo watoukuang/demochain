@@ -66,5 +66,5 @@ fn auth_router() -> Router<AppState> {
 
 fn payments_router() -> Router<AppState> {
     Router::new()
-        .route("/api/order/create", post(handlers::order::create()))
+        .route("/api/order/create", post(handlers::order::create))
 }

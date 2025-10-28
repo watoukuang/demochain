@@ -69,6 +69,8 @@ pub async fn create(
     let now = Utc::now();
     let qr_code = generate_qr(addr, amount, &payload.network);
     let deep_link = generate_deeplink(addr, amount, &payload.network);
+    let created = now.to_rfc3339();
+    let expires = (now + Duration::minutes(30)).to_rfc3339();
 
     // 插入订单到数据库
     sqlx::query!(
@@ -91,8 +93,8 @@ pub async fn create(
         deep_link,
         addr,
         amount,
-        now.to_rfc3339(),
-        (now + Duration::minutes(30)).to_rfc3339()
+        created,
+        expires
     )
         .execute(pool)
         .await

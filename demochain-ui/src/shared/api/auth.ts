@@ -44,7 +44,7 @@ export async function login(payload: LoginRequest): Promise<AuthResponse> {
     const data = resp.data;
     if (!data) throw new Error('登录响应数据为空');
     if (typeof window !== 'undefined') {
-        // Cookie-only: 不再存 token，仅可选保存基本用户信息
+        if (data.token) localStorage.setItem('auth_token', data.token);
         localStorage.setItem('user_info', JSON.stringify(data.user));
         window.dispatchEvent(new Event('authChanged'));
     }
@@ -100,7 +100,8 @@ export async function refreshToken(): Promise<AuthResponse> {
     const authData = resp.data;
     if (!authData) throw new Error('刷新 token 响应数据为空');
     if (typeof window !== 'undefined') {
-        // Cookie-only: 不再存 token，仅可选保存基本用户信息
+        // Bearer-only: 存储 token 并保存用户信息
+        if (authData.token) localStorage.setItem('auth_token', authData.token);
         localStorage.setItem('user_info', JSON.stringify(authData.user));
     }
     return authData;

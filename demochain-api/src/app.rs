@@ -2,6 +2,7 @@ use std::net::SocketAddr;
 
 use axum::{Router, http::Request};
 use axum::middleware::{self, Next};
+use axum::body::Body;
 use axum::response::Response;
 use sqlx::SqlitePool;
 use tracing::{error, info};
@@ -45,13 +46,14 @@ pub async fn run() -> anyhow::Result<()> {
     serve(addr, state).await
 }
 
-async fn auth_middleware<B>(mut req: Request<B>, next: Next) -> Result<Response, StatusCode> {
+async fn auth_middleware(mut req: Request<Body>, next: Next) -> Result<Response, StatusCode> {
     // 0) 放行预检请求
     if req.method() == axum::http::Method::OPTIONS {
         return Ok(next.run(req).await);
     }
 
-    let path = req.uri().path();
+    // 先持有路径的独立副本，避免后续对 req 的可变借用与此处的不可变借用冲突
+    let path_owned = req.uri().path().to_string();
     // 1) 解析 Authorization（即使是公开接口也解析，供下游可选使用）
     let token_opt = extract_token(&req);
     let mut user_id: Option<String> = None;
@@ -65,7 +67,7 @@ async fn auth_middleware<B>(mut req: Request<B>, next: Next) -> Result<Response,
     }
 
     // 2) 白名单放行，否则必须已鉴权
-    if is_public_path(path) || user_id.is_some() {
+    if is_public_path(&path_owned) || user_id.is_some() {
         return Ok(next.run(req).await);
     }
 
