@@ -31,9 +31,8 @@ export default function PaymentModel({isOpen, onClose, planType}: PaymentProps) 
 
     const handleClose = () => {
         setStep('select');
-        // setPaymentOrder(null);
+        setOrder(null);
         setQrCode('');
-        setDeepLink('');
         setTimeLeft(0);
         onClose();
     };
@@ -74,16 +73,17 @@ export default function PaymentModel({isOpen, onClose, planType}: PaymentProps) 
         success('已复制到剪贴板');
     };
 
-    // 手动验证：用户点击"已支付，立即查看"时跳转到订单页面
     const handleGo = async () => {
         if (!order) return;
         onClose();
-        success('正在跳转到订单页面，请查看支付状态');
-        if (typeof window !== 'undefined') {
-            window.location.href = '/order';
-        }
+        success('正在跳转到订单页面，请查看支付状态...');
 
+        // 延迟 1.5 秒再跳转
+        setTimeout(() => {
+            window.location.href = '/order';
+        }, 1000);
     };
+
 
     if (!isOpen) return null;
 
