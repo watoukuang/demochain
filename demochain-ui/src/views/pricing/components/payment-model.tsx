@@ -30,7 +30,7 @@ export default function PaymentModel({isOpen, onClose, plan}: PaymentProps) {
     const [timeLeft, setTimeLeft] = useState(0);
 
     // 获取计划信息
-    const planInfo = plan !== 'free' ? PLAN_META[plan] : null;
+    const planDetails = plan !== 'free' ? PLAN_META[plan] : null;
 
     // 倒计时
     useEffect(() => {
@@ -60,7 +60,7 @@ export default function PaymentModel({isOpen, onClose, plan}: PaymentProps) {
     };
 
     const handleCreateOrder = async () => {
-        if (!planInfo) return;
+        if (!planDetails) return;
         setLoading(true);
         try {
             const payload: CreateOrderPayload = {
@@ -133,7 +133,7 @@ export default function PaymentModel({isOpen, onClose, plan}: PaymentProps) {
                 <div className="p-4">
                     {step === 'select' && (
                         <SelectStep
-                            planInfo={planInfo}
+                            plan={planDetails}
                             selectedNetwork={selectedNetwork}
                             setSelectedNetwork={setSelectedNetwork}
                             onCreate={handleCreateOrder}

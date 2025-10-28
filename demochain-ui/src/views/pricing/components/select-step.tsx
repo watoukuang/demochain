@@ -3,7 +3,7 @@ import {Network} from '@/src/shared/types/order';
 import {USDT_NETWORKS} from '@/src/shared/config/payment';
 
 interface SelectStepProps {
-    planInfo: { name: string; price: number; period: string } | null;
+    plan: { name: string; price: number; period: string } | null;
     selectedNetwork: Network;
     setSelectedNetwork: (n: Network) => void;
     onCreate: () => void;
@@ -11,7 +11,7 @@ interface SelectStepProps {
 }
 
 export default function SelectStep({
-                                       planInfo,
+                                       plan,
                                        selectedNetwork,
                                        setSelectedNetwork,
                                        onCreate,
@@ -20,10 +20,10 @@ export default function SelectStep({
     return (
         <div className="space-y-4">
             <div className="rounded-lg p-4 border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.04]">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">{planInfo?.name}</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">{plan?.name}</h3>
                 <div className="flex items-center justify-between">
-                    <span className="text-xl font-bold text-gray-900 dark:text-white">${planInfo?.price} USDT</span>
-                    <span className="text-sm text-gray-600 dark:text-gray-400">{planInfo?.period}</span>
+                    <span className="text-xl font-bold text-gray-900 dark:text-white">${plan?.price} USDT</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">{plan?.period}</span>
                 </div>
             </div>
 
