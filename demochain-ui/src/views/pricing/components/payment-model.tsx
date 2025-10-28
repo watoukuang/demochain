@@ -23,7 +23,6 @@ interface PaymentProps {
 
 export default function PaymentModel({isOpen, onClose, plan, onSuccess}: PaymentProps) {
     const {success, error} = useToast();
-    const [entered, setEntered] = useState(false);
     const [step, setStep] = useState<'select' | 'payment' | 'confirm'>('select');
     const [selectedNetwork, setSelectedNetwork] = useState<Network>('usdt_trc20');
     const [paymentOrder, setPaymentOrder] = useState<PaymentOrder | null>(null);
@@ -227,12 +226,8 @@ export default function PaymentModel({isOpen, onClose, plan, onSuccess}: Payment
             <div
                 className={
                     `bg-white dark:bg-[#0b0f17] rounded-xl border border-gray-200 dark:border-white/12 shadow-xl w-full max-w-sm md:max-w-md max-h-[85vh] overflow-y-auto text-gray-900 dark:text-gray-100 ` +
-                    `transform transition-all duration-200 ease-out ` +
-                    (entered ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-[0.98] translate-y-1')
+                    `transform transition-all duration-200 ease-out opacity-100 scale-100 translate-y-0`
                 }
-                onAnimationEnd={() => setEntered(true)}
-                onTransitionEnd={() => setEntered(true)}
-                onMouseEnter={() => !entered && setEntered(true)}
             >
                 {/* 头部 */}
                 <StepHeader step={step} onClose={handleClose}/>

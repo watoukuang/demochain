@@ -93,33 +93,24 @@ const faqs = [
 
 export default function Pricing(): React.ReactElement {
     const {success} = useToast();
-    const [billing, setBilling] = useState<'monthly' | 'yearly'>('monthly');
     const [payment, setPayment] = useState<{ isOpen: boolean; plan: SubscriptionPlan | null; }>({
         isOpen: false,
         plan: null
     });
 
-    const discount = billing === 'yearly' ? '（节省高达 20%）' : '';
 
     const handleSubscribe = (planType: string) => {
         if (planType === '免费版') {
             success('您已在使用免费版！');
             return;
         }
-        let plan: SubscriptionPlan;
-        switch (planType) {
-            case '月度会员':
-                plan = 'monthly';
-                break;
-            case '年度会员':
-                plan = 'yearly';
-                break;
-            case '终身会员':
-                plan = 'lifetime';
-                break;
-            default:
-                return;
-        }
+        const planMapping: Record<string, SubscriptionPlan> = {
+            '月度会员': 'monthly',
+            '年度会员': 'yearly',
+            '终身会员': 'lifetime'
+        };
+        const plan = planMapping[planType];
+        if (!plan) return;
         setPayment({isOpen: true, plan});
     };
 
@@ -259,7 +250,6 @@ export default function Pricing(): React.ReactElement {
                 </div>
             </section>
 
-            {/* 支付说明 */}
             <section className="mb-12">
                 <div
                     className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl p-8 text-center border border-blue-200 dark:border-blue-800">
@@ -289,21 +279,15 @@ export default function Pricing(): React.ReactElement {
                 </div>
             </section>
 
-            {/* 联系 CTA */}
             <section className="text-center">
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">有疑问或建议？</p>
                 <Link href="mailto:hello@demochain.com"
                       className="inline-flex items-center rounded-xl border px-4 py-2 hover:bg-gray-50 dark:border-[#2a2c31] dark:hover:bg-[#1a1d24]">联系我们</Link>
             </section>
 
-            {/* 支付弹窗 */}
             {payment.plan && (
-                <PaymentModel
-                    isOpen={payment.isOpen}
-                    plan={payment.plan}
-                    onClose={() => setPayment({isOpen: false, plan: null})}
-                    onSuccess={handlePaymentSuccess}
-                />
+                <PaymentModel isOpen={payment.isOpen} plan={payment.plan}
+                              onClose={() => setPayment({isOpen: false, plan: null})} onSuccess={handlePaymentSuccess}/>
             )}
         </div>
     );
