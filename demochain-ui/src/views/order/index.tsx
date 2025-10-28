@@ -9,16 +9,27 @@ import Loading from './components/loading'
 
 export default function OrdersPage() {
     const {user, isAuthenticated} = useAuth();
-    const [orders, setOrders] = useState<PaymentOrder[]>([]);
+    const [orders, setOrders] = useState<PaymentOrder[] | null>(null);
     const [loading, setLoading] = useState(true);
+    const [fetched, setFetched] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize] = useState(10);
     const [totalCount, setTotalCount] = useState(0);
+    const MIN_LOADING_MS = 300; // 最少loading时长，避免闪烁
+
+    const isInitial = orders === null;
 
     useEffect(() => {
         const loadOrders = async () => {
+            const start = Date.now();
             if (!isAuthenticated || !user) {
-                setLoading(false);
+                const elapsed = Date.now() - start;
+                const delay = Math.max(0, MIN_LOADING_MS - elapsed);
+                setTimeout(() => {
+                    setOrders([]);
+                    setLoading(false);
+                    setFetched(true);
+                }, delay);
                 return;
             }
             try {
@@ -27,7 +38,12 @@ export default function OrdersPage() {
             } catch (error) {
                 console.error('Failed to load orders:', error);
             } finally {
-                setLoading(false);
+                const elapsed = Date.now() - start;
+                const delay = Math.max(0, MIN_LOADING_MS - elapsed);
+                setTimeout(() => {
+                    setLoading(false);
+                    setFetched(true);
+                }, delay);
             }
         };
 
@@ -71,7 +87,9 @@ export default function OrdersPage() {
                         <p className="text-gray-600 dark:text-gray-400">查看您的订阅订单历史和支付记录</p>
                     </div>
 
-                    {loading ? (<Loading/>) : orders.length === 0 ? (<Empty/>) : (
+                    {isInitial || loading ? (
+                        <Loading/>
+                    ) : (orders && orders.length > 0) ? (
                         <OrderTable
                             orders={orders}
                             currentPage={currentPage}
@@ -79,6 +97,8 @@ export default function OrdersPage() {
                             totalCount={totalCount}
                             onPageChange={handlePageChange}
                         />
+                    ) : (
+                        <Empty/>
                     )}
                 </div>
             </div>

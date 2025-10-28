@@ -81,7 +81,7 @@ export default function PaymentModel({isOpen, onClose, planType}: PaymentProps) 
         // 延迟 1.5 秒再跳转
         setTimeout(() => {
             window.location.href = '/order';
-        }, 1000);
+        }, 1500);
     };
 
 
