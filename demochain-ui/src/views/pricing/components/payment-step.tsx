@@ -13,17 +13,12 @@ interface PaymentStepProps {
     timeLeft: number;
     qrCode: string;
     copyToClipboard: (text: string) => void;
-    handleManualVerify: () => void;
+    handleGo: () => void;
 }
 
-const PaymentStep: React.FC<PaymentStepProps> = ({order, timeLeft, qrCode, copyToClipboard, handleManualVerify}) => {
+const PaymentStep: React.FC<PaymentStepProps> = ({order, timeLeft, qrCode, copyToClipboard, handleGo}) => {
     return (
         <div className="space-y-4">
-            <div className="text-center">
-                <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">订单将在以下时间后过期</div>
-                <div className="text-xl font-bold text-red-500">{formatTime(timeLeft)}</div>
-            </div>
-
             <div
                 className="bg-gray-50 dark:bg-white/[0.06] rounded-lg p-3 space-y-3 border border-gray-200 dark:border-white/10">
                 <div className="flex justify-between">
@@ -76,7 +71,7 @@ const PaymentStep: React.FC<PaymentStepProps> = ({order, timeLeft, qrCode, copyT
 
             <div className="mt-3 flex items-center justify-center">
                 <button
-                    onClick={handleManualVerify}
+                    onClick={handleGo}
                     className="inline-flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium bg-orange-600 text-white hover:bg-orange-700 disabled:opacity-50"
                 >
                     已支付，立即查看

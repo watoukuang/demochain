@@ -1,10 +1,4 @@
-import {
-    CreateOrderPayload,
-    CreatePaymentResponse, OrderDTO,
-    PaymentOrder,
-    VerifyPaymentRequest,
-    VerifyPaymentResponse
-} from '../types/order';
+import {OrderDTO, OrderVO} from '../types/order';
 import request from '../utils/request';
 import {R} from "@/src/shared/types/response";
 
@@ -43,81 +37,14 @@ const generateDeepLink = (address: string, amount: number, method: string) => {
 };
 
 // 创建支付订单（后端）
-export async function addOrderAPI(payload: OrderDTO): Promise<any> {
-
-    const res = await request.post<any>('/api/order/add', payload);
-    if (!res.success || !res.data) throw new Error(res.message || '创建订单失败');
-    // 新后端直接返回 Order（包含 qr_code、deep_link）
-    const o: any = res.data;
-    const mapped: CreatePaymentResponse = {
-        order: {
-            id: o.id,
-            userId: o.user_id,
-            plan: o.plan,
-            amount: o.amount,
-            currency: o.currency,
-            paymentMethod: o.network, // 后端字段 network
-            status: o.state,          // 后端字段 state
-            paymentAddress: o.payment_address,
-            paymentAmount: o.payment_amount,
-            createdAt: o.created,     // 后端字段 created
-            expiresAt: o.expires,     // 后端字段 expires
-            txHash: o.tx_hash ?? undefined,
-            paidAt: o.paid ?? undefined,
-            confirmations: o.confirmations ?? undefined,
-            confirmedAt: o.confirmed ?? undefined,
-        },
-        qrCode: o.qr_code,
-        deepLink: o.deep_link,
-    };
-    return mapped;
+export async function addOrderAPI(payload: OrderDTO): Promise<R<String>> {
+    const response = await request.post<any>('/api/order/add', payload);
+    if (!response.success) {
+        throw new Error(response.message || '注册失败');
+    }
+    return response;
 }
 
-// 获取支付订单
-export async function getPaymentOrder(orderId: string): Promise<PaymentOrder | null> {
-    const res = await request.get<PaymentOrder>(`/api/payments/orders/${orderId}`);
-    if (!res.success) return null;
-    const order: any = res.data;
-    if (!order) return null;
-    return {
-        id: order.id,
-        userId: order.user_id,
-        plan: order.plan,
-        amount: order.amount,
-        currency: order.currency,
-        paymentMethod: order.payment_method,
-        status: order.status,
-        paymentAddress: order.payment_address,
-        paymentAmount: order.payment_amount,
-        createdAt: order.created_at,
-        expiresAt: order.expires_at,
-        txHash: order.tx_hash ?? undefined,
-        paidAt: order.paid_at ?? undefined,
-        confirmations: order.confirmations ?? undefined,
-        confirmedAt: order.confirmed_at ?? undefined,
-    };
-}
-
-// 更新支付订单
-export async function updatePaymentOrder(orderId: string, updates: Partial<PaymentOrder>): Promise<PaymentOrder> {
-    throw new Error('Not implemented on client. Use backend API.');
-}
-
-// 验证支付
-export async function verifyPayment(request: VerifyPaymentRequest): Promise<VerifyPaymentResponse> {
-    // 需要后端实现验证接口，这里暂时返回失败或直接返回当前订单
-    const order = await getPaymentOrder(request.orderId);
-    return {
-        success: !!order,
-        order: order as any,
-        message: order ? 'OK' : '订单不存在',
-    };
-}
-
-// 检查订单状态
-export async function checkOrderStatus(orderId: string): Promise<PaymentOrder | null> {
-    return getPaymentOrder(orderId);
-}
 
 // 获取用户订单历史
 export async function pageOrder(page: number = 1, size: number = 10): Promise<PaymentOrder[]> {
@@ -126,9 +53,4 @@ export async function pageOrder(page: number = 1, size: number = 10): Promise<Pa
         throw new Error(resp.message || '获取订单失败');
     }
     return resp.data ? resp.data : [];
-}
-
-// 取消订单
-export async function cancelOrder(orderId: string): Promise<PaymentOrder> {
-    throw new Error('Not implemented on backend');
 }

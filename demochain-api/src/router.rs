@@ -44,7 +44,7 @@ pub fn build_router() -> Router<AppState> {
         .merge(health_router())
         .merge(ideas_router())
         .merge(auth_router())
-        .merge(payments_router())
+        .merge(order_router())
 }
 
 fn health_router() -> Router<AppState> {
@@ -64,8 +64,8 @@ fn auth_router() -> Router<AppState> {
         .route("/api/auth/login", post(handlers::user::login))
 }
 
-fn payments_router() -> Router<AppState> {
+fn order_router() -> Router<AppState> {
     Router::new()
-        .route("/api/components/create", post(handlers::order::create))
-        .route("/api/components/page", get(handlers::order::page))
+        .route("/api/order/add", post(handlers::order::add))
+        .route("/api/order/page", get(handlers::order::page))
 }

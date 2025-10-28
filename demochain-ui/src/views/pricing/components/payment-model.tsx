@@ -40,22 +40,36 @@ export default function PaymentModel({isOpen, onClose, planType}: PaymentProps) 
 
     const plan = planType !== 'free' ? PLAN_META[planType] : null;
 
-    const handleAdd = async () => {
-        if (!planType) return;
-        debugger
-        setLoading(true);
-        if (planType === 'free') throw new Error('免费计划无需支付');
-        try {
-            let payload: OrderDTO = {
-                planType: planType,
-                network: selectedNetwork
-            }
-            const response = await addOrderAPI(payload);
+    const makeTempOrder = (pt: Exclude<PlanType, 'free'>, address: string, network: Network): Order => ({
+        id: `TEMP_${Date.now()}`,
+        user_id: '',
+        plan: pt,
+        amount: PLAN_META[pt].price,
+        currency: 'USDT',
+        network,
+        state: 'created',
+        qrCode: '',
+        deep_link: '',
+        paymentAddress: address,
+        paymentAmount: PLAN_META[pt].price,
+    });
 
-            // setPaymentOrder(response.order);
-            // setQrCode(response.qrCode);
-            // setDeepLink(response.deepLink);
-            // setStep('payment');
+    const handleAdd = async () => {
+        if (!planType || planType === 'free') {
+            error('免费计划无需支付');
+            return;
+        }
+        setLoading(true);
+        try {
+            const payload: OrderDTO = {plan_type: planType, network: selectedNetwork};
+            const {code, data, message} = await addOrderAPI(payload);
+            if (code !== 200 || !data) throw new Error(message || '创建订单失败');
+
+            const pt = planType as Exclude<PlanType, 'free'>;
+            setOrder(makeTempOrder(pt, data as unknown as string, selectedNetwork));
+            setQrCode('');
+            setDeepLink('');
+            setStep('payment');
             success('订单创建成功，请完成支付');
         } catch (err: any) {
             error(err.message || '创建订单失败');
@@ -70,34 +84,14 @@ export default function PaymentModel({isOpen, onClose, planType}: PaymentProps) 
     };
 
     // 手动验证：用户点击"已支付，立即查看"时跳转到订单页面
-    const handleManualVerify = async () => {
+    const handleGo = async () => {
         if (!order) return;
-
-        // 1) 本地记录挂起订单，便于用户在订单中心查看
-        // try {
-        //     const snapshot = {
-        //         id: order.id,
-        //         network: paymentOrder.paymentMethod,
-        //         expiresAt: paymentOrder.expiresAt,
-        //         plan: paymentOrder.plan,
-        //         amount: paymentOrder.paymentAmount
-        //     };
-        //     if (typeof window !== 'undefined') {
-        //         localStorage.setItem('pending_order', JSON.stringify(snapshot));
-        //     }
-        // } catch {
-        // }
-
-        // 2) 关闭弹窗
         onClose();
-
-        // 3) 跳转到订单页面
+        success('正在跳转到订单页面，请查看支付状态');
         if (typeof window !== 'undefined') {
             window.location.href = '/order';
         }
 
-        // 4) 轻提示
-        success('正在跳转到订单页面，请查看支付状态');
     };
 
     if (!isOpen) return null;
@@ -122,7 +116,7 @@ export default function PaymentModel({isOpen, onClose, planType}: PaymentProps) 
 
                     {step === 'payment' && order && (
                         <PaymentStep order={order} timeLeft={timeLeft} qrCode={qrCode}
-                                     copyToClipboard={copyToClipboard} handleManualVerify={handleManualVerify}
+                                     copyToClipboard={copyToClipboard} handleGo={handleGo}
                         />
                     )}
                 </div>

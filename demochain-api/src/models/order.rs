@@ -2,8 +2,8 @@ use serde::{Deserialize, Serialize};
 use chrono::{DateTime, Utc};
 
 #[derive(Debug, Deserialize)]
-pub struct CreateOrderDTO {
-    pub plan: String,              // "monthly" | "yearly" | "lifetime"
+pub struct OrderDTO {
+    pub plan_type: String,              // "monthly" | "yearly" | "lifetime"
     pub network: String,    // "usdt_trc20" | "usdt_erc20" | "usdt_bep20"
 }
 
@@ -18,19 +18,14 @@ pub struct PageOrderDTO {
 pub struct Order {
     pub id: String,
     pub user_id: String,
-    pub plan: String,
+    pub plan_type: String,
     pub amount: f64,
     pub currency: String, // USDT
     pub network: String,
     pub state: String, // created | paid | confirmed | expired | cancelled
-    pub qr_code: String,
-    pub deep_link: String,
-    pub payment_address: String,
-    pub payment_amount: f64,
+    pub address: String,
+    pub sender_address: Option<String>,
+    pub tx: Option<String>,
     pub created: DateTime<Utc>,
-    pub expires: DateTime<Utc>,
-    pub tx_hash: Option<String>,
-    pub paid: Option<DateTime<Utc>>,
-    pub confirmations: Option<u32>,
-    pub confirmed: Option<DateTime<Utc>>,
+    pub updated: DateTime<Utc>,
 }

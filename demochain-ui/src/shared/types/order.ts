@@ -17,7 +17,7 @@ export interface USDTNetwork {
 }
 
 export interface OrderDTO {
-    planType: string,
+    plan_type: string,
     network: string
 }
 
@@ -33,12 +33,6 @@ export interface Order {
     deep_link: string;
     paymentAddress: string;
     paymentAmount: number;
-    created: string;
-    expires: string;
-    txHash?: string | null;
-    paid?: string | null;
-    confirmations?: number | null;
-    confirmed?: string | null;
 }
 
 export interface OrderVO {
