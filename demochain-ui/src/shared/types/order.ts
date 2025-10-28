@@ -22,17 +22,10 @@ export interface OrderDTO {
 }
 
 export interface Order {
-    id: string;
-    user_id: string;
-    plan: string;
     amount: number;
-    currency: string;
     network: string;
-    state: OrderState;
     qrCode: string;
-    deep_link: string;
-    paymentAddress: string;
-    paymentAmount: number;
+    address: string;
 }
 
 export interface OrderVO {

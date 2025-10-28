@@ -41,17 +41,10 @@ export default function PaymentModel({isOpen, onClose, planType}: PaymentProps) 
     const plan = planType !== 'free' ? PLAN_META[planType] : null;
 
     const makeTempOrder = (pt: Exclude<PlanType, 'free'>, address: string, network: Network): Order => ({
-        id: `TEMP_${Date.now()}`,
-        user_id: '',
-        plan: pt,
         amount: PLAN_META[pt].price,
-        currency: 'USDT',
         network,
-        state: 'created',
         qrCode: '',
-        deep_link: '',
-        paymentAddress: address,
-        paymentAmount: PLAN_META[pt].price,
+        address: address,
     });
 
     const handleAdd = async () => {
@@ -64,11 +57,9 @@ export default function PaymentModel({isOpen, onClose, planType}: PaymentProps) 
             const payload: OrderDTO = {plan_type: planType, network: selectedNetwork};
             const {code, data, message} = await addOrderAPI(payload);
             if (code !== 200 || !data) throw new Error(message || '创建订单失败');
-
             const pt = planType as Exclude<PlanType, 'free'>;
             setOrder(makeTempOrder(pt, data as unknown as string, selectedNetwork));
             setQrCode('');
-            setDeepLink('');
             setStep('payment');
             success('订单创建成功，请完成支付');
         } catch (err: any) {

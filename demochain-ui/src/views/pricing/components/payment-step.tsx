@@ -37,10 +37,10 @@ const PaymentStep: React.FC<PaymentStepProps> = ({order, timeLeft, qrCode, copyT
                     <div
                         className="flex items-center gap-2 flex-1 h-9 px-3 rounded-lg border border-gray-300 dark:border-white/10 bg-gray-50 dark:bg-white/[0.06] overflow-hidden">
                         <span
-                            className="font-mono text-sm text-gray-900 dark:text-gray-100 truncate">{order.paymentAddress}</span>
+                            className="font-mono text-sm text-gray-900 dark:text-gray-100 truncate">{order.address}</span>
                     </div>
                     <button
-                        onClick={() => copyToClipboard(order.paymentAddress)}
+                        onClick={() => copyToClipboard(order.address)}
                         className="h-9 px-3 rounded-lg bg-gray-200 dark:bg-white/[0.08] text-gray-700 dark:text-gray-100 hover:bg-gray-300 dark:hover:bg-white/[0.12] transition-colors shrink-0 border border-transparent dark:border-white/10"
                         title="复制到剪贴板"
                     >
@@ -61,7 +61,7 @@ const PaymentStep: React.FC<PaymentStepProps> = ({order, timeLeft, qrCode, copyT
                 className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3">
                 <h4 className="font-medium text-yellow-800 dark:text-yellow-200 mb-2">⚠️ 支付注意事项</h4>
                 <ul className="text-sm text-yellow-700 dark:text-yellow-300 space-y-1">
-                    <li>• 请确保转账金额完全一致: {order.paymentAmount} USDT</li>
+                    <li>• 请确保转账金额完全一致: {order.amount} USDT</li>
                     <li>• 请使用正确的网络进行转账</li>
                     <li>• 支付完成后点击"已支付，立即查看"按钮跳转到订单页面</li>
                     <li>• 在订单页面查看支付状态和确认结果</li>
