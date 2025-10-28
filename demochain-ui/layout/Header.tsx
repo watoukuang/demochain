@@ -480,7 +480,7 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                                             onClick={() => {
                                                 setUserMenuOpen(false);
                                                 if (typeof window !== 'undefined') {
-                                                    window.location.href = '/components';
+                                                    window.location.href = '/order';
                                                 }
                                             }}
                                             className="w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
