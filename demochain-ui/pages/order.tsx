@@ -169,32 +169,32 @@ export default function OrdersPage() {
                             </a>
                         </div>
                     ) : (
-                        <div className="bg-white dark:bg-gray-800 rounded  shadow-xl overflow-hidden">
+                        <div className="bg-white dark:bg-gray-900/40 rounded shadow-xl overflow-hidden border border-gray-100/60 dark:border-white/10">
                             {/* 表格 */}
                             <div className="overflow-x-auto">
                                 <table className="w-full">
                                     <thead
-                                        className="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-gray-700 dark:to-gray-600">
+                                        className="bg-gray-50 dark:bg-gray-900/60">
                                     <tr>
-                                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                                        <th className="px-6 py-4 text-left text-sm md:text-base font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                                             订单号
                                         </th>
-                                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                                        <th className="px-6 py-4 text-left text-sm md:text-base font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                                             订阅计划
                                         </th>
-                                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                                        <th className="px-6 py-4 text-left text-sm md:text-base font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                                             金额
                                         </th>
-                                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                                        <th className="px-6 py-4 text-left text-sm md:text-base font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                                             支付方式
                                         </th>
-                                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                                        <th className="px-6 py-4 text-left text-sm md:text-base font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                                             状态
                                         </th>
-                                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                                        <th className="px-6 py-4 text-left text-sm md:text-base font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                                             创建时间
                                         </th>
-                                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                                        <th className="px-6 py-4 text-left text-sm md:text-base font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                                             操作
                                         </th>
                                     </tr>
@@ -202,7 +202,7 @@ export default function OrdersPage() {
                                     <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                                     {orders.map((order, index) => (
                                         <tr key={order.id}
-                                            className="hover:bg-orange-50 dark:hover:bg-gray-700/50 transition-colors">
+                                            className="hover:bg-orange-50/60 dark:hover:bg-white/5 transition-colors">
                                             <td className="px-6 py-4">
                                                 <div
                                                     className="text-sm font-mono text-gray-900 dark:text-white break-all max-w-xs">
@@ -254,10 +254,10 @@ export default function OrdersPage() {
 
                             {/* 分页控件 */}
                             <div
-                                className="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-gray-700 dark:to-gray-600 px-6 py-4 border-t border-orange-200 dark:border-gray-600">
+                                className="bg-white/60 dark:bg-transparent backdrop-blur px-4 py-2 border-t border-gray-200 dark:border-white/10">
                                 <div
-                                    className="flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0">
-                                    <div className="text-sm text-gray-600 dark:text-gray-300">
+                                    className="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0">
+                                    <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
                                         显示第 {currentPage} 页，共 {totalPages} 页 ({totalCount} 条订单)
                                     </div>
 
@@ -265,7 +265,7 @@ export default function OrdersPage() {
                                         <button
                                             onClick={goToPrevious}
                                             disabled={currentPage === 1}
-                                            className="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-500"
+                                            className="px-3 py-1 text-xs sm:text-sm font-medium rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-500"
                                         >
                                             上一页
                                         </button>
@@ -283,60 +283,6 @@ export default function OrdersPage() {
                                                 }
 
                                                 // 第一页
-                                                if (startPage > 1) {
-                                                    pages.push(
-                                                        <button
-                                                            key={1}
-                                                            onClick={() => goToPage(1)}
-                                                            className="px-3 py-2 text-sm font-medium rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-500"
-                                                        >
-                                                            1
-                                                        </button>
-                                                    );
-                                                    if (startPage > 2) {
-                                                        pages.push(
-                                                            <span key="start-ellipsis"
-                                                                  className="px-2 text-gray-500">...</span>
-                                                        );
-                                                    }
-                                                }
-
-                                                // 中间页码
-                                                for (let i = startPage; i <= endPage; i++) {
-                                                    pages.push(
-                                                        <button
-                                                            key={i}
-                                                            onClick={() => goToPage(i)}
-                                                            className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-                                                                currentPage === i
-                                                                    ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-md'
-                                                                    : 'text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-500'
-                                                            }`}
-                                                        >
-                                                            {i}
-                                                        </button>
-                                                    );
-                                                }
-
-                                                // 最后一页
-                                                if (endPage < totalPages) {
-                                                    if (endPage < totalPages - 1) {
-                                                        pages.push(
-                                                            <span key="end-ellipsis"
-                                                                  className="px-2 text-gray-500">...</span>
-                                                        );
-                                                    }
-                                                    pages.push(
-                                                        <button
-                                                            key={totalPages}
-                                                            onClick={() => goToPage(totalPages)}
-                                                            className="px-3 py-2 text-sm font-medium rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-500"
-                                                        >
-                                                            {totalPages}
-                                                        </button>
-                                                    );
-                                                }
-
                                                 return pages;
                                             })()}
                                         </div>
@@ -344,7 +290,7 @@ export default function OrdersPage() {
                                         <button
                                             onClick={goToNext}
                                             disabled={currentPage === totalPages}
-                                            className="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-500"
+                                            className="px-3 py-1 text-xs sm:text-sm font-medium rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-500"
                                         >
                                             下一页
                                         </button>
