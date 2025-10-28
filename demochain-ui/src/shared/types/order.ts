@@ -28,24 +28,33 @@ export interface Order {
     address: string;
 }
 
-export interface OrderVO {
+export interface OrderDetail {
     id: string;
-    user_id: string;
-    plan: string;
+    planType: string;
     amount: number;
     currency: string; // USDT
     network: string;
-    state: OrderState; // 使用已定义的 OrderState 类型
-    qr_code: string;
-    deep_link: string;
-    payment_address: string;
-    payment_amount: number;
+    state: string; // created | paid | confirmed | expired | cancelled
+    address: string;
+    senderAddress?: string | null;
+    tx?: string | null;
     created: string; // ISO date string
-    expires: string; // ISO date string
-    tx_hash?: string | null; // 可选字段
-    paid?: string | null; // ISO date string
-    confirmations?: number | null;
-    confirmed?: string | null; // ISO date string
+    updated: string; // ISO date string
+}
+
+export interface OrderVO {
+    id: string;
+    user_id: string;
+    plan_type: string;
+    amount: number;
+    currency: string; // USDT
+    network: string;
+    state: string; // created | paid | confirmed | expired | cancelled
+    address: string;
+    sender_address?: string | null;
+    tx?: string | null;
+    created: string; // ISO date string
+    updated: string; // ISO date string
 }
 
 

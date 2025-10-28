@@ -4,7 +4,7 @@ interface OrderStatusBadgeProps {
     status: string;
 }
 
-export default function OrderStatusBadge({ status }: OrderStatusBadgeProps) {
+export default function OrderTag({status}: OrderStatusBadgeProps) {
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'completed':
@@ -23,7 +23,7 @@ export default function OrderStatusBadge({ status }: OrderStatusBadgeProps) {
         }
     };
 
-    const getStatusText = (status: string) => {
+    const getStateText = (status: string) => {
         switch (status) {
             case 'created':
                 return '已创建';
@@ -47,7 +47,7 @@ export default function OrderStatusBadge({ status }: OrderStatusBadgeProps) {
     return (
         <span
             className={`inline-flex px-3 py-1 text-xs font-medium rounded-full ${getStatusColor(status)}`}>
-            {getStatusText(status)}
+            {getStateText(status)}
         </span>
     );
 }

@@ -15,7 +15,7 @@ pub struct PageOrderDTO {
 
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct Order {
+pub struct OrderVO {
     pub id: String,
     pub user_id: String,
     pub plan_type: String,

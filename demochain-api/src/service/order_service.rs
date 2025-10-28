@@ -1,4 +1,4 @@
-use crate::models::order::{Order, OrderDTO, PageResult};
+use crate::models::order::{OrderVO, OrderDTO, PageResult};
 use crate::utils::jwt_util;
 use anyhow::Context;
 use chrono::{NaiveDateTime, Utc};
@@ -16,7 +16,7 @@ pub async fn page(
     pool: &SqlitePool,
     page: i64,
     size: i64,
-) -> anyhow::Result<PageResult<Order>> {
+) -> anyhow::Result<PageResult<OrderVO>> {
     let limit = if size <= 0 { 10 } else { size };
     let page = if page <= 0 { 1 } else { page };
     let offset = (page - 1) * limit;
@@ -65,7 +65,7 @@ pub async fn page(
 
     let mut out = Vec::with_capacity(rows.len());
     for r in rows {
-        let order = Order {
+        let order = OrderVO {
             id: r.id.to_string(),
             user_id: r.user_id,
             plan_type: r.plan_type,

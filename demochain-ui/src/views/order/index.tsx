@@ -1,35 +1,35 @@
 import React, {useState, useEffect} from 'react';
 import Head from 'next/head';
-import {pageOrderPaged} from '@/src/shared/api/order';
+import {pageOrderAPI} from '@/src/shared/api/order';
 import OrderTable from './components/order-table';
 import Empty from './components/empty';
 import Loading from './components/loading'
 
 export default function OrdersPage() {
-    const [orders, setOrders] = useState<any[] | null>(null);
+    const [orderDetails, setOrderDetails] = useState<any[] | null>(null);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize] = useState(10);
     const [totalCount, setTotalCount] = useState(0);
     const MIN_LOADING_MS = 300; // 最少loading时长，避免闪烁
 
-    const isInitial = orders === null;
+    const isInitial = orderDetails === null;
 
     useEffect(() => {
         const loadOrders = async () => {
             const start = Date.now();
             try {
-                const {items, total, page, size} = await pageOrderPaged(currentPage, pageSize);
+                const {items, total, page, size} = await pageOrderAPI(currentPage, pageSize);
                 // 将后端项映射为表格需要的最小字段，兼容旧结构
                 const mapped = (items || []).map((o: any) => ({
                     id: o.id,
-                    plan: o.plan || o.plan_type,
+                    plan: o.plan_type,
                     amount: o.amount,
                     network: o.network,
                     state: o.state,
-                    created: o.created || o.createdAt,
+                    created: o.created,
                 }));
-                setOrders(mapped);
+                setOrderDetails(mapped);
                 setTotalCount(typeof total === 'number' ? total : 0);
             } catch (error) {
                 console.error('Failed to load orders:', error);
@@ -67,8 +67,8 @@ export default function OrdersPage() {
 
                     {isInitial || loading ? (
                         <Loading/>
-                    ) : (orders && orders.length > 0) ? (
-                        <OrderTable orders={orders} currentPage={currentPage} totalPages={totalPages}
+                    ) : (orderDetails && orderDetails.length > 0) ? (
+                        <OrderTable orderDetails={orderDetails} currentPage={currentPage} totalPages={totalPages}
                                     totalCount={totalCount} onPageChange={handlePageChange}
                         />
                     ) : (
