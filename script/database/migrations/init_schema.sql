@@ -1,17 +1,18 @@
 -- 创建用户表
-CREATE TABLE IF NOT EXISTS user (
-    id TEXT PRIMARY KEY NOT NULL,
-    email TEXT UNIQUE NOT NULL,
-    username TEXT,
-    password TEXT NOT NULL,
-    created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE IF NOT EXISTS t_user (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,             -- 自增主键
+    email TEXT UNIQUE NOT NULL,                       -- 邮箱唯一
+    username TEXT,                                    -- 可选用户名
+    password TEXT NOT NULL,                           -- 密码哈希
+    created DATETIME NOT NULL DEFAULT (datetime('now')),  -- 创建时间
+    updated DATETIME NOT NULL DEFAULT (datetime('now'))   -- 更新时间
 );
+
 
 CREATE TABLE t_order (
     id TEXT PRIMARY KEY,
     user_id TEXT NOT NULL,
-    plan TEXT NOT NULL,
+    plan TEXT NOT NULL,t_ss
     amount REAL NOT NULL,
     currency TEXT NOT NULL,           -- e.g. "USDT"
     network TEXT NOT NULL,

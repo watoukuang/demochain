@@ -12,8 +12,7 @@ impl PasswordService {
 
     /// 验证密码
     pub fn verify_password(password: &str, hash: &str) -> Result<bool> {
-        verify(password, hash)
-            .map_err(|e| anyhow!("Failed to verify password: {}", e))
+        verify(password, hash).map_err(|e| anyhow!("Failed to verify password: {}", e))
     }
 
     /// 验证密码强度
@@ -25,10 +24,6 @@ impl PasswordService {
         if password.len() > 128 {
             return Err(anyhow!("密码长度不能超过128位"));
         }
-
-        // 可以添加更多密码强度检查
-        // 例如：必须包含数字、字母、特殊字符等
-
         Ok(())
     }
 }

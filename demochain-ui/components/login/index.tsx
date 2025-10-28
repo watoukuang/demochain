@@ -90,10 +90,9 @@ export default function LoginModal({open, onClose, onSuccess}: LoginModalProps) 
     };
 
     const handleSignup = async (email: string, password: string) => {
-        const req: RegisterRequest = {email, password};
-        const res = await register(req);
-        onSuccess?.(res.user);
-        toast.success('!注册成功');
+        const payload: RegisterRequest = {email, password};
+        await register(payload);
+        toast.success('注册成功');
         setMode('login');
         setFormState(prev => ({
             email: prev.email,

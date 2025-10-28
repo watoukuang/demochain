@@ -1,4 +1,5 @@
 import request from '../utils/request';
+import {R} from "@/types/response";
 
 // 请求参数类型
 export interface LoginRequest {
@@ -52,19 +53,12 @@ export async function login(payload: LoginRequest): Promise<AuthResponse> {
 }
 
 // 注册
-export async function register(payload: RegisterRequest): Promise<AuthResponse> {
-    const resp = await request.post<AuthResponse>('/api/auth/register', payload);
+export async function register(payload: RegisterRequest): Promise<R<null>> {
+    const resp = await request.post<null>('/api/auth/register', payload);
     if (!resp.success) {
         throw new Error(resp.message || '注册失败');
     }
-    const data = resp.data;
-    if (!data) throw new Error('注册响应数据为空');
-    if (data.token && typeof window !== 'undefined') {
-        localStorage.setItem('auth_token', data.token);
-        localStorage.setItem('user_info', JSON.stringify(data.user));
-        window.dispatchEvent(new Event('authChanged'));
-    }
-    return data;
+    return resp;
 }
 
 // 登出

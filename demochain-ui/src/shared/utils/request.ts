@@ -1,11 +1,6 @@
-export interface Response<T = any> {
-    success: boolean;
-    data: T | null;
-    message?: string | null;
-    code?: number | null;
-}
+import {R} from '@/types/response';
 
-export interface RequestConfig {
+interface RequestConfig {
     headers?: Record<string, string>;
     timeout?: number;
     skipErrorHandler?: boolean;
@@ -14,7 +9,7 @@ export interface RequestConfig {
 class RequestService {
     private baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://demochain.org:8085';
 
-    private async request<T>(url: string, options: RequestInit & RequestConfig = {}): Promise<Response<T>> {
+    private async request<T>(url: string, options: RequestInit & RequestConfig = {}): Promise<R<T>> {
         const {headers = {}, timeout = 10000, skipErrorHandler, ...fetchOptions} = options;
 
         // 构建请求头
@@ -42,7 +37,7 @@ class RequestService {
             });
 
             // 后端统一返回 { success, data, message, code }
-            let parsed: Response<T> | null = null;
+            let parsed: R<T> | null = null;
             try {
                 parsed = await response.json();
             } catch {
@@ -59,14 +54,14 @@ class RequestService {
                         localStorage.removeItem('auth_token');
                         localStorage.removeItem('user_info');
                     }
-                    return { success: false, data: null, message: '登录已过期，请重新登录', code: 401 } as Response<T>;
+                    return { success: false, data: null, message: '登录已过期，请重新登录', code: 401 } as R<T>;
                 }
-                return { success: false, data: null, message: errMsg, code: response.status } as Response<T>;
+                return { success: false, data: null, message: errMsg, code: response.status } as R<T>;
             }
 
             // 直接返回后端统一结构
             if (parsed && typeof parsed === 'object' && 'success' in parsed) {
-                return parsed as Response<T>;
+                return parsed as R<T>;
             }
             // 极端情况（无可解析内容）
             return {success: true, data: null, message: null, code: null};
@@ -79,28 +74,28 @@ class RequestService {
         }
     }
 
-    get<T>(url: string, config?: RequestConfig): Promise<Response<T>> {
+    get<T>(url: string, config?: RequestConfig): Promise<R<T>> {
         const separator = url.includes('?') ? '&' : '?';
         return this.request<T>(`${url}${separator}_t=${Date.now()}`, {method: 'GET', ...config});
     }
 
-    post<T>(url: string, data?: any, config?: RequestConfig): Promise<Response<T>> {
+    post<T>(url: string, data?: any, config?: RequestConfig): Promise<R<T>> {
         return this.request<T>(url, {method: 'POST', body: data ? JSON.stringify(data) : undefined, ...config});
     }
 
-    put<T>(url: string, data?: any, config?: RequestConfig): Promise<Response<T>> {
+    put<T>(url: string, data?: any, config?: RequestConfig): Promise<R<T>> {
         return this.request<T>(url, {method: 'PUT', body: data ? JSON.stringify(data) : undefined, ...config});
     }
 
-    delete<T>(url: string, config?: RequestConfig): Promise<Response<T>> {
+    delete<T>(url: string, config?: RequestConfig): Promise<R<T>> {
         return this.request<T>(url, {method: 'DELETE', ...config});
     }
 
-    patch<T>(url: string, data?: any, config?: RequestConfig): Promise<Response<T>> {
+    patch<T>(url: string, data?: any, config?: RequestConfig): Promise<R<T>> {
         return this.request<T>(url, {method: 'PATCH', body: data ? JSON.stringify(data) : undefined, ...config});
     }
 
-    upload<T>(url: string, formData: FormData, config?: RequestConfig): Promise<Response<T>> {
+    upload<T>(url: string, formData: FormData, config?: RequestConfig): Promise<R<T>> {
         const {headers = {}, ...restConfig} = config || {};
         const uploadHeaders = {...headers};
         delete uploadHeaders['Content-Type'];
