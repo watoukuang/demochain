@@ -23,7 +23,7 @@ export default function OrdersPage() {
                 // 将后端项映射为表格需要的最小字段，兼容旧结构
                 const mapped = (items || []).map((o: any) => ({
                     id: o.id,
-                    plan: o.plan_type,
+                    planType: o.plan_type,
                     amount: o.amount,
                     network: o.network,
                     state: o.state,

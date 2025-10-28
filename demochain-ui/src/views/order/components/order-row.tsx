@@ -7,8 +7,8 @@ interface OrderRowProps {
 }
 
 export default function OrderRow({orderDetail}: OrderRowProps) {
-    const getPlanText = (plan: string) => {
-        switch (plan) {
+    const getPlanText = (planType: string) => {
+        switch (planType) {
             case 'monthly':
                 return '月度会员';
             case 'yearly':
@@ -16,7 +16,7 @@ export default function OrderRow({orderDetail}: OrderRowProps) {
             case 'lifetime':
                 return '终身会员';
             default:
-                return plan;
+                return planType;
         }
     };
 
