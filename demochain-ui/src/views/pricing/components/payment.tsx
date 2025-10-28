@@ -149,7 +149,7 @@ export default function Payment({isOpen, onClose, plan, onSuccess}: PaymentProps
                         }
                     }
                 } catch (err) {
-                    console.error('Failed to check order status:', err);
+                    console.error('Failed to check components status:', err);
                 }
             }, 15000); // 15 秒兜底
             return () => clearInterval(pollInterval);
