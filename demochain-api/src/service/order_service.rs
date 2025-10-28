@@ -1,6 +1,5 @@
-use serde_json::json;
-use anyhow::Context;
 use crate::models::order::{CreateOrderDTO, Order};
+use anyhow::Context;
 use chrono::{DateTime, Duration, Utc};
 use sqlx::SqlitePool;
 use uuid::Uuid;
@@ -12,15 +11,16 @@ fn price_for_plan(plan: &str) -> Option<f64> {
         "lifetime" => Some(15.0),
         _ => None,
     }
-
-pub async fn list_my_orders(
+}
+pub async fn page_orders(
     pool: &SqlitePool,
     user_id: &str,
     page: i64,
     size: i64,
 ) -> anyhow::Result<Vec<Order>> {
     let limit = if size <= 0 { 10 } else { size };
-    let offset = ((if page <= 1 { 1 } else { page }) - 1) * limit;
+    let page = if page <= 0 { 1 } else { page };
+    let offset = (page - 1) * limit;
 
     let rows = sqlx::query!(
         r#"
@@ -50,12 +50,21 @@ pub async fn list_my_orders(
         limit,
         offset
     )
-    .fetch_all(pool)
-    .await
-    .with_context(|| "查询订单失败")?;
+        .fetch_all(pool)
+        .await
+        .with_context(|| "查询订单失败")?;
 
     let mut out = Vec::with_capacity(rows.len());
     for r in rows {
+        let paid_dt = r
+            .paid
+            .as_ref()
+            .and_then(|s| DateTime::parse_from_rfc3339(s).ok().map(|dt| dt.with_timezone(&Utc)));
+        let confirmed_dt = r
+            .confirmed
+            .as_ref()
+            .and_then(|s| DateTime::parse_from_rfc3339(s).ok().map(|dt| dt.with_timezone(&Utc)));
+
         let order = Order {
             id: r.id,
             user_id: r.user_id,
@@ -64,9 +73,9 @@ pub async fn list_my_orders(
             currency: r.currency,
             network: r.network,
             state: r.state,
-            qr_code: r.qr_code,
-            deep_link: r.deep_link,
-            payment_address: r.payment_address,
+            qr_code: r.qr_code.unwrap_or_default(),
+            deep_link: r.deep_link.unwrap_or_default(),
+            payment_address: r.payment_address.unwrap_or_default(),
             payment_amount: r.payment_amount,
             created: DateTime::parse_from_rfc3339(&r.created)
                 .ok()
@@ -77,74 +86,14 @@ pub async fn list_my_orders(
                 .map(|dt| dt.with_timezone(&Utc))
                 .unwrap_or_else(|| Utc::now() + Duration::minutes(30)),
             tx_hash: r.tx_hash,
-            paid: r.paid,
+            paid: paid_dt,
             confirmations: r.confirmations.map(|v| v as u32),
-            confirmed: r.confirmed,
+            confirmed: confirmed_dt,
         };
         out.push(order);
     }
 
     Ok(out)
-}
-pub async fn get_order(pool: &SqlitePool, id: &str) -> anyhow::Result<Option<Order>> {
-    let rec = sqlx::query!(
-        r#"
-        SELECT id,
-               user_id,
-               plan,
-               amount,
-               currency,
-               network,
-               state,
-               qr_code,
-               deep_link,
-               payment_address,
-               payment_amount,
-               created,
-               expires,
-               tx_hash,
-               paid,
-               confirmations,
-               confirmed
-        FROM t_order WHERE id = ?1
-        "#,
-        id
-    )
-    .fetch_optional(pool)
-    .await
-    .with_context(|| "查询订单失败")?;
-
-    if let Some(r) = rec {
-        let order = Order {
-            id: r.id,
-            user_id: r.user_id,
-            plan: r.plan,
-            amount: r.amount,
-            currency: r.currency,
-            network: r.network,
-            state: r.state,
-            qr_code: r.qr_code,
-            deep_link: r.deep_link,
-            payment_address: r.payment_address,
-            payment_amount: r.payment_amount,
-            created: DateTime::parse_from_rfc3339(&r.created)
-                .ok()
-                .map(|dt| dt.with_timezone(&Utc))
-                .unwrap_or_else(Utc::now),
-            expires: DateTime::parse_from_rfc3339(&r.expires)
-                .ok()
-                .map(|dt| dt.with_timezone(&Utc))
-                .unwrap_or_else(|| Utc::now() + Duration::minutes(30)),
-            tx_hash: r.tx_hash,
-            paid: r.paid,
-            confirmations: r.confirmations.map(|v| v as u32),
-            confirmed: r.confirmed,
-        };
-        Ok(Some(order))
-    } else {
-        Ok(None)
-    }
-}
 }
 
 fn address_for_method(method: &str) -> Option<&'static str> {
@@ -208,28 +157,28 @@ pub async fn create(
 
     // 插入订单到数据库
     sqlx::query!(
-        r#"
-        INSERT INTO t_order (
-            id, user_id, plan, amount, currency, network, state,
-            qr_code, deep_link, payment_address, payment_amount,
-            created, expires
+            r#"
+            INSERT INTO t_order (
+                id, user_id, plan, amount, currency, network, state,
+                qr_code, deep_link, payment_address, payment_amount,
+                created, expires
+            )
+            VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13)
+            "#,
+            id,
+            user_id,
+            payload.plan,
+            amount,
+            "USDT",
+            payload.network,
+            "created",
+            qr_code,
+            deep_link,
+            addr,
+            amount,
+            created,
+            expires
         )
-        VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13)
-        "#,
-        id,
-        user_id,
-        payload.plan,
-        amount,
-        "USDT",
-        payload.network,
-        "created",
-        qr_code,
-        deep_link,
-        addr,
-        amount,
-        created,
-        expires
-    )
         .execute(pool)
         .await
         .with_context(|| "插入订单失败")?;
@@ -257,3 +206,5 @@ pub async fn create(
 
     Ok(order)
 }
+
+// 注意：上面提供了 list_my_orders 作为分页查询，请通过 handlers 调用
