@@ -6,6 +6,7 @@ import {
     VerifyPaymentResponse
 } from '../types/order';
 import request from '../utils/request';
+import {R} from "@/types/response";
 
 // 生成订单 ID
 const generateOrderId = () => `ORDER_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -127,9 +128,12 @@ export async function checkOrderStatus(orderId: string): Promise<PaymentOrder | 
 }
 
 // 获取用户订单历史
-export async function getUserOrders(userId: string): Promise<PaymentOrder[]> {
-    // TODO: implement backend endpoint for listing orders by user
-    return [];
+export async function pageOrder(page: number = 1, size: number = 10): Promise<PaymentOrder[]> {
+    const resp = await request.get<PaymentOrder[]>(`/api/order/page?page=${page}&size=${size}`);
+    if (!resp.success) {
+        throw new Error(resp.message || '获取订单失败');
+    }
+    return resp.data ? resp.data : [];
 }
 
 // 取消订单
