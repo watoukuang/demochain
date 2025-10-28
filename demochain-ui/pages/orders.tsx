@@ -103,18 +103,8 @@ export default function OrdersPage() {
                 <meta name="description" content="查看您的订阅订单历史和支付记录"/>
             </Head>
 
-            <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    {/* 页面标题 */}
-                    <div className="mb-8">
-                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                            订单管理
-                        </h1>
-                        <p className="text-gray-600 dark:text-gray-400">
-                            查看您的订阅订单历史和支付记录
-                        </p>
-                    </div>
-
+            <div className="min-h-screen">
+                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 min-h-[80vh]">
                     {loading ? (
                         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-8">
                             <div className="animate-pulse space-y-4">
@@ -129,7 +119,8 @@ export default function OrdersPage() {
                             </div>
                         </div>
                     ) : orders.length === 0 ? (
-                        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-12 text-center">
+                        <div
+                            className="text-center">
                             <div className="text-gray-400 dark:text-gray-500 mb-4">
                                 <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor"
                                      viewBox="0 0 24 24">
@@ -145,7 +136,7 @@ export default function OrdersPage() {
                             </p>
                             <a
                                 href="/pricing"
-                                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                className="inline-flex items-center px-4 py-2 rounded-lg transition-colors bg-orange-600 text-white hover:bg-orange-700 dark:bg-orange-500 dark:hover:bg-orange-400"
                             >
                                 查看订阅计划
                             </a>
