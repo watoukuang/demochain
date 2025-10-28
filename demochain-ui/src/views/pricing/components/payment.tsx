@@ -257,7 +257,7 @@ export default function Payment({isOpen, onClose, plan, onSuccess}: PaymentProps
                         <div className="mt-3 flex items-center justify-between gap-3">
                             <button
                                 onClick={handleManualVerify}
-                                className="inline-flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+                                className="inline-flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium bg-orange-600 text-white hover:bg-orange-700 disabled:opacity-50"
                             >
                                 已支付，立即验证
                             </button>
