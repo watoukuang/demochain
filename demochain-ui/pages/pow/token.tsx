@@ -1,1 +1,1 @@
-export {default} from '../../src/views/Token'
+export {default} from '../../src/views/token'

@@ -1,77 +1,61 @@
-import React, {useEffect, useState} from 'react';
-import {CreateOrderPayload, Network, PaymentOrder} from '@/src/shared/types/order';
-import {SubscriptionPlan} from '@/src/shared/types/subscription';
-import {createOrderAPI} from '@/src/shared/api/order';
+import React, {useState} from 'react';
+import {Network, Order, OrderDTO} from '@/src/shared/types/order';
+import {addOrderAPI} from '@/src/shared/api/order';
 import {useToast} from '@/components/toast';
 import StepHeader from './step-header';
 import SelectStep from './select-step';
 import PaymentStep from './payment-step';
-
-const PLAN_META = {
-    monthly: {name: '月度会员', price: 3, period: '每月'},
-    yearly: {name: '年度会员', price: 10, period: '每年'},
-    lifetime: {name: '终身会员', price: 15, period: '一次性'}
-} as const;
+import {Plan, PlanType} from "@/src/shared/types/plan";
 
 interface PaymentProps {
     isOpen: boolean;
     onClose: () => void;
-    plan: SubscriptionPlan;
+    planType: PlanType;
 }
 
-export default function PaymentModel({isOpen, onClose, plan: planType}: PaymentProps) {
+const PLAN_META: Record<Exclude<PlanType, 'free'>, Plan> = {
+    monthly: {name: '月度会员', price: 3, period: '每月'},
+    yearly: {name: '年度会员', price: 10, period: '每年'},
+    lifetime: {name: '终身会员', price: 15, period: '一次性'},
+};
+
+export default function PaymentModel({isOpen, onClose, planType}: PaymentProps) {
     const {success, error} = useToast();
     const [step, setStep] = useState<'select' | 'payment'>('select');
     const [selectedNetwork, setSelectedNetwork] = useState<Network>('usdt_trc20');
-    const [paymentOrder, setPaymentOrder] = useState<PaymentOrder | null>(null);
+    const [order, setOrder] = useState<Order | null>(null);
     const [qrCode, setQrCode] = useState<string>('');
     const [deepLink, setDeepLink] = useState<string>('');
     const [loading, setLoading] = useState(false);
     const [timeLeft, setTimeLeft] = useState(0);
 
-    // 获取计划信息
-    const plan = planType !== 'free' ? PLAN_META[planType] : null;
-
-    // 倒计时
-    useEffect(() => {
-        if (paymentOrder && step === 'payment') {
-            const expiresAt = new Date(paymentOrder.expiresAt).getTime();
-            const timer = setInterval(() => {
-                const now = Date.now();
-                const remaining = Math.max(0, Math.floor((expiresAt - now) / 1000));
-                setTimeLeft(remaining);
-                if (remaining === 0) {
-                    clearInterval(timer);
-                    error('订单已过期，请重新创建');
-                    handleClose();
-                }
-            }, 1000);
-            return () => clearInterval(timer);
-        }
-    }, [paymentOrder, step, error]);
-
     const handleClose = () => {
         setStep('select');
-        setPaymentOrder(null);
+        // setPaymentOrder(null);
         setQrCode('');
         setDeepLink('');
         setTimeLeft(0);
         onClose();
     };
 
-    const handleCreateOrder = async () => {
-        if (!plan) return;
+    const plan = planType !== 'free' ? PLAN_META[planType] : null;
+
+    const handleAdd = async () => {
+        if (!planType) return;
+        debugger
         setLoading(true);
+        if (planType === 'free') throw new Error('免费计划无需支付');
         try {
-            const payload: CreateOrderPayload = {
-                plan: planType,
+            let payload: OrderDTO = {
+                planType: planType,
                 network: selectedNetwork
-            };
-            const response = await createOrderAPI(payload);
-            setPaymentOrder(response.order);
-            setQrCode(response.qrCode);
-            setDeepLink(response.deepLink);
-            setStep('payment');
+            }
+            const response = await addOrderAPI(payload);
+
+            // setPaymentOrder(response.order);
+            // setQrCode(response.qrCode);
+            // setDeepLink(response.deepLink);
+            // setStep('payment');
             success('订单创建成功，请完成支付');
         } catch (err: any) {
             error(err.message || '创建订单失败');
@@ -87,22 +71,22 @@ export default function PaymentModel({isOpen, onClose, plan: planType}: PaymentP
 
     // 手动验证：用户点击"已支付，立即查看"时跳转到订单页面
     const handleManualVerify = async () => {
-        if (!paymentOrder) return;
+        if (!order) return;
 
         // 1) 本地记录挂起订单，便于用户在订单中心查看
-        try {
-            const snapshot = {
-                id: paymentOrder.id,
-                network: paymentOrder.paymentMethod,
-                expiresAt: paymentOrder.expiresAt,
-                plan: paymentOrder.plan,
-                amount: paymentOrder.paymentAmount
-            };
-            if (typeof window !== 'undefined') {
-                localStorage.setItem('pending_order', JSON.stringify(snapshot));
-            }
-        } catch {
-        }
+        // try {
+        //     const snapshot = {
+        //         id: order.id,
+        //         network: paymentOrder.paymentMethod,
+        //         expiresAt: paymentOrder.expiresAt,
+        //         plan: paymentOrder.plan,
+        //         amount: paymentOrder.paymentAmount
+        //     };
+        //     if (typeof window !== 'undefined') {
+        //         localStorage.setItem('pending_order', JSON.stringify(snapshot));
+        //     }
+        // } catch {
+        // }
 
         // 2) 关闭弹窗
         onClose();
@@ -132,22 +116,13 @@ export default function PaymentModel({isOpen, onClose, plan: planType}: PaymentP
                 {/* 内容 */}
                 <div className="p-4">
                     {step === 'select' && (
-                        <SelectStep
-                            plan={plan}
-                            selectedNetwork={selectedNetwork}
-                            setSelectedNetwork={setSelectedNetwork}
-                            onCreate={handleCreateOrder}
-                            loading={loading}
-                        />
+                        <SelectStep plan={plan} selectedNetwork={selectedNetwork}
+                                    setSelectedNetwork={setSelectedNetwork} onCreate={handleAdd} loading={loading}/>
                     )}
 
-                    {step === 'payment' && paymentOrder && (
-                        <PaymentStep
-                            paymentOrder={paymentOrder}
-                            timeLeft={timeLeft}
-                            qrCode={qrCode}
-                            copyToClipboard={copyToClipboard}
-                            handleManualVerify={handleManualVerify}
+                    {step === 'payment' && order && (
+                        <PaymentStep order={order} timeLeft={timeLeft} qrCode={qrCode}
+                                     copyToClipboard={copyToClipboard} handleManualVerify={handleManualVerify}
                         />
                     )}
                 </div>

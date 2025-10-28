@@ -1,4 +1,4 @@
-import { UserSubscription, UsageStats, SubscriptionPlan } from '../types/subscription';
+import { UserSubscription, UsageStats, Plan } from '../types/subscription';
 
 // 模拟 API 延迟
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -45,7 +45,7 @@ export async function getUserUsageStats(userId: string): Promise<UsageStats | nu
 // 创建订阅
 export async function createSubscription(data: {
   userId: string;
-  plan: SubscriptionPlan;
+  plan: Plan;
   paymentMethod: string;
 }): Promise<UserSubscription> {
   await delay(500);
@@ -142,7 +142,7 @@ export async function getSubscriptionHistory(userId: string): Promise<UserSubscr
 // 验证支付并激活订阅
 export async function verifyPaymentAndActivate(data: {
   userId: string;
-  plan: SubscriptionPlan;
+  plan: Plan;
   paymentId: string;
 }): Promise<UserSubscription> {
   await delay(1000); // 模拟支付验证时间

@@ -1,12 +1,12 @@
 import {
     CreateOrderPayload,
-    CreatePaymentResponse,
+    CreatePaymentResponse, OrderDTO,
     PaymentOrder,
     VerifyPaymentRequest,
     VerifyPaymentResponse
 } from '../types/order';
 import request from '../utils/request';
-import {R} from "@/types/response";
+import {R} from "@/src/shared/types/response";
 
 // 生成订单 ID
 const generateOrderId = () => `ORDER_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -43,17 +43,9 @@ const generateDeepLink = (address: string, amount: number, method: string) => {
 };
 
 // 创建支付订单（后端）
-export async function createOrderAPI(payload: CreateOrderPayload): Promise<CreatePaymentResponse> {
-    // 免费计划不需要支付
-    if (payload.plan === 'free') {
-        throw new Error('免费计划无需支付');
-    }
-    // 转换前端 payload 为后端期望的格式
-    const backendPayload = {
-        plan: payload.plan,
-        network: payload.network
-    };
-    const res = await request.post<any>('/api/order/create', backendPayload);
+export async function addOrderAPI(payload: OrderDTO): Promise<any> {
+
+    const res = await request.post<any>('/api/order/add', payload);
     if (!res.success || !res.data) throw new Error(res.message || '创建订单失败');
     // 新后端直接返回 Order（包含 qr_code、deep_link）
     const o: any = res.data;

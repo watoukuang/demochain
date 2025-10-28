@@ -1,1 +1,1 @@
-export {default} from '../../src/views/Block'
+export {default} from '../../src/views/block'

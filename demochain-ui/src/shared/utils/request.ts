@@ -1,4 +1,4 @@
-import {R} from '@/types/response';
+import {R} from '@/src/shared/types/response';
 
 interface RequestConfig {
     headers?: Record<string, string>;

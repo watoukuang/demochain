@@ -24,7 +24,7 @@ export default function BlockchainPage(): React.ReactElement {
         {
             height: 1,
             nonce: 72608,
-            data: 'Genesis Block',
+            data: 'Genesis block',
             previous: genesisHash,
             timestamp: 1640995200000, // 固定时间戳避免水合错误
             hash: '0000f727854b50bb95c054b39c1fe5c92e5ebcfa4bcb5dc279f56aa96a365e5a'
@@ -74,7 +74,7 @@ export default function BlockchainPage(): React.ReactElement {
         setBlocks([{
             height: 1,
             nonce: 72608,
-            data: 'Genesis Block',
+            data: 'Genesis block',
             previous: genesisHash,
             timestamp: Date.now(),
             hash: '0000f727854b50bb95c054b39c1fe5c92e5ebcfa4bcb5dc279f56aa96a365e5a'

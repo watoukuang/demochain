@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
 import Link from 'next/link';
 import PaymentModel from './components/payment-model';
-import {SubscriptionPlan} from '@/src/shared/types/subscription';
 import {useToast} from '@/components/toast';
+import {PlanType} from "@/src/shared/types/plan";
 
 const combos = [
     {
@@ -92,9 +92,9 @@ const faqs = [
 
 export default function Pricing(): React.ReactElement {
     const {success} = useToast();
-    const [payment, setPayment] = useState<{ isOpen: boolean; plan: SubscriptionPlan | null; }>({
+    const [payment, setPayment] = useState<{ isOpen: boolean; planType: PlanType | null; }>({
         isOpen: false,
-        plan: null
+        planType: null
     });
 
 
@@ -103,14 +103,14 @@ export default function Pricing(): React.ReactElement {
             success('您已在使用免费版！');
             return;
         }
-        const planMapping: Record<string, SubscriptionPlan> = {
+        const planMapping: Record<string, PlanType> = {
             '月度会员': 'monthly',
             '年度会员': 'yearly',
             '终身会员': 'lifetime'
         };
-        const plan = planMapping[comboType];
-        if (!plan) return;
-        setPayment({isOpen: true, plan});
+        const planType = planMapping[comboType];
+        if (!planType) return;
+        setPayment({isOpen: true, planType});
     };
 
     return (
@@ -278,9 +278,9 @@ export default function Pricing(): React.ReactElement {
                       className="inline-flex items-center rounded-xl border px-4 py-2 hover:bg-gray-50 dark:border-[#2a2c31] dark:hover:bg-[#1a1d24]">联系我们</Link>
             </section>
 
-            {payment.plan && (
-                <PaymentModel isOpen={payment.isOpen} plan={payment.plan}
-                              onClose={() => setPayment({isOpen: false, plan: null})}/>
+            {payment.planType && (
+                <PaymentModel isOpen={payment.isOpen} planType={payment.planType as PlanType}
+                              onClose={() => setPayment({isOpen: false, planType: null})}/>
             )}
         </div>
     );

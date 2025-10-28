@@ -1,5 +1,5 @@
 import request from '../utils/request';
-import {R} from "@/types/response";
+import {R} from "@/src/shared/types/response";
 
 // 请求参数类型
 export interface LoginRequest {

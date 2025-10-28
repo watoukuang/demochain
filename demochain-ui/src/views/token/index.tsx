@@ -151,7 +151,7 @@ export default function TokenPage(): React.ReactElement {
                 timestamp: ts,
                 hash: foundHash,
                 award: '0',
-                miner: 'Token Miner',
+                miner: 'token Miner',
                 txs: txs.length ? txs : undefined,
             }
 

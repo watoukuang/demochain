@@ -1,5 +1,4 @@
-// 订阅计划类型
-export type SubscriptionPlan = 'free' | 'monthly' | 'yearly' | 'lifetime';
+
 
 // 权限类型
 export type Permission =
@@ -26,7 +25,7 @@ export interface FeatureModule {
 
 // 订阅计划配置
 export interface SubscriptionConfig {
-    plan: SubscriptionPlan;
+    plan: Plan;
     name: string;
     price: number;
     period: 'forever' | 'month' | 'year' | 'lifetime';
@@ -43,7 +42,7 @@ export interface SubscriptionConfig {
 export interface UserSubscription {
     id: string;
     userId: string;
-    plan: SubscriptionPlan;
+    plan: Plan;
     status: 'active' | 'expired' | 'cancelled' | 'pending';
     startDate: string;
     endDate?: string; // lifetime 计划为 null
@@ -57,7 +56,7 @@ export interface UserSubscription {
 export interface PermissionCheckResult {
     hasPermission: boolean;
     reason?: string;
-    upgradeRequired?: SubscriptionPlan[];
+    upgradeRequired?: Plan[];
     trialAvailable?: boolean;
 }
 
