@@ -1,5 +1,5 @@
 use crate::app::AppState;
-use crate::models::order::{Order, OrderDTO, PageOrderDTO};
+use crate::models::order::{Order, OrderDTO, PageOrderDTO, PageResult};
 use crate::models::r::Response;
 use crate::service::order_service;
 use axum::extract::{Extension, Query, State};
@@ -26,13 +26,12 @@ pub async fn add(
 }
 pub async fn page(
     State(state): State<AppState>,
-    Extension(user_id): Extension<String>,
     Query(p): Query<PageOrderDTO>,
-) -> Json<Response<Vec<Order>>> {
+) -> Json<Response<PageResult<Order>>> {
     let page = p.page.unwrap_or(1);
     let size = p.size.unwrap_or(10);
     match order_service::page(&state.db, page, size).await {
-        Ok(list) => Json(Response { success: true, data: Some(list), message: None, code: Some(200) }),
+        Ok(paged) => Json(Response { success: true, data: Some(paged), message: None, code: Some(200) }),
         Err(e) => Json(Response { success: false, data: None, message: Some(e.to_string()), code: Some(500) }),
     }
 }

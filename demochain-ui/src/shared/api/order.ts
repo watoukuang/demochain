@@ -30,10 +30,14 @@ export async function addOrderAPI(payload: OrderDTO): Promise<R<String>> {
 
 
 // 获取用户订单历史
-export async function pageOrder(page: number = 1, size: number = 10): Promise<OrderVO[]> {
-    const resp = await request.get<OrderVO[]>(`/api/order/page?page=${page}&size=${size}`);
-    if (!resp.success) {
-        throw new Error(resp.message || '获取订单失败');
-    }
-    return resp.data ? resp.data : [];
+export async function pageOrderPaged(page: number = 1, size: number = 10): Promise<{items: OrderVO[]; total: number; page: number; size: number}> {
+    const resp = await request.get<any>(`/api/order/page?page=${page}&size=${size}`);
+    if (!resp.success) throw new Error(resp.message || '获取订单失败');
+    const data = resp.data || {};
+    return {
+        items: Array.isArray(data.items) ? data.items : [],
+        total: typeof data.total === 'number' ? data.total : 0,
+        page: typeof data.page === 'number' ? data.page : page,
+        size: typeof data.size === 'number' ? data.size : size,
+    };
 }

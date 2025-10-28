@@ -7,7 +7,7 @@ interface PaginationProps {
     onPageChange: (page: number) => void;
 }
 
-export default function Pagination({ currentPage, totalPages, totalCount, onPageChange }: PaginationProps) {
+export default function Pagination({currentPage, totalPages, totalCount, onPageChange}: PaginationProps) {
     const goToPrevious = () => {
         if (currentPage > 1) {
             onPageChange(currentPage - 1);
@@ -23,7 +23,8 @@ export default function Pagination({ currentPage, totalPages, totalCount, onPage
     if (totalPages <= 1) return null;
 
     return (
-        <div className="bg-white/60 dark:bg-transparent backdrop-blur px-4 py-2 border-t border-gray-200 dark:border-white/10">
+        <div
+            className="bg-white/60 dark:bg-transparent backdrop-blur px-4 py-2 border-t border-gray-200 dark:border-white/10">
             <div className="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0">
                 <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
                     显示第 {currentPage} 页，共 {totalPages} 页 ({totalCount} 条订单)

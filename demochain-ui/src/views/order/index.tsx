@@ -1,17 +1,13 @@
 import React, {useState, useEffect} from 'react';
 import Head from 'next/head';
-import {PaymentOrder} from '@/src/shared/types/order';
-import {pageOrder} from '@/src/shared/api/order';
-import {useAuth} from '@/src/shared/hooks/useAuth';
+import {pageOrderPaged} from '@/src/shared/api/order';
 import OrderTable from './components/order-table';
 import Empty from './components/empty';
 import Loading from './components/loading'
 
 export default function OrdersPage() {
-    const {user, isAuthenticated} = useAuth();
-    const [orders, setOrders] = useState<PaymentOrder[] | null>(null);
+    const [orders, setOrders] = useState<any[] | null>(null);
     const [loading, setLoading] = useState(true);
-    const [fetched, setFetched] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize] = useState(10);
     const [totalCount, setTotalCount] = useState(0);
@@ -22,19 +18,19 @@ export default function OrdersPage() {
     useEffect(() => {
         const loadOrders = async () => {
             const start = Date.now();
-            if (!isAuthenticated || !user) {
-                const elapsed = Date.now() - start;
-                const delay = Math.max(0, MIN_LOADING_MS - elapsed);
-                setTimeout(() => {
-                    setOrders([]);
-                    setLoading(false);
-                    setFetched(true);
-                }, delay);
-                return;
-            }
             try {
-                const userOrders = await pageOrder(currentPage, pageSize);
-                setOrders(userOrders);
+                const {items, total, page, size} = await pageOrderPaged(currentPage, pageSize);
+                // 将后端项映射为表格需要的最小字段，兼容旧结构
+                const mapped = (items || []).map((o: any) => ({
+                    id: o.id,
+                    plan: o.plan || o.plan_type,
+                    amount: o.amount,
+                    network: o.network,
+                    state: o.state,
+                    created: o.created || o.createdAt,
+                }));
+                setOrders(mapped);
+                setTotalCount(typeof total === 'number' ? total : 0);
             } catch (error) {
                 console.error('Failed to load orders:', error);
             } finally {
@@ -42,13 +38,12 @@ export default function OrdersPage() {
                 const delay = Math.max(0, MIN_LOADING_MS - elapsed);
                 setTimeout(() => {
                     setLoading(false);
-                    setFetched(true);
                 }, delay);
             }
         };
 
         loadOrders();
-    }, [isAuthenticated, user, currentPage, pageSize]);
+    }, [currentPage, pageSize]);
 
     // 分页逻辑 - 使用后端分页
     const totalPages = Math.ceil(totalCount / pageSize);
@@ -57,29 +52,12 @@ export default function OrdersPage() {
         setCurrentPage(page);
     };
 
-    if (!isAuthenticated) {
-        return (
-            <div
-                className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
-                <div className="text-center">
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                        请先登录
-                    </h1>
-                    <p className="text-gray-600 dark:text-gray-400">
-                        您需要登录后才能查看订单历史
-                    </p>
-                </div>
-            </div>
-        );
-    }
-
     return (
         <>
             <Head>
                 <title>订单管理 - DemoChain</title>
                 <meta name="description" content="查看您的订阅订单历史和支付记录"/>
             </Head>
-
             <div className="min-h-screen">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     <div className="mb-8">
@@ -90,12 +68,8 @@ export default function OrdersPage() {
                     {isInitial || loading ? (
                         <Loading/>
                     ) : (orders && orders.length > 0) ? (
-                        <OrderTable
-                            orders={orders}
-                            currentPage={currentPage}
-                            totalPages={totalPages}
-                            totalCount={totalCount}
-                            onPageChange={handlePageChange}
+                        <OrderTable orders={orders} currentPage={currentPage} totalPages={totalPages}
+                                    totalCount={totalCount} onPageChange={handlePageChange}
                         />
                     ) : (
                         <Empty/>

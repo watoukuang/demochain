@@ -1,4 +1,4 @@
-use crate::models::order::{Order, OrderDTO};
+use crate::models::order::{Order, OrderDTO, PageResult};
 use crate::utils::jwt_util;
 use anyhow::Context;
 use chrono::{NaiveDateTime, Utc};
@@ -16,14 +16,25 @@ pub async fn page(
     pool: &SqlitePool,
     page: i64,
     size: i64,
-) -> anyhow::Result<Vec<Order>> {
+) -> anyhow::Result<PageResult<Order>> {
     let limit = if size <= 0 { 10 } else { size };
     let page = if page <= 0 { 1 } else { page };
     let offset = (page - 1) * limit;
     let user_id = match jwt_util::get_user_id() {
         Some(uid) => uid,
-        None => return Ok(Vec::new()),
+        None => return Ok(PageResult { items: vec![], total: 0, page, size: limit }),
     };
+    // 查询总数
+    let total_row = sqlx::query!(
+        r#"
+        SELECT COUNT(1) as "count!: i64" FROM t_order WHERE user_id = ?1
+        "#,
+        user_id
+    )
+        .fetch_one(pool)
+        .await
+        .with_context(|| "查询订单总数失败")?;
+
     let rows = sqlx::query!(
         r#"
         SELECT 
@@ -71,7 +82,7 @@ pub async fn page(
         out.push(order);
     }
 
-    Ok(out)
+    Ok(PageResult { items: out, total: total_row.count, page, size: limit })
 }
 
 pub async fn add(
