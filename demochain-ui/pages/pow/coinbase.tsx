@@ -1,1 +1,1 @@
-export {default} from '../../src/views/CoinBase'
+export {default} from '../../src/views/coin-base'

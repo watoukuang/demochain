@@ -105,7 +105,7 @@ export default function BlockCardFull({ block }: { block: MiniBlock }) {
           </div>
         </div>
 
-        {/* Previous Hash Field */}
+        {/* Previous hash Field */}
         <div className="flex items-start">
           <label className="w-16 text-white text-sm font-medium pt-2">前指针</label>
           <div className="flex-1">
@@ -118,7 +118,7 @@ export default function BlockCardFull({ block }: { block: MiniBlock }) {
           </div>
         </div>
 
-        {/* Hash Field */}
+        {/* hash Field */}
         <div className="flex items-start">
           <label className="w-16 text-white text-sm font-medium pt-2">哈希</label>
           <div className="flex-1">

@@ -57,7 +57,7 @@ export default function BlockCard({ block }: Props) {
           </div>
         </div>
 
-        {/* Previous Hash Field */}
+        {/* Previous hash Field */}
         <div className="flex items-start">
           <label className="w-16 text-sm font-medium pt-2 text-gray-700 dark:text-white">前指针</label>
           <div className="flex-1">
@@ -70,7 +70,7 @@ export default function BlockCard({ block }: Props) {
           </div>
         </div>
 
-        {/* Hash Field */}
+        {/* hash Field */}
         <div className="flex items-start">
           <label className="w-16 text-sm font-medium pt-2 text-gray-700 dark:text-white">哈希</label>
           <div className="flex-1">

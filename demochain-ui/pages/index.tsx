@@ -1,1 +1,1 @@
-export {default} from '../src/views/Hash'
+export {default} from '../src/views/hash'

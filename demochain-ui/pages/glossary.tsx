@@ -1,1 +1,1 @@
-export {default} from '../src/views/Glossary'
+export {default} from '../src/views/glossary'

@@ -1,1 +1,1 @@
-export {default} from '../src/views/NotFound'
+export {default} from '../src/views/not-found'

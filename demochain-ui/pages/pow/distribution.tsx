@@ -1,1 +1,1 @@
-export {default} from '../../src/views/Distribution'
+export {default} from '../../src/views/distribution'
