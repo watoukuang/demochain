@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import Link from 'next/link';
-import Payment from './components/payment';
+import PaymentModel from './components/payment-model';
 import {SubscriptionPlan} from '@/src/shared/types/subscription';
 import {PaymentOrder} from '@/src/shared/types/order';
 import {useToast} from '@/components/toast';
@@ -298,7 +298,7 @@ export default function Pricing(): React.ReactElement {
 
             {/* 支付弹窗 */}
             {payment.plan && (
-                <Payment
+                <PaymentModel
                     isOpen={payment.isOpen}
                     plan={payment.plan}
                     onClose={() => setPayment({isOpen: false, plan: null})}

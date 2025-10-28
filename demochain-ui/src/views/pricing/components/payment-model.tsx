@@ -21,7 +21,7 @@ interface PaymentProps {
     onSuccess?: (order: PaymentOrder) => void;
 }
 
-export default function Payment({isOpen, onClose, plan, onSuccess}: PaymentProps) {
+export default function PaymentModel({isOpen, onClose, plan, onSuccess}: PaymentProps) {
     const {success, error} = useToast();
     const [entered, setEntered] = useState(false);
     const [step, setStep] = useState<'select' | 'payment' | 'confirm'>('select');

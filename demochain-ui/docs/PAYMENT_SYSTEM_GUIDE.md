@@ -105,7 +105,7 @@ function PricingPage() {
 
   const handlePaymentSuccess = (order: PaymentOrder) => {
     // 支付成功处理
-    console.log('Payment successful:', order);
+    console.log('PaymentModel successful:', order);
   };
 
   return (

@@ -59,7 +59,7 @@ export default function PaymentStep({
             <div className="text-center">
                 <div
                     className="inline-block p-3 rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.04]">
-                    <img src={qrCode} alt="Payment QR Code" className="w-40 h-40"/>
+                    <img src={qrCode} alt="PaymentModel QR Code" className="w-40 h-40"/>
                 </div>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">使用钱包扫描二维码支付</p>
             </div>
