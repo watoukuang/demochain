@@ -49,17 +49,19 @@ class RequestService {
                 parsed = null;
             }
 
-            // 错误处理
+            // 错误处理：统一返回结构，而不是直接抛错（401 仍特殊处理）
             if (!response.ok) {
-                const errMsg = (parsed && typeof parsed === 'object' && parsed.message) ? parsed.message! : `请求失败 (${response.status})`;
+                const errMsg = (parsed && typeof parsed === 'object' && (parsed as any).message)
+                    ? (parsed as any).message as string
+                    : `请求失败 (${response.status})`;
                 if (response.status === 401) {
                     if (typeof window !== 'undefined') {
                         localStorage.removeItem('auth_token');
                         localStorage.removeItem('user_info');
                     }
-                    throw new Error('登录已过期，请重新登录');
+                    return { success: false, data: null, message: '登录已过期，请重新登录', code: 401 } as Response<T>;
                 }
-                throw new Error(errMsg);
+                return { success: false, data: null, message: errMsg, code: response.status } as Response<T>;
             }
 
             // 直接返回后端统一结构

@@ -477,6 +477,18 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                                             className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-800">{user?.email}
                                         </div>
                                         <button
+                                            onClick={() => {
+                                                setUserMenuOpen(false);
+                                                if (typeof window !== 'undefined') {
+                                                    window.location.href = '/orders';
+                                                }
+                                            }}
+                                            className="w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+                                            role="menuitem"
+                                        >
+                                            订单记录
+                                        </button>
+                                        <button
                                             onClick={handleUserLogout}
                                             className="w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
                                         >

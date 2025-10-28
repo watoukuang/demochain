@@ -31,6 +31,8 @@ export default function Payment({isOpen, onClose, plan, onSuccess}: PaymentProps
     const [deepLink, setDeepLink] = useState<string>('');
     const [loading, setLoading] = useState(false);
     const [timeLeft, setTimeLeft] = useState(0);
+    const [wsConnected, setWsConnected] = useState(false);
+    const [wsTried, setWsTried] = useState(false);
 
     // 获取计划信息
     const planInfo = plan !== 'free' ? PLAN_META[plan] : null;
@@ -53,9 +55,85 @@ export default function Payment({isOpen, onClose, plan, onSuccess}: PaymentProps
         }
     }, [paymentOrder, step, error]);
 
-    // 轮询订单状态
+    // WebSocket 实时状态（主通道）
     useEffect(() => {
-        if (paymentOrder && step === 'payment') {
+        if (!paymentOrder || step !== 'payment') return;
+
+        // 构造 ws 地址
+        const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://demochain.org:8085';
+        let wsBase = '';
+        try {
+            const u = new URL(apiBase);
+            wsBase = `${u.protocol === 'https:' ? 'wss' : 'ws'}://${u.host}`;
+        } catch {
+            // 如果环境变量不是标准 URL，回退为当前站点
+            wsBase = (typeof window !== 'undefined' && window.location.protocol === 'https:')
+                ? `wss://${window.location.host}`
+                : `ws://${typeof window !== 'undefined' ? window.location.host : ''}`;
+        }
+
+        const wsUrl = `${wsBase}/api/payments/orders/${paymentOrder.id}/ws`;
+        let socket: WebSocket | null = null;
+        try {
+            socket = new WebSocket(wsUrl);
+        } catch (e) {
+            console.warn('WS construct failed, fallback to polling:', e);
+            setWsConnected(false);
+            setWsTried(true);
+            return;
+        }
+
+        let closed = false;
+        socket.onopen = () => {
+            setWsConnected(true);
+            setWsTried(true);
+        };
+        socket.onmessage = (evt) => {
+            try {
+                const data = JSON.parse(evt.data || '{}');
+                // 兼容后端字段：state/confirmed/expired 等
+                if (data.state) {
+                    const next = {
+                        ...paymentOrder,
+                        status: data.state,
+                        txHash: data.tx_hash ?? paymentOrder.txHash,
+                        confirmations: data.confirmations ?? paymentOrder.confirmations,
+                        // 时间字段如果存在则覆盖
+                        paidAt: data.paid ?? paymentOrder.paidAt,
+                        confirmedAt: data.confirmed ?? paymentOrder.confirmedAt,
+                    } as PaymentOrder;
+                    setPaymentOrder(next);
+                    if (data.state === 'confirmed') {
+                        success('支付成功！订阅已激活');
+                        setStep('confirm');
+                        onSuccess?.(next);
+                        socket?.close();
+                    } else if (data.state === 'expired') {
+                        error('订单已过期');
+                        socket?.close();
+                        handleClose();
+                    }
+                }
+            } catch (e) {
+                // 忽略无法解析的数据
+            }
+        };
+        socket.onerror = () => {
+            setWsConnected(false);
+        };
+        socket.onclose = () => {
+            if (!closed) setWsConnected(false);
+        };
+
+        return () => {
+            closed = true;
+            try { socket?.close(); } catch {}
+        };
+    }, [paymentOrder, step, success, error, onSuccess]);
+
+    // 轮询订单状态（WS 失效兜底，低频）
+    useEffect(() => {
+        if (paymentOrder && step === 'payment' && wsTried && !wsConnected) {
             const pollInterval = setInterval(async () => {
                 try {
                     const updatedOrder = await checkOrderStatus(paymentOrder.id);
@@ -73,10 +151,10 @@ export default function Payment({isOpen, onClose, plan, onSuccess}: PaymentProps
                 } catch (err) {
                     console.error('Failed to check order status:', err);
                 }
-            }, 5000); // 每5秒检查一次
+            }, 15000); // 15 秒兜底
             return () => clearInterval(pollInterval);
         }
-    }, [paymentOrder, step, success, error, onSuccess]);
+    }, [paymentOrder, step, wsConnected, wsTried, success, error, onSuccess]);
 
     const handleClose = () => {
         setStep('select');
@@ -111,6 +189,30 @@ export default function Payment({isOpen, onClose, plan, onSuccess}: PaymentProps
     const copyToClipboard = (text: string) => {
         navigator.clipboard.writeText(text);
         success('已复制到剪贴板');
+    };
+
+    // 手动验证：用户点击“已支付，立即验证”时触发一次检查
+    const handleManualVerify = async () => {
+        if (!paymentOrder) return;
+        // 1) 本地记录挂起订单，便于用户稍后在订单中心查看
+        try {
+            const snapshot = {
+                id: paymentOrder.id,
+                network: paymentOrder.paymentMethod,
+                expiresAt: paymentOrder.expiresAt,
+            };
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('pending_order', JSON.stringify(snapshot));
+            }
+        } catch {}
+        // 2) 立即关闭弹窗，避免用户长时间停留
+        onClose();
+        // 3) 后台做一次轻量验证（不影响已关闭的 UI）
+        try {
+            void checkOrderStatus(paymentOrder.id);
+        } catch {}
+        // 4) 轻提示
+        success('我们将后台持续为你确认链上支付，你可稍后在订单中心查看');
     };
 
     if (!isOpen) return null;
@@ -149,6 +251,20 @@ export default function Payment({isOpen, onClose, plan, onSuccess}: PaymentProps
                             qrCode={qrCode}
                             copyToClipboard={copyToClipboard}
                         />
+                    )}
+
+                    {step === 'payment' && paymentOrder && (
+                        <div className="mt-3 flex items-center justify-between gap-3">
+                            <button
+                                onClick={handleManualVerify}
+                                className="inline-flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+                            >
+                                已支付，立即验证
+                            </button>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">
+                                链上确认可能需要时间，请耐心等待
+                            </div>
+                        </div>
                     )}
 
                     {step === 'confirm' && paymentOrder && (
