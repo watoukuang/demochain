@@ -2,12 +2,12 @@
 
 import React, { useState, useEffect } from 'react'
 import PermissionGate from '@/components/permissions/PermissionGate'
-import { usePermissions } from '@/src/shared/hooks/usePermissions'
+import { usePerms } from '@/src/shared/hooks/usePerms'
 
 type Validator = { id: string, stake: number }
 
 export default function PosValidators(): React.ReactElement {
-  const { recordUsage } = usePermissions()
+  const { recordUsage } = usePerms()
   const [validators, setValidators] = useState<Validator[]>([
     { id: 'V1', stake: 300 },
     { id: 'V2', stake: 500 },

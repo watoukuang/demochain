@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { usePermissions } from '@/src/shared/hooks/usePermissions';
+import { usePerms } from '@/src/shared/hooks/usePerms';
 import { SUBSCRIPTION_PLANS } from '@/src/shared/config/subscriptions';
 
 interface UsageIndicatorProps {
@@ -9,7 +9,7 @@ interface UsageIndicatorProps {
 }
 
 export default function UsageIndicator({ type, className = '' }: UsageIndicatorProps) {
-  const { subscription, usageStats } = usePermissions();
+  const { subscription, usageStats } = usePerms();
 
   if (!subscription || !usageStats) {
     return null;

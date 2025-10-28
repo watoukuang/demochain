@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Permission, PermissionCheckResult, UserSubscription, UsageStats } from '../types/subscription';
+import { Permission, PermissionCheckResult, UserSubscription, UsageStats } from '../types/perms';
 import { SUBSCRIPTION_PLANS, PERMISSION_HIERARCHY } from '../config/subscriptions';
 import { useAuth } from './useAuth';
 
@@ -30,7 +30,7 @@ const mockUsageStats: UsageStats = {
   lastUpdated: '2024-01-15'
 };
 
-export function usePermissions() {
+export function usePerms() {
   const { user, isAuthenticated } = useAuth();
   const [subscription, setSubscription] = useState<UserSubscription | null>(null);
   const [usageStats, setUsageStats] = useState<UsageStats | null>(null);

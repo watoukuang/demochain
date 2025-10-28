@@ -1,4 +1,4 @@
-import { UserSubscription, UsageStats, Plan } from '../types/subscription';
+import { UserSubscription, UsageStats, Plan } from '../types/perms';
 
 // 模拟 API 延迟
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));

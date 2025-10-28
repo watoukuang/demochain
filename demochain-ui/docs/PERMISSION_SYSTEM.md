@@ -42,7 +42,7 @@
 
 ## 核心组件
 
-### 1. 类型定义 (`src/shared/types/subscription.ts`)
+### 1. 类型定义 (`src/shared/types/perms.ts`)
 
 ```typescript
 // 订阅计划
@@ -75,10 +75,10 @@ export const SUBSCRIPTION_PLANS: Record<string, SubscriptionConfig> = {
 };
 ```
 
-### 3. 权限 Hook (`src/shared/hooks/usePermissions.ts`)
+### 3. 权限 Hook (`src/shared/hooks/usePerms.ts`)
 
 ```typescript
-export function usePermissions() {
+export function usePerms() {
   return {
     checkPermission,      // 检查单个权限
     checkModuleAccess,    // 检查模块访问权限
@@ -110,10 +110,10 @@ export function usePermissions() {
 ### 1. 基础权限检查
 
 ```typescript
-import { usePermissions } from '@/src/shared/hooks/usePermissions';
+import { usePerms } from '@/src/shared/hooks/usePerms';
 
 function MyComponent() {
-  const { checkPermission } = usePermissions();
+  const { checkPermission } = usePerms();
   
   const handlePOSAccess = () => {
     const result = checkPermission('pos_access');
@@ -156,7 +156,7 @@ function MyComponent() {
 ### 3. 使用统计记录
 
 ```typescript
-const { recordUsage } = usePermissions();
+const { recordUsage } = usePerms();
 
 // 记录文章阅读
 await recordUsage('article_view', { 
@@ -207,7 +207,7 @@ export default function POSStakingPage() {
 ```typescript
 // pages/article/[slug].tsx
 export default function ArticleDetailPage() {
-  const { recordUsage } = usePermissions();
+  const { recordUsage } = usePerms();
   
   useEffect(() => {
     // 记录文章阅读
@@ -227,7 +227,7 @@ export default function ArticleDetailPage() {
 ```typescript
 // components/DataExportButton.tsx
 function DataExportButton() {
-  const { checkPermission, recordUsage } = usePermissions();
+  const { checkPermission, recordUsage } = usePerms();
   
   const handleExport = async () => {
     const result = checkPermission('export_data');
@@ -274,7 +274,7 @@ function Sidebar() {
 
 ### 1. 添加新权限
 
-在 `types/subscription.ts` 中添加新的权限类型：
+在 `types/perms.ts` 中添加新的权限类型：
 
 ```typescript
 export type Permission = 

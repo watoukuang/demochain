@@ -27,14 +27,14 @@ pages/pos/
 ```typescript
 import React, { useState, useEffect } from 'react'
 import PermissionGate from '@/components/permissions/PermissionGate'
-import { usePermissions } from '@/src/shared/hooks/usePermissions'
+import { usePerms } from '@/src/shared/hooks/usePerms'
 ```
 
 ### 2. 使用权限 Hook
 
 ```typescript
 export default function POSComponent() {
-  const { recordUsage } = usePermissions()
+  const { recordUsage } = usePerms()
   
   // 记录页面访问
   useEffect(() => {
@@ -198,7 +198,7 @@ await recordUsage('pos_delegation', {
 ### 2. 编程式检查
 
 ```typescript
-const { checkPermission } = usePermissions()
+const { checkPermission } = usePerms()
 
 const handlePOSAccess = () => {
   const result = checkPermission('pos_access')
@@ -215,7 +215,7 @@ const handlePOSAccess = () => {
 ### 3. 模块级检查
 
 ```typescript
-const { checkModuleAccess } = usePermissions()
+const { checkModuleAccess } = usePerms()
 
 const result = checkModuleAccess('pos_consensus')
 if (result.hasPermission) {
@@ -301,10 +301,10 @@ if (result.hasPermission) {
 
 import React, { useState, useEffect } from 'react'
 import PermissionGate from '@/components/permissions/PermissionGate'
-import { usePermissions } from '@/src/shared/hooks/usePermissions'
+import { usePerms } from '@/src/shared/hooks/usePerms'
 
 export default function POSStaking() {
-  const { recordUsage } = usePermissions()
+  const { recordUsage } = usePerms()
   const [balance, setBalance] = useState(1000)
   const [staked, setStaked] = useState(0)
 

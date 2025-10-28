@@ -1,7 +1,7 @@
 import React from 'react';
 import PermissionGate from '@/components/permissions/PermissionGate';
 import UsageIndicator from '@/components/permissions/UsageIndicator';
-import { usePermissions } from '@/src/shared/hooks/usePermissions';
+import { usePerms } from '@/src/shared/hooks/usePerms';
 
 // 使用权限系统的示例页面
 export default function PermissionSystemExample() {
@@ -12,7 +12,7 @@ export default function PermissionSystemExample() {
     recordUsage,
     isFreePlan,
     canAccessPremiumFeatures 
-  } = usePermissions();
+  } = usePerms();
 
   const handlePOSAccess = async () => {
     const result = checkPermission('pos_access');

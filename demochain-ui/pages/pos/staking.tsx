@@ -2,10 +2,10 @@
 
 import React, {useState, useEffect} from 'react'
 import PermissionGate from '@/components/permissions/PermissionGate'
-import {usePermissions} from '@/src/shared/hooks/usePermissions'
+import {usePerms} from '@/src/shared/hooks/usePerms'
 
 export default function PosStaking(): React.ReactElement {
-    const {recordUsage} = usePermissions()
+    const {recordUsage} = usePerms()
     const [balance, setBalance] = useState(1000)
     const [staked, setStaked] = useState(0)
     const [amount, setAmount] = useState(100)

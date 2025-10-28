@@ -1,4 +1,4 @@
-import { SubscriptionConfig, FeatureModule, Permission } from '../types/subscription';
+import { SubscriptionConfig, FeatureModule, Permission } from '../types/perms';
 
 // 订阅计划配置
 export const SUBSCRIPTION_PLANS: Record<string, SubscriptionConfig> = {

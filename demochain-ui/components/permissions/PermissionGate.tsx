@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
-import {Permission} from '@/src/shared/types/subscription';
-import {usePermissions} from '@/src/shared/hooks/usePermissions';
+import {Permission} from '@/src/shared/types/perms';
+import {usePerms} from '@/src/shared/hooks/usePerms';
 import {SUBSCRIPTION_PLANS} from '@/src/shared/config/subscriptions';
 
 interface PermissionGateProps {
@@ -17,7 +17,7 @@ export default function PermissionGate({
                                            fallback,
                                            showUpgradePrompt = true
                                        }: PermissionGateProps) {
-    const {checkPermission} = usePermissions();
+    const {checkPermission} = usePerms();
     const permissionResult = checkPermission(permission);
 
     if (permissionResult.hasPermission) {

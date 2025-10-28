@@ -1,8 +1,4 @@
-import {Plan} from "@/src/shared/types/plan";
-
 export type Network = 'usdt_trc20' | 'usdt_erc20' | 'usdt_bep20';
-
-export type OrderState = 'created' | 'pending_payment' | 'paid' | 'confirmed' | 'completed' | 'cancelled' | 'expired';
 
 export interface USDTNetwork {
     id: Network;
