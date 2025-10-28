@@ -1,7 +1,7 @@
 "use client"
 
 import React, {useState, useEffect} from 'react'
-import PermissionGate from '@/components/permissions/PermissionGate'
+import PermissionGate from '@/components/permission/PermissionGate'
 import {usePerms} from '@/src/shared/hooks/usePerms'
 
 export default function PosStaking(): React.ReactElement {
