@@ -36,6 +36,8 @@ Options / 选项:
                     在构建前执行 cargo clean
   --target <triple> Explicit cargo build target (default: host, e.g. x86_64-unknown-linux-gnu)
                     指定构建目标三元组（默认主机架构）
+  --out-name <name> Rename the output binary in dist to <name>
+                    将导出的可执行文件重命名为 <name>
   -h, --help        Show this help
                     显示此帮助
 EOF
@@ -44,12 +46,16 @@ EOF
 INSTALL_DEPS=0
 CLEAN_FIRST=0
 TARGET=""
+# Default output binary name without passing parameters
+# 默认输出二进制名称（无需传参）
+OUT_NAME="demochain"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --install-deps) INSTALL_DEPS=1; shift ;;
     --clean) CLEAN_FIRST=1; shift ;;
     --target) TARGET="$2"; shift 2 ;;
+    --out-name) OUT_NAME="$2"; shift 2 ;;
     -h|--help) usage; exit 0 ;;
     *) err "Unknown option: $1"; usage; exit 1 ;;
   esac
@@ -167,6 +173,26 @@ export_artifacts() {
   done
 
   log "Artifacts are in $dist 构建产物已生成到 $dist"
+
+  # If requested, rename the main binary to OUT_NAME
+  if [[ -n "$OUT_NAME" ]]; then
+    # Try to detect a likely main binary name (package name), fall back to first executable
+    local target_bin
+    # Prefer a file starting with project/package name if exists
+    for f in "$dist"/*; do
+      if [[ -f "$f" && -x "$f" ]]; then
+        target_bin="$f"; break
+      fi
+    done
+    if [[ -n "$target_bin" ]]; then
+      local new_path="$dist/$OUT_NAME"
+      mv -f "$target_bin" "$new_path"
+      chmod +x "$new_path" || true
+      log "Renamed executable to $OUT_NAME 已重命名可执行文件为 $OUT_NAME"
+    else
+      warn "No executable found to rename 未找到可重命名的可执行文件"
+    fi
+  fi
 }
 
 main() {
