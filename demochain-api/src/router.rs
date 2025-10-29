@@ -65,4 +65,5 @@ fn order_router() -> Router<AppState> {
 fn article_router() -> Router<AppState> {
     Router::new()
         .route("/api/article/page", get(handlers::article::page))
+        .route("/api/article/:id", get(handlers::article::get_article))
 }

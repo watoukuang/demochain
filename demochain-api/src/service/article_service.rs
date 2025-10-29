@@ -63,3 +63,49 @@ pub async fn page(db: &SqlitePool, page: i64, size: i64) -> Result<PageVO<Articl
         size: limit,
     })
 }
+
+pub async fn get_by_id(db: &SqlitePool, id: &str) -> Result<Option<Article>, sqlx::Error> {
+    let id_num: i64 = match id.parse() {
+        Ok(num) => num,
+        Err(_) => return Ok(None),
+    };
+
+    let row = sqlx::query!(
+        r#"
+        SELECT 
+            id as "id!: i64",
+            title,
+            excerpt,
+            content,
+            tags,
+            views,
+            created as "created: NaiveDateTime"
+        FROM t_article
+        WHERE id = ?1
+        "#,
+        id_num
+    ).fetch_optional(db).await?;
+
+    match row {
+        Some(row) => {
+            let tags: Vec<String> = match row.tags {
+                Some(tags_json) => {
+                    serde_json::from_str(&tags_json).unwrap_or_else(|_| vec![])
+                }
+                None => vec![]
+            };
+
+            let article = Article {
+                id: row.id.to_string(),
+                title: row.title,
+                excerpt: row.excerpt.unwrap_or_default(),
+                content: row.content.unwrap_or_default(),
+                tags,
+                views: row.views.unwrap_or(0) as i32,
+                created: row.created.and_utc(),
+            };
+            Ok(Some(article))
+        }
+        None => Ok(None),
+    }
+}
