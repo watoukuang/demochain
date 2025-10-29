@@ -24,9 +24,6 @@ const TermModal: React.FC<TermModalProps> = ({ term, onClose, glossaryData, onSe
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-[#2a2c31]">
           <div className="flex items-center gap-3">
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">{term.term}</h2>
-            <span className="px-3 py-1 text-sm font-medium rounded-full bg-orange-100 text-orange-800 dark:bg-orange-500/20 dark:text-orange-300">
-              {term.category}
-            </span>
             {/* 热门程度 */}
             <div className="flex items-center gap-1">
               {Array.from({ length: 5 }, (_, i) => (

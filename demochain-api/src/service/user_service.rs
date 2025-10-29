@@ -78,26 +78,3 @@ pub async fn login(
         expires_in: Some(24 * 60 * 60),
     })
 }
-
-pub async fn get_user_by_id(pool: &SqlitePool, user_id: i64) -> Result<Option<User>> {
-    let user = sqlx::query_as!(
-        User,
-        r#"
-        SELECT
-            CAST(id AS TEXT) as "id!: String",
-            email,
-            username,
-            password as "password?: String",
-            created as "created: DateTime<Utc>",
-            updated as "updated: DateTime<Utc>"
-        FROM t_user WHERE id = ?1
-        "#,
-        user_id
-    )
-        .fetch_optional(pool)
-        .await
-        .with_context(|| "failed to fetch user")?;
-
-    Ok(user)
-}
-
