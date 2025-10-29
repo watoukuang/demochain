@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import ClockIcon from '@/components/icons/ClockIcon';
 import EyeIcon from '@/components/icons/EyeIcon';
 import {Article} from '@/src/shared/api/article';
@@ -10,12 +11,18 @@ interface ArticleCardProps {
 }
 
 const ArticleCard: React.FC<ArticleCardProps> = ({article, categoryMap = {}}) => {
+    const router = useRouter();
     const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString('zh-CN');
     const displayTags = (article.tags || []).slice(0, 3).map((id) => categoryMap[id] ?? id);
 
     return (
         <Link href={`/article/${article.id}`} className="block">
             <article
+                onClick={(e) => {
+                    // 作为兜底，确保点击整个卡片可导航
+                    e.preventDefault();
+                    router.push(`/article/${article.id}`);
+                }}
                 className="bg-white dark:bg-[#1a1d24] rounded-xl border border-gray-200 dark:border-[#2a2c31] p-5 hover:shadow-lg dark:hover:shadow-2xl hover:border-orange-300 dark:hover:border-orange-400 hover:scale-[1.02] transition-all duration-300 cursor-pointer group"
             >
                 {/* 标题 */}
