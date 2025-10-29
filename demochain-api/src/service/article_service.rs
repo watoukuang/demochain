@@ -13,9 +13,7 @@ pub async fn page(db: &SqlitePool, page: i64, size: i64) -> Result<PageVO<Articl
         r#"
         SELECT COUNT(1) as "count!: i64" FROM t_article
         "#
-    )
-    .fetch_one(db)
-    .await?;
+    ).fetch_one(db).await?;
 
     // 查询文章列表
     let rows = sqlx::query!(
@@ -34,9 +32,7 @@ pub async fn page(db: &SqlitePool, page: i64, size: i64) -> Result<PageVO<Articl
         "#,
         limit,
         offset
-    )
-    .fetch_all(db)
-    .await?;
+    ).fetch_all(db).await?;
 
     let mut articles = Vec::with_capacity(rows.len());
     for row in rows {
