@@ -1,84 +1,35 @@
 "use client"
 
-import React, {useState, useEffect} from 'react'
-import Index from 'components/access'
-import {useAccess} from '@/src/shared/hooks/useAccess'
+import React, {useState, useCallback} from 'react'
+import Access from "@/components/access";
 
 export default function PosStaking(): React.ReactElement {
-    const {recordUsage} = useAccess()
     const [balance, setBalance] = useState(1000)
     const [staked, setStaked] = useState(0)
     const [amount, setAmount] = useState(100)
 
-    // 记录页面访问
-    useEffect(() => {
-        recordUsage('consensus_access', {
-            type: 'pos',
-            module: 'staking',
-            timestamp: new Date().toISOString()
-        })
-    }, [recordUsage])
-
-    const stake = async () => {
+    const stake = useCallback(() => {
         const amt = Math.max(0, Math.min(balance, Math.floor(amount)))
         setBalance(b => b - amt)
         setStaked(s => s + amt)
+    }, [balance, amount])
 
-        // 记录质押操作
-        await recordUsage('pos_staking', {
-            action: 'stake',
-            amount: amt,
-            newBalance: balance - amt,
-            newStaked: staked + amt
-        })
-    }
-
-    const unstake = async () => {
+    const unstake = useCallback(() => {
         const amt = Math.max(0, Math.min(staked, Math.floor(amount)))
         setStaked(s => s - amt)
         setBalance(b => b + amt)
+    }, [staked, amount])
 
-        // 记录赎回操作
-        await recordUsage('pos_staking', {
-            action: 'unstake',
-            amount: amt,
-            newBalance: balance + amt,
-            newStaked: staked - amt
-        })
-    }
-
-    const reset = async () => {
+    const reset = useCallback(() => {
         setBalance(1000)
         setStaked(0)
         setAmount(100)
-
-        // 记录重置操作
-        await recordUsage('pos_staking', {
-            action: 'reset'
-        })
-    }
+    }, [])
 
     return (
-        <Index permission="pos_access">
+        <Access>
             <div className="px-4 py-8">
                 <div className="max-w-3xl mx-auto space-y-6">
-                    {/* 页面标题和权限提示 */}
-                    <div
-                        className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 rounded-lg p-4 border border-green-200 dark:border-green-800">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <h1 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">POS ·
-                                    质押池</h1>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">权益证明共识机制演示 -
-                                    付费功能</p>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                                <span className="text-sm text-green-600 dark:text-green-400 font-medium">已解锁</span>
-                            </div>
-                        </div>
-                    </div>
-
                     {/* 质押操作面板 */}
                     <div
                         className="p-6 rounded-lg border bg-white border-gray-200 dark:border-gray-700 dark:bg-gray-800 shadow-sm">
@@ -170,6 +121,6 @@ export default function PosStaking(): React.ReactElement {
                     </div>
                 </div>
             </div>
-        </Index>
+        </Access>
     )
 }
