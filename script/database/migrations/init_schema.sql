@@ -34,3 +34,15 @@ CREATE TABLE t_article (
       views INTEGER DEFAULT 0,
       created DATETIME NOT NULL DEFAULT (datetime('now')), -- 创建时间（自动）
 );
+
+CREATE TABLE t_term (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,  -- 主键，自增
+                        term TEXT NOT NULL,                    -- 术语
+                        definition TEXT NOT NULL,              -- 定义
+                        category TEXT NOT NULL,                -- 分类
+                        related_terms TEXT,                    -- 相关术语（JSON字符串存储 Vec<String>）
+                        popularity INTEGER DEFAULT 0,          -- 热度或流行度
+                        created DATETIME NOT NULL DEFAULT (datetime('now')), -- 创建时间（自动）
+                        updated DATETIME NOT NULL DEFAULT (datetime('now')), -- 创建时间（自动）
+);
+

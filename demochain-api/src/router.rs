@@ -45,6 +45,7 @@ pub fn build_router() -> Router<AppState> {
         .merge(auth_router())
         .merge(order_router())
         .merge(article_router())
+        .merge(term_router())
 }
 
 fn health_router() -> Router<AppState> {
@@ -66,4 +67,9 @@ fn article_router() -> Router<AppState> {
     Router::new()
         .route("/api/article/page", get(handlers::article::page))
         .route("/api/article/:id", get(handlers::article::get_article))
+}
+
+fn term_router() -> Router<AppState> {
+    Router::new()
+        .route("/api/term/page", get(handlers::term::page))
 }

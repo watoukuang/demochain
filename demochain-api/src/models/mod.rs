@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 pub mod user;
 pub mod order;
 pub mod article;
+pub mod term;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct PageVO<T> {
