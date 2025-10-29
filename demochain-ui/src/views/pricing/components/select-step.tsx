@@ -1,6 +1,5 @@
 import React from 'react';
 import {Network} from '@/src/shared/types/order';
-import {USDT_NETWORKS} from '@/src/shared/config/payment';
 
 interface SelectStepProps {
     plan: { name: string; price: number; period: string } | null;
@@ -9,6 +8,12 @@ interface SelectStepProps {
     onCreate: () => void;
     loading: boolean;
 }
+
+const NETWORK_OPTIONS: Array<{ id: Network; name: string; network: string; confirmations: number }> = [
+    { id: 'usdt_trc20', name: 'USDT · TRC20', network: 'TRON', confirmations: 1 },
+    { id: 'usdt_erc20', name: 'USDT · ERC20', network: 'Ethereum', confirmations: 12 },
+    { id: 'usdt_bep20', name: 'USDT · BEP20', network: 'BSC', confirmations: 12 },
+];
 
 export default function SelectStep({
                                        plan,
@@ -30,7 +35,7 @@ export default function SelectStep({
             <div>
                 <h4 className="font-medium text-gray-900 dark:text-white mb-3">选择 USDT 网络</h4>
                 <div className="space-y-2">
-                    {USDT_NETWORKS.map((network) => (
+                    {NETWORK_OPTIONS.map((network) => (
                         <label
                             key={network.id}
                             className={`flex items-center p-3 rounded-lg border cursor-pointer transition-colors ${

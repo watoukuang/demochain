@@ -1,6 +1,5 @@
 import React from 'react';
 import {Order} from '@/src/shared/types/order';
-import {USDT_NETWORKS} from '@/src/shared/config/payment';
 
 function formatTime(seconds: number) {
     const minutes = Math.floor(seconds / 60);
@@ -27,7 +26,7 @@ const PaymentStep: React.FC<PaymentStepProps> = ({order, timeLeft, qrCode, copyT
                 </div>
                 <div className="flex justify-between">
                     <span className="text-gray-600 dark:text-gray-400">网络:</span>
-                    <span>{USDT_NETWORKS.find((n) => n.id === order.network)?.name}</span>
+                    <span>{order.network}</span>
                 </div>
             </div>
 
