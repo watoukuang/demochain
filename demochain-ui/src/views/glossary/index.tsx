@@ -1,4 +1,7 @@
 import React, {useState} from 'react';
+import Sidebar from './components/Sidebar';
+import TermsGrid from './components/TermsGrid';
+import TermModal from './components/TermModal';
 
 interface GlossaryTerm {
     term: string;
@@ -268,99 +271,18 @@ export default function Glossary(): React.ReactElement {
         <div className="px-4 lg:px-12 max-w-screen-2xl mx-auto">
             <div className="flex min-h-screen dark:bg-[#0f1115] p-4 sm:p-6 lg:p-8">
                 {/* 左侧分类导航 */}
-                <div
-                    className="w-64 bg-white dark:bg-[#1a1d24] border-r border-gray-200 dark:border-[#2a2c31] flex flex-col sticky top-0 h-screen overflow-y-auto shadow-lg dark:shadow-2xl rounded">
-                    {/* 标题和搜索 */}
-                    <div className="p-6 border-b border-gray-200 dark:border-[#2a2c31]">
-                        {/* 搜索框 */}
-                        <div className="relative mb-1">
-                            <input
-                                type="text"
-                                placeholder="搜索名词..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full px-3 py-2 pl-9 text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-transparent dark:bg-[#0f1115] dark:border-[#2a2c31] dark:text-white dark:placeholder-gray-400"
-                            />
-                            <svg className="absolute left-3 top-2.5 h-4 w-4 text-gray-400 dark:text-gray-500"
-                                 fill="none"
-                                 stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                            </svg>
-                        </div>
-
-                    </div>
-
-                    {/* 分类列表 */}
-                    <div className="flex-1 overflow-y-auto">
-                        {categoryStructure.map(category => (
-                            <div key={category.name}>
-                                {/* 主分类 */}
-                                <button
-                                    onClick={() => {
-                                        setSelectedCategory(category.name);
-                                        setSelectedSubcategory(null);
-                                        if (category.subcategories.length > 0) {
-                                            toggleCategory(category.name);
-                                        }
-                                    }}
-                                    className={`w-full text-left p-4 border-b border-gray-100 dark:border-[#2a2c31] hover:bg-gray-50 dark:hover:bg-[#26292e] transition-all duration-200 ${
-                                        selectedCategory === category.name && !selectedSubcategory ? 'bg-orange-50 dark:bg-orange-500/10 border-l-4 border-l-orange-500 dark:border-l-orange-400' : ''
-                                    }`}
-                                >
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-2">
-                                            <h3 className="font-medium text-gray-900 dark:text-white text-sm">{category.name}</h3>
-                                            {category.subcategories.length > 0 && (
-                                                <svg
-                                                    className={`w-4 h-4 text-gray-400 dark:text-gray-500 transition-transform ${
-                                                        expandedCategories.includes(category.name) ? 'rotate-90' : ''
-                                                    }`}
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    viewBox="0 0 24 24"
-                                                >
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                                                          d="M9 5l7 7-7 7"/>
-                                                </svg>
-                                            )}
-                                        </div>
-                                        <span
-                                            className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-[#2a2c31] px-2 py-1 rounded-full">
-                    {category.count}
-                  </span>
-                                    </div>
-                                </button>
-
-                                {/* 二级分类 */}
-                                {expandedCategories.includes(category.name) && category.subcategories.length > 0 && (
-                                    <div className="bg-gray-50 dark:bg-[#0f1115]">
-                                        {category.subcategories.map(subcategory => (
-                                            <button
-                                                key={subcategory.name}
-                                                onClick={() => {
-                                                    setSelectedCategory(category.name);
-                                                    setSelectedSubcategory(subcategory.name);
-                                                }}
-                                                className={`w-full text-left p-3 pl-8 border-b border-gray-100 dark:border-[#2a2c31] hover:bg-gray-100 dark:hover:bg-[#1a1d24] transition-all duration-200 ${
-                                                    selectedSubcategory === subcategory.name ? 'bg-orange-50 dark:bg-orange-500/10 border-l-4 border-l-orange-500 dark:border-l-orange-400' : ''
-                                                }`}
-                                            >
-                                                <div className="flex items-center justify-between">
-                                                    <h4 className="text-sm text-gray-700 dark:text-gray-300">{subcategory.name}</h4>
-                                                    <span
-                                                        className="text-xs text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-[#2a2c31] px-2 py-0.5 rounded-full">
-                          {glossaryData.filter(subcategory.filter).length}
-                        </span>
-                                                </div>
-                                            </button>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                </div>
+                <Sidebar
+                    searchTerm={searchTerm}
+                    onSearchChange={setSearchTerm}
+                    expandedCategories={expandedCategories}
+                    onToggleCategory={toggleCategory}
+                    selectedCategory={selectedCategory}
+                    selectedSubcategory={selectedSubcategory}
+                    onSelectCategory={(name) => { setSelectedCategory(name); setSelectedSubcategory(null); }}
+                    onSelectSubcategory={(parent, name) => { setSelectedCategory(parent); setSelectedSubcategory(name); }}
+                    categoryStructure={categoryStructure as any}
+                    glossaryData={glossaryData}
+                />
 
                 {/* 右侧卡片网格 */}
                 <div className="flex-1 p-6 overflow-y-auto">
@@ -370,179 +292,21 @@ export default function Glossary(): React.ReactElement {
                             <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                                 {selectedSubcategory ? `${selectedCategory} - ${selectedSubcategory}` : selectedCategory}
                             </h1>
-                            <p className="text-gray-600 dark:text-gray-400">
-                                共 {filteredTerms.length} 个术语
-                            </p>
+                            <p className="text-gray-600 dark:text-gray-400">共 {filteredTerms.length} 个术语</p>
                         </div>
 
-                        {/* 术语卡片网格 */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                            {filteredTerms.map((term, index) => (
-                                <div
-                                    key={index}
-                                    className="bg-white dark:bg-[#1a1d24] rounded-xl border border-gray-200 dark:border-[#2a2c31] p-5 hover:shadow-lg dark:hover:shadow-2xl hover:border-orange-300 dark:hover:border-orange-400 hover:scale-[1.02] transition-all duration-300 cursor-pointer group"
-                                    onClick={() => setSelectedTerm(term)}
-                                >
-                                    {/* 卡片头部 */}
-                                    <div className="flex items-start justify-between mb-3">
-                                        <div className="flex-1">
-                                            <h3 className="font-semibold text-gray-900 dark:text-white text-base mb-1 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
-                                                {term.term}
-                                            </h3>
-                                            <span
-                                                className="inline-block px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600 dark:bg-[#2a2c31] dark:text-gray-400">
-                      {term.category}
-                    </span>
-                                        </div>
-                                        {/* 热门程度指示器 */}
-                                        <div className="flex items-center gap-1 ml-2">
-                                            {Array.from({length: term.popularity}, (_, i) => (
-                                                <div key={i}
-                                                     className="w-1.5 h-1.5 bg-orange-400 dark:bg-orange-500 rounded-full"></div>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    {/* 卡片内容 */}
-                                    <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-3 leading-relaxed mb-3">
-                                        {term.definition}
-                                    </p>
-
-                                    {/* 相关术语标签 */}
-                                    {term.relatedTerms && term.relatedTerms.length > 0 && (
-                                        <div className="flex flex-wrap gap-1">
-                                            {term.relatedTerms.slice(0, 3).map((relatedTerm, idx) => (
-                                                <span
-                                                    key={idx}
-                                                    className="px-2 py-1 text-xs bg-orange-50 text-orange-700 rounded dark:bg-orange-500/20 dark:text-orange-300"
-                                                >
-                        {relatedTerm}
-                      </span>
-                                            ))}
-                                            {term.relatedTerms.length > 3 && (
-                                                <span className="px-2 py-1 text-xs text-gray-500 dark:text-gray-400">
-                        +{term.relatedTerms.length - 3}
-                      </span>
-                                            )}
-                                        </div>
-                                    )}
-
-                                    {/* 查看详情指示 */}
-                                    <div className="mt-3 pt-3 border-t border-gray-100 dark:border-[#2a2c31]">
-                                        <div
-                                            className="flex items-center text-xs text-gray-500 dark:text-gray-400 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
-                                            <span>点击查看详情</span>
-                                            <svg
-                                                className="ml-1 w-3 h-3 group-hover:translate-x-0.5 transition-transform"
-                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                                                      d="M9 5l7 7-7 7"/>
-                                            </svg>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* 无结果提示 */}
-                        {filteredTerms.length === 0 && (
-                            <div className="text-center py-12">
-                                <div className="text-gray-400 mb-4">
-                                    <svg className="mx-auto h-12 w-12" fill="none" stroke="currentColor"
-                                         viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                                              d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.47-.881-6.08-2.33"/>
-                                    </svg>
-                                </div>
-                                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">未找到相关术语</h3>
-                                <p className="text-gray-500 dark:text-gray-400">尝试调整搜索关键词或选择其他分类</p>
-                            </div>
-                        )}
+                        <TermsGrid terms={filteredTerms as any} onSelect={setSelectedTerm} />
                     </div>
                 </div>
             </div>
 
             {/* 术语详情弹窗 */}
-            {selectedTerm && (
-                <div
-                    className="fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50"
-                    onClick={() => setSelectedTerm(null)}
-                >
-                    <div
-                        className="bg-white dark:bg-[#1a1d24] rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto shadow-2xl border border-gray-200 dark:border-[#2a2c31]"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        {/* 弹窗头部 */}
-                        <div
-                            className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-[#2a2c31]">
-                            <div className="flex items-center gap-3">
-                                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                                    {selectedTerm.term}
-                                </h2>
-                                <span
-                                    className="px-3 py-1 text-sm font-medium rounded-full bg-orange-100 text-orange-800 dark:bg-orange-500/20 dark:text-orange-300">
-                                {selectedTerm.category}
-                            </span>
-                                {/* 热门程度 */}
-                                <div className="flex items-center gap-1">
-                                    {Array.from({length: 5}, (_, i) => (
-                                        <svg
-                                            key={i}
-                                            className={`w-4 h-4 ${i < selectedTerm.popularity ? 'text-orange-400 dark:text-orange-500' : 'text-gray-300 dark:text-gray-600'}`}
-                                            fill="currentColor"
-                                            viewBox="0 0 20 20"
-                                        >
-                                            <path
-                                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                        </svg>
-                                    ))}
-                                </div>
-                            </div>
-                            <button
-                                onClick={() => setSelectedTerm(null)}
-                                className="p-2 hover:bg-gray-100 dark:hover:bg-[#2a2c31] rounded-lg transition-colors text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-                            >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                                          d="M6 18L18 6M6 6l12 12"/>
-                                </svg>
-                            </button>
-                        </div>
-
-                        {/* 弹窗内容 */}
-                        <div className="p-6">
-                            {/* 定义 */}
-                            <div className="mb-6">
-                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">定义</h3>
-                                <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-base">
-                                    {selectedTerm.definition}
-                                </p>
-                            </div>
-
-                            {/* 相关术语 */}
-                            {selectedTerm.relatedTerms && selectedTerm.relatedTerms.length > 0 && (
-                                <div>
-                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">相关术语</h3>
-                                    <div className="flex flex-wrap gap-2">
-                                        {selectedTerm.relatedTerms.map((relatedTerm, idx) => {
-                                            const relatedTermData = glossaryData.find(t => t.term === relatedTerm);
-                                            return (
-                                                <button
-                                                    key={idx}
-                                                    onClick={() => relatedTermData && setSelectedTerm(relatedTermData)}
-                                                    className="px-3 py-2 text-sm bg-orange-50 text-orange-700 rounded-lg hover:bg-orange-100 transition-all duration-200 dark:bg-orange-500/20 dark:text-orange-300 dark:hover:bg-orange-500/30 hover:scale-105"
-                                                >
-                                                    {relatedTerm}
-                                                </button>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            )}
+            <TermModal
+                term={selectedTerm as any}
+                onClose={() => setSelectedTerm(null)}
+                glossaryData={glossaryData as any}
+                onSelectTerm={setSelectedTerm as any}
+            />
         </div>
     );
 }
