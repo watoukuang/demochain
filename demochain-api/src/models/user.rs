@@ -1,6 +1,5 @@
-use serde::{Deserialize, Serialize};
-use sqlx::FromRow;
 use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize)]
 pub struct LoginDTO {
@@ -17,7 +16,7 @@ pub struct RegisterDTO {
 #[derive(Debug, Serialize)]
 pub struct AuthVO {
     pub token: String,
-    pub user: UserDetail,
+    pub user_detail: UserDetail,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub expires_in: Option<i64>,
 }
@@ -35,6 +34,7 @@ pub struct User {
 pub struct UserDetail {
     pub id: String,
     pub email: String,
+    pub vip: String,
     pub username: Option<String>,
     pub created: DateTime<Utc>,
     pub updated: DateTime<Utc>,

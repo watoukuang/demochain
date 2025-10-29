@@ -67,7 +67,7 @@ pub async fn login(
 
     Ok(AuthVO {
         token,
-        user: UserDetail {
+        user_detail: UserDetail {
             id: user.id.clone(),
             email: user.email.clone(),
             username: user.username.clone(),

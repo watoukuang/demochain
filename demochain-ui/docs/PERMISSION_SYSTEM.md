@@ -42,14 +42,14 @@
 
 ## 核心组件
 
-### 1. 类型定义 (`src/shared/types/perms.ts`)
+### 1. 类型定义 (`src/shared/types/permission.ts`)
 
 ```typescript
 // 订阅计划
 export type SubscriptionPlan = 'free' | 'monthly' | 'yearly' | 'lifetime';
 
 // 权限类型
-export type Permission = 'pow_access' | 'pos_access' | ...;
+export type Index = 'pow_access' | 'pos_access' | ...;
 
 // 用户订阅状态
 export interface UserSubscription {
@@ -75,10 +75,10 @@ export const SUBSCRIPTION_PLANS: Record<string, SubscriptionConfig> = {
 };
 ```
 
-### 3. 权限 Hook (`src/shared/hooks/usePerms.ts`)
+### 3. 权限 Hook (`src/shared/hooks/useAccess.ts`)
 
 ```typescript
-export function usePerms() {
+export function useAccess() {
   return {
     checkPermission,      // 检查单个权限
     checkModuleAccess,    // 检查模块访问权限
@@ -90,12 +90,12 @@ export function usePerms() {
 }
 ```
 
-### 4. 权限门控组件 (`components/permissions/PermissionGate.tsx`)
+### 4. 权限门控组件 (`components/permissions/index.tsx`)
 
 ```typescript
-<PermissionGate permission="pos_access">
+<Index permission="pos_access">
   <POSConsensusDemo />
-</PermissionGate>
+</Index>
 ```
 
 ### 5. 使用量指示器 (`components/permissions/UsageIndicator.tsx`)
@@ -110,10 +110,10 @@ export function usePerms() {
 ### 1. 基础权限检查
 
 ```typescript
-import { usePerms } from '@/src/shared/hooks/usePerms';
+import { useAccess } from '@/src/shared/hooks/useAccess';
 
 function MyComponent() {
-  const { checkPermission } = usePerms();
+  const { checkPermission } = useAccess();
   
   const handlePOSAccess = () => {
     const result = checkPermission('pos_access');
@@ -132,31 +132,31 @@ function MyComponent() {
 
 ```typescript
 // 有权限时显示内容，无权限时显示升级提示
-<PermissionGate permission="pos_access">
+<Index permission="pos_access">
   <POSDemo />
-</PermissionGate>
+</Index>
 
 // 自定义无权限时的显示内容
-<PermissionGate 
+<Index 
   permission="pos_access"
   fallback={<CustomUpgradePrompt />}
 >
   <POSDemo />
-</PermissionGate>
+</Index>
 
 // 仅检查权限，不显示升级提示
-<PermissionGate 
+<Index 
   permission="pos_access"
   showUpgradePrompt={false}
 >
   <POSDemo />
-</PermissionGate>
+</Index>
 ```
 
 ### 3. 使用统计记录
 
 ```typescript
-const { recordUsage } = usePerms();
+const { recordUsage } = useAccess();
 
 // 记录文章阅读
 await recordUsage('article_view', { 
@@ -195,9 +195,9 @@ await recordUsage('data_export', {
 // pages/pos/staking.tsx
 export default function POSStakingPage() {
   return (
-    <PermissionGate permission="pos_access">
+    <Index permission="pos_access">
       <POSStakingDemo />
-    </PermissionGate>
+    </Index>
   );
 }
 ```
@@ -207,7 +207,7 @@ export default function POSStakingPage() {
 ```typescript
 // pages/article/[slug].tsx
 export default function ArticleDetailPage() {
-  const { recordUsage } = usePerms();
+  const { recordUsage } = useAccess();
   
   useEffect(() => {
     // 记录文章阅读
@@ -215,9 +215,9 @@ export default function ArticleDetailPage() {
   }, [slug]);
   
   return (
-    <PermissionGate permission="article_read">
+    <Index permission="article_read">
       <ArticleContent />
-    </PermissionGate>
+    </Index>
   );
 }
 ```
@@ -227,7 +227,7 @@ export default function ArticleDetailPage() {
 ```typescript
 // components/DataExportButton.tsx
 function DataExportButton() {
-  const { checkPermission, recordUsage } = usePerms();
+  const { checkPermission, recordUsage } = useAccess();
   
   const handleExport = async () => {
     const result = checkPermission('export_data');
@@ -242,11 +242,11 @@ function DataExportButton() {
   };
   
   return (
-    <PermissionGate permission="export_data">
+    <Index permission="export_data">
       <button onClick={handleExport}>
         导出数据
       </button>
-    </PermissionGate>
+    </Index>
   );
 }
 ```
@@ -274,10 +274,10 @@ function Sidebar() {
 
 ### 1. 添加新权限
 
-在 `types/perms.ts` 中添加新的权限类型：
+在 `types/permission.ts` 中添加新的权限类型：
 
 ```typescript
-export type Permission = 
+export type Index = 
   | 'existing_permissions...'
   | 'new_feature_access';    // 新权限
 ```
@@ -307,7 +307,7 @@ interface SubscriptionConfig {
 ### 3. 自定义权限检查逻辑
 
 ```typescript
-const customPermissionCheck = useCallback((permission: Permission) => {
+const customPermissionCheck = useCallback((permission: Index) => {
   const baseResult = checkPermission(permission);
   
   // 添加自定义逻辑
@@ -323,7 +323,7 @@ const customPermissionCheck = useCallback((permission: Permission) => {
 
 ### 1. 权限检查时机
 
-- **页面级**: 在页面组件中使用 `PermissionGate`
+- **页面级**: 在页面组件中使用 `Index`
 - **功能级**: 在具体功能按钮/组件中检查权限
 - **API 调用前**: 在发起 API 请求前验证权限
 

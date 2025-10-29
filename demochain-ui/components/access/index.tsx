@@ -1,46 +1,34 @@
 import React from 'react';
 import Link from 'next/link';
-import {Permission} from '@/src/shared/types/perms';
-import {usePerms} from '@/src/shared/hooks/usePerms';
+import {useAccess} from '@/src/shared/hooks/useAccess';
+import {AccessState} from '@/src/shared/types/permission';
 
-interface PermissionGateProps {
-    permission: Permission;
+interface AccessProps {
     children: React.ReactNode;
     fallback?: React.ReactNode;
     showUpgradePrompt?: boolean;
 }
 
-export default function PermissionGate({
-                                           permission,
-                                           children,
-                                           fallback,
-                                           showUpgradePrompt = true
-                                       }: PermissionGateProps) {
-    const {checkPermission} = usePerms();
-    const permissionResult = checkPermission(permission);
-
-    if (permissionResult.hasPermission) {
+const Access = ({children, fallback, showUpgradePrompt = true}: AccessProps) => {
+    const {checkPermission} = useAccess();
+    const {hasPermission, reason}: AccessState = checkPermission();
+    if (hasPermission) {
         return <>{children}</>;
     }
-
-    // 自定义 fallback
     if (fallback) {
         return <>{fallback}</>;
     }
-
-    // 默认升级提示
     if (showUpgradePrompt) {
-        return <UpgradePrompt permissionResult={permissionResult}/>;
+        return <UpgradePrompt reason={reason}/>;
     }
     return null;
-}
+};
 
 interface UpgradePromptProps {
-    permissionResult: any;
+    reason?: string;
 }
 
-function UpgradePrompt({permissionResult}: UpgradePromptProps) {
-    const {reason} = permissionResult;
+function UpgradePrompt({reason}: UpgradePromptProps) {
 
     return (
         <div className="pt-4 mt-8 sm:mt-12 lg:mt-16 text-center">
@@ -57,9 +45,7 @@ function UpgradePrompt({permissionResult}: UpgradePromptProps) {
                     需要升级访问权限
                 </h3>
 
-                <p className="text-gray-600 dark:text-gray-400 mb-6">
-                    {reason || '此功能需要付费订阅才能使用'}
-                </p>
+                <p className="text-gray-600 dark:text-gray-400 mb-6">{reason || '此功能需要付费订阅才能使用'}</p>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -73,3 +59,5 @@ function UpgradePrompt({permissionResult}: UpgradePromptProps) {
         </div>
     );
 }
+
+export default Access;

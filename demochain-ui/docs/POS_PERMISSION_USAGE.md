@@ -26,15 +26,15 @@ pages/pos/
 
 ```typescript
 import React, { useState, useEffect } from 'react'
-import PermissionGate from '@/components/permission/PermissionGate'
-import { usePerms } from '@/src/shared/hooks/usePerms'
+import Index from '@/components/access/Index'
+import { useAccess } from '@/src/shared/hooks/useAccess'
 ```
 
 ### 2. 使用权限 Hook
 
 ```typescript
 export default function POSComponent() {
-  const { recordUsage } = usePerms()
+  const { recordUsage } = useAccess()
   
   // 记录页面访问
   useEffect(() => {
@@ -53,12 +53,12 @@ export default function POSComponent() {
 
 ```typescript
 return (
-  <PermissionGate permission="pos_access">
+  <Index permission="pos_access">
     {/* 页面内容 */}
     <div className="px-4 py-8">
       {/* 实际功能组件 */}
     </div>
-  </PermissionGate>
+  </Index>
 )
 ```
 
@@ -165,7 +165,7 @@ await recordUsage('pos_delegation', {
 
 ## 🚫 权限拒绝处理
 
-当用户没有 `pos_access` 权限时，`PermissionGate` 会自动显示升级提示：
+当用户没有 `pos_access` 权限时，`Index` 会自动显示升级提示：
 
 ### 升级提示内容
 - **标题**: "需要升级访问权限"
@@ -177,12 +177,12 @@ await recordUsage('pos_delegation', {
 ### 自定义权限拒绝
 
 ```typescript
-<PermissionGate 
+<Index 
   permission="pos_access"
   fallback={<CustomUpgradePrompt />}
 >
   <POSContent />
-</PermissionGate>
+</Index>
 ```
 
 ## 🔍 权限检查方式
@@ -190,15 +190,15 @@ await recordUsage('pos_delegation', {
 ### 1. 声明式检查 (推荐)
 
 ```typescript
-<PermissionGate permission="pos_access">
+<Index permission="pos_access">
   <POSStakingDemo />
-</PermissionGate>
+</Index>
 ```
 
 ### 2. 编程式检查
 
 ```typescript
-const { checkPermission } = usePerms()
+const { checkPermission } = useAccess()
 
 const handlePOSAccess = () => {
   const result = checkPermission('pos_access')
@@ -215,7 +215,7 @@ const handlePOSAccess = () => {
 ### 3. 模块级检查
 
 ```typescript
-const { checkModuleAccess } = usePerms()
+const { checkModuleAccess } = useAccess()
 
 const result = checkModuleAccess('pos_consensus')
 if (result.hasPermission) {
@@ -273,7 +273,7 @@ if (result.hasPermission) {
 ## 🎯 最佳实践
 
 ### 1. 权限检查时机
-- **页面级**: 使用 `PermissionGate` 包装整个页面
+- **页面级**: 使用 `Index` 包装整个页面
 - **功能级**: 在具体操作前检查权限
 - **导航级**: 在菜单中显示权限状态
 
@@ -300,11 +300,11 @@ if (result.hasPermission) {
 "use client"
 
 import React, { useState, useEffect } from 'react'
-import PermissionGate from '@/components/permission/PermissionGate'
-import { usePerms } from '@/src/shared/hooks/usePerms'
+import Index from '@/components/access/Index'
+import { useAccess } from '@/src/shared/hooks/useAccess'
 
 export default function POSStaking() {
-  const { recordUsage } = usePerms()
+  const { recordUsage } = useAccess()
   const [balance, setBalance] = useState(1000)
   const [staked, setStaked] = useState(0)
 
@@ -330,7 +330,7 @@ export default function POSStaking() {
   }
 
   return (
-    <PermissionGate permission="pos_access">
+    <Index permission="pos_access">
       <div className="px-4 py-8">
         {/* 页面内容 */}
         <POSStakingInterface 
@@ -339,7 +339,7 @@ export default function POSStaking() {
           onStake={handleStake}
         />
       </div>
-    </PermissionGate>
+    </Index>
   )
 }
 ```

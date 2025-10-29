@@ -1,13 +1,13 @@
 "use client"
 
 import React, { useState, useEffect } from 'react'
-import PermissionGate from '@/components/permission/PermissionGate'
-import { usePerms } from '@/src/shared/hooks/usePerms'
+import Index from 'components/access'
+import { useAccess } from '@/src/shared/hooks/useAccess'
 
 type Validator = { id: string, stake: number }
 
 export default function PosValidators(): React.ReactElement {
-  const { recordUsage } = usePerms()
+  const { recordUsage } = useAccess()
   const [validators, setValidators] = useState<Validator[]>([
     { id: 'V1', stake: 300 },
     { id: 'V2', stake: 500 },
@@ -45,7 +45,7 @@ export default function PosValidators(): React.ReactElement {
   }
 
   return (
-    <PermissionGate permission="pos_access">
+    <Index permission="pos_access">
       <div className="px-4 py-8">
         <div className="max-w-4xl mx-auto space-y-6">
           {/* 页面标题 */}
@@ -143,6 +143,6 @@ export default function PosValidators(): React.ReactElement {
           </div>
         </div>
       </div>
-    </PermissionGate>
+    </Index>
   )
 }

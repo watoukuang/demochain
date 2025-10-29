@@ -1,11 +1,11 @@
 "use client"
 
 import React, {useState, useEffect} from 'react'
-import PermissionGate from '@/components/permission/PermissionGate'
-import {usePerms} from '@/src/shared/hooks/usePerms'
+import Index from 'components/access'
+import {useAccess} from '@/src/shared/hooks/useAccess'
 
 export default function PosStaking(): React.ReactElement {
-    const {recordUsage} = usePerms()
+    const {recordUsage} = useAccess()
     const [balance, setBalance] = useState(1000)
     const [staked, setStaked] = useState(0)
     const [amount, setAmount] = useState(100)
@@ -59,7 +59,7 @@ export default function PosStaking(): React.ReactElement {
     }
 
     return (
-        <PermissionGate permission="pos_access">
+        <Index permission="pos_access">
             <div className="px-4 py-8">
                 <div className="max-w-3xl mx-auto space-y-6">
                     {/* 页面标题和权限提示 */}
@@ -170,6 +170,6 @@ export default function PosStaking(): React.ReactElement {
                     </div>
                 </div>
             </div>
-        </PermissionGate>
+        </Index>
     )
 }

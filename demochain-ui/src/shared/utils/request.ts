@@ -19,7 +19,7 @@ class RequestService {
         };
         Object.assign(reqHeaders, headers);
         if (typeof window !== 'undefined') {
-            const token = localStorage.getItem('auth_token');
+            const token = localStorage.getItem('token');
             if (token) reqHeaders.Authorization = `Bearer ${token}`;
         }
 
@@ -51,12 +51,12 @@ class RequestService {
                     : `请求失败 (${response.status})`;
                 if (response.status === 401) {
                     if (typeof window !== 'undefined') {
-                        localStorage.removeItem('auth_token');
-                        localStorage.removeItem('user_info');
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('user_detail');
                     }
-                    return { success: false, data: null, message: '登录已过期，请重新登录', code: 401 } as R<T>;
+                    return {success: false, data: null, message: '登录已过期，请重新登录', code: 401} as R<T>;
                 }
-                return { success: false, data: null, message: errMsg, code: response.status } as R<T>;
+                return {success: false, data: null, message: errMsg, code: response.status} as R<T>;
             }
 
             // 直接返回后端统一结构
