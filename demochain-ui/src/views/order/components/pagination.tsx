@@ -27,7 +27,7 @@ export default function Pagination({currentPage, totalPages, totalCount, onPageC
             className="bg-white/60 dark:bg-transparent backdrop-blur px-4 py-2 border-t border-gray-200 dark:border-white/10">
             <div className="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0">
                 <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
-                    显示第 {currentPage} 页，共 {totalPages} 页 ({totalCount} 条订单)
+                    显示第 {currentPage} 页，共 {totalPages} 页 ({totalCount} 条记录)
                 </div>
 
                 <div className="flex items-center space-x-2">

@@ -1,4 +1,4 @@
 pub mod user;
 pub mod order;
-mod article;
+pub mod article;
 
