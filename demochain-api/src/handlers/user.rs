@@ -1,15 +1,16 @@
-use axum::{extract::State, Json};
+use axum::extract::State;
+use axum::Json;
 use crate::app::AppState;
 use crate::models::user::{RegisterDTO, LoginDTO, AuthVO};
-use crate::models::r::Response;
+use crate::models::R;
 use crate::service::user_service;
 
 pub async fn register(
     State(state): State<AppState>,
     Json(payload): Json<RegisterDTO>,
-) -> Json<Response<()>> {
+) -> Json<R<()>> {
     match user_service::register(&state.db, payload).await {
-        Ok(()) => Json(Response {
+        Ok(()) => Json(R {
             success: true,
             data: None,
             message: Some("注册成功".to_string()),
@@ -17,7 +18,7 @@ pub async fn register(
         }),
         Err(e) => {
             let msg = e.to_string();
-            Json(Response {
+            Json(R {
                 success: false,
                 data: None,
                 message: Some(msg),
@@ -30,15 +31,15 @@ pub async fn register(
 pub async fn login(
     State(state): State<AppState>,
     Json(payload): Json<LoginDTO>,
-) -> Json<Response<AuthVO>> {
+) -> Json<R<AuthVO>> {
     match user_service::login(&state.db, payload).await {
-        Ok(auth_response) => Json(Response {
+        Ok(auth_response) => Json(R {
             success: true,
             data: Some(auth_response),
             message: Some("登录成功".to_string()),
             code: Some(200),
         }),
-        Err(e) => Json(Response {
+        Err(e) => Json(R {
             success: false,
             data: None,
             message: Some(e.to_string()),

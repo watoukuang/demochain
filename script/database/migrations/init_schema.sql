@@ -25,3 +25,12 @@ CREATE TABLE t_order (
 );
 
 
+CREATE TABLE t_article (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      excerpt TEXT,
+      content TEXT,
+      tags TEXT,               -- 存 JSON 数组，例如 '["tutorial"]'
+      views INTEGER DEFAULT 0,
+      created DATETIME NOT NULL DEFAULT (datetime('now')), -- 创建时间（自动）
+);

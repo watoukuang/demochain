@@ -1,4 +1,5 @@
-use crate::models::order::{OrderVO, OrderDTO, PageResult};
+use crate::models::order::{OrderVO, OrderDTO};
+use crate::models::PageVO;
 use crate::utils::jwt_util;
 use anyhow::Context;
 use chrono::{NaiveDateTime, Utc};
@@ -16,13 +17,13 @@ pub async fn page(
     pool: &SqlitePool,
     page: i64,
     size: i64,
-) -> anyhow::Result<PageResult<OrderVO>> {
+) -> anyhow::Result<PageVO<OrderVO>> {
     let limit = if size <= 0 { 10 } else { size };
     let page = if page <= 0 { 1 } else { page };
     let offset = (page - 1) * limit;
     let user_id = match jwt_util::get_user_id() {
         Some(uid) => uid,
-        None => return Ok(PageResult { items: vec![], total: 0, page, size: limit }),
+        None => return Ok(PageVO { items: vec![], total: 0, page, size: limit }),
     };
     // 查询总数
     let total_row = sqlx::query!(
@@ -82,7 +83,7 @@ pub async fn page(
         out.push(order);
     }
 
-    Ok(PageResult { items: out, total: total_row.count, page, size: limit })
+    Ok(PageVO { items: out, total: total_row.count, page, size: limit })
 }
 
 pub async fn add(

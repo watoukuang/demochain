@@ -70,6 +70,7 @@ pub async fn login(
         user_detail: UserDetail {
             id: user.id.clone(),
             email: user.email.clone(),
+            vip: "1".to_string(), // 默认免费用户
             username: user.username.clone(),
             created: user.created,
             updated: user.updated,

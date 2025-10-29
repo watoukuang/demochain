@@ -66,6 +66,7 @@ pub fn no_auth_path(path: &str) -> bool {
         path,
         "/" | "/health" | "/api/health" |
         "/api/auth/login" | "/api/auth/register" | "/api/auth/refresh" |
+        "/api/article/page" |
         "/docs" | "/swagger" | "/openapi.json"
     ) || path.starts_with("/assets/") || path.starts_with("/public/")
 }

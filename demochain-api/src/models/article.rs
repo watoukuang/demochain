@@ -1,5 +1,5 @@
 use chrono::{DateTime, Utc};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize)]
 pub struct PageArticleDTO {
@@ -7,14 +7,13 @@ pub struct PageArticleDTO {
     pub size: Option<i64>,
 }
 
-#[derive(Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Article {
     pub id: String,
     pub title: String,
     pub excerpt: String,
     pub content: String,
     pub tags: Vec<String>,
-    pub slug: String,
     pub views: i32,
     pub created: DateTime<Utc>,
 }

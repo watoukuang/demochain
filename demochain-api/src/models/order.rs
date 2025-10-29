@@ -29,11 +29,3 @@ pub struct OrderVO {
     pub created: DateTime<Utc>,
     pub updated: DateTime<Utc>,
 }
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct PageResult<T> {
-    pub items: Vec<T>,
-    pub total: i64,
-    pub page: i64,
-    pub size: i64,
-}
