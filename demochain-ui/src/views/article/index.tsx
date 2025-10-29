@@ -62,18 +62,18 @@ export default function ArticleIndex() {
             </Head>
 
             <div className="min-h-screen">
-                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div className="py-4 sm:py-6 lg:py-12">
                     <Index/>
                     <div>
                         {loading ? (
                             // 加载状态
-                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
                                 {[...Array(6)].map((_, i) => (<Skeleton key={i}/>))}
                             </div>
                         ) : (
                             <>
                                 {/* 文章列表 */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mb-12">
+                                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8 mb-8 lg:mb-12">
                                     {articles.map((article) => (
                                         <ArticleCard key={article.id} article={article} categoryMap={categoryMap}/>
                                     ))}

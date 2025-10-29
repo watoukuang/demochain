@@ -26,8 +26,7 @@ export default function PosValidators(): React.ReactElement {
     }
 
     return (
-        <div className="px-4 py-8">
-            <div className="max-w-4xl mx-auto space-y-6">
+        <div className="space-y-6">
                 {/* 页面标题 */}
                 <div
                     className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-lg p-4 border border-purple-200 dark:border-purple-800">
@@ -130,7 +129,6 @@ export default function PosValidators(): React.ReactElement {
                         <li>• 这种机制激励用户质押更多代币来获得更多奖励</li>
                     </ul>
                 </div>
-            </div>
         </div>
     )
 }

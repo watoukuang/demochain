@@ -103,6 +103,8 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
     // 添加用户菜单状态
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const userMenuRef = useRef<HTMLDivElement | null>(null);
+    const [moreOpen, setMoreOpen] = useState(false);
+    const moreRef = useRef<HTMLDivElement | null>(null);
 
     // 添加一个状态来跟踪是否已挂载（用于解决hydration问题）
     const [isMounted, setIsMounted] = useState(false);
@@ -196,6 +198,15 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
         return () => document.removeEventListener('mousedown', handler);
     }, [userMenuOpen]);
 
+    useEffect(() => {
+        const handler = (e: MouseEvent) => {
+            if (!moreRef.current) return;
+            if (!moreRef.current.contains(e.target as Node)) setMoreOpen(false);
+        };
+        if (moreOpen) document.addEventListener('mousedown', handler);
+        return () => document.removeEventListener('mousedown', handler);
+    }, [moreOpen]);
+
     // 处理用户登出
     const handleUserLogout = async () => {
         try {
@@ -224,63 +235,25 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                             </svg>
                         </button>
 
-                        <Link href="/" className="flex items-center gap-2 whitespace-nowrap overflow-hidden min-w-0" onClick={() => {
-                            setConsensus('POW')
-                            if (typeof window !== 'undefined') {
-                                localStorage.setItem('consensus', 'POW')
-                                window.dispatchEvent(new Event('consensusChanged'))
-                            }
-                        }}
+                        <Link href="/" className="flex items-center gap-2 whitespace-nowrap overflow-hidden min-w-0"
+                              onClick={() => {
+                                  setConsensus('POW')
+                                  if (typeof window !== 'undefined') {
+                                      localStorage.setItem('consensus', 'POW')
+                                      window.dispatchEvent(new Event('consensusChanged'))
+                                  }
+                              }}
                         >
                             <span className="shrink-0 inline-flex"><Logo/></span>
                             <span
                                 className="truncate max-w-[50vw] sm:max-w-[60vw] md:max-w-none text-xl md:text-2xl font-bold tracking-wide leading-none select-none bg-gradient-to-r from-orange-500 to-purple-600 dark:from-orange-400 dark:to-purple-400 bg-clip-text text-transparent drop-shadow-sm">Demo Chain</span>
                         </Link>
-
-                        {/* 桌面端导航 */}
                         <div className="hidden md:flex flex-1 justify-end mr-3">
-                            <div className="flex items-baseline">
-                                <div className="flex space-x-1 overflow-x-auto scrollbar-hide">
-                                    {isMounted && menuItems.map((item) => {
-                                        const isActive = currentPathname === item.href;
-                                        return (
-                                            <Link
-                                                key={item.name}
-                                                href={item.href}
-                                                className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap flex items-center space-x-2 transition-all duration-200 ${
-                                                    isActive
-                                                        ? 'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20'
-                                                        : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#1a1d24]'
-                                                }`}
-                                            >
-                                                {item.icon}
-                                                <span>{item.name}</span>
-                                            </Link>
-                                        );
-                                    })}
-                                    {isMounted && (
-                                        <Link
-                                            href="/glossary"
-                                            className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap flex items-center space-x-2 transition-all duration-200 ${
-                                                currentPathname === '/glossary'
-                                                    ? 'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20'
-                                                    : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#1a1d24]'
-                                            }`}
-                                        >
-                                            <NameIcon/>
-                                            <span>名词</span>
-                                        </Link>
-
-                                    )}
-                                    {isMounted && (
-                                        <Link
-                                            href="/article"
-                                            className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap flex items-center space-x-2 transition-all duration-200 ${
-                                                currentPathname === '/article' || currentPathname.startsWith('/article/')
-                                                    ? 'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20'
-                                                    : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#1a1d24]'
-                                            }`}
-                                        >
+                            {(() => {
+                                const extra = [
+                                    {name: '名词', href: '/glossary', icon: (<NameIcon/>)},
+                                    {
+                                        name: '文章', href: '/article', icon: (
                                             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none"
                                                  stroke="currentColor" strokeWidth="2">
                                                 <rect x="5" y="3" width="14" height="18" rx="2"/>
@@ -288,14 +261,93 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                                                 <path d="M8 12h8"/>
                                                 <path d="M8 16h6"/>
                                             </svg>
-                                            <span>文章</span>
-                                        </Link>
-                                    )}
-                                </div>
-                            </div>
+                                        )
+                                    },
+                                ];
+                                const all = isMounted ? [...menuItems, ...extra] : [];
+                                const MAX_INLINE_MD = 3;
+                                const inlineMd = all.slice(0, MAX_INLINE_MD);
+                                const overflowMd = all.slice(MAX_INLINE_MD);
+                                return (
+                                    <div className="flex items-center">
+                                        <div className="md:flex lg:hidden flex items-center space-x-1">
+                                            {inlineMd.map((item) => {
+                                                const isActive = currentPathname === item.href || (item.href === '/article' && currentPathname.startsWith('/article/'));
+                                                return (
+                                                    <Link
+                                                        key={`md-${item.name}`}
+                                                        href={item.href}
+                                                        className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap flex items-center space-x-2 transition-all duration-200 ${
+                                                            isActive
+                                                                ? 'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20'
+                                                                : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#1a1d24]'
+                                                        }`}
+                                                    >
+                                                        {item.icon}
+                                                        <span>{item.name}</span>
+                                                    </Link>
+                                                );
+                                            })}
+                                            {overflowMd.length > 0 && (
+                                                <div className="relative" ref={moreRef}>
+                                                    <button
+                                                        onClick={() => setMoreOpen(v => !v)}
+                                                        className="px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap flex items-center space-x-2 transition-colors border bg-white text-gray-700 border-gray-200 hover:bg-gray-100 dark:bg-[#1a1d24] dark:text-gray-200 dark:border-[#2a2c31]"
+                                                        aria-haspopup="menu"
+                                                        aria-expanded={moreOpen}
+                                                    >
+                                                        <span>更多</span>
+                                                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none"
+                                                             stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round"
+                                                                  strokeWidth="2" d="M19 9l-7 7-7-7"/>
+                                                        </svg>
+                                                    </button>
+                                                    {moreOpen && (
+                                                        <div role="menu"
+                                                             className="absolute right-0 mt-2 w-48 rounded-2xl border bg-white/98 backdrop-blur-sm shadow-lg ring-1 ring-black/5 p-2 border-gray-200 dark:bg-[#1e1e1e] dark:border-[#2d2d30] dark:ring-white/5 z-50">
+                                                            {overflowMd.map((item) => {
+                                                                const isActive = currentPathname === item.href || (item.href === '/article' && currentPathname.startsWith('/article/'));
+                                                                return (
+                                                                    <Link
+                                                                        key={`more-${item.name}`}
+                                                                        href={item.href}
+                                                                        className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm hover:bg-gray-100 dark:hover:bg-gray-800 ${isActive ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100' : 'text-gray-700 dark:text-gray-200'}`}
+                                                                    >
+                                                                        {item.icon}
+                                                                        <span>{item.name}</span>
+                                                                    </Link>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="hidden lg:flex items-center space-x-1">
+                                            {all.map((item) => {
+                                                const isActive = currentPathname === item.href || (item.href === '/article' && currentPathname.startsWith('/article/'));
+                                                return (
+                                                    <Link
+                                                        key={`lg-${item.name}`}
+                                                        href={item.href}
+                                                        className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap flex items-center space-x-2 transition-all duration-200 ${
+                                                            isActive
+                                                                ? 'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20'
+                                                                : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#1a1d24]'
+                                                        }`}
+                                                    >
+                                                        {item.icon}
+                                                        <span>{item.name}</span>
+                                                    </Link>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                );
+                            })()}
                         </div>
                     </div>
-
                     <div className="flex items-center space-x-2 md:space-x-3">
                         {/* 共识选择器（放在主题选择的右侧） */}
                         <div className="relative" ref={consensusRef}>

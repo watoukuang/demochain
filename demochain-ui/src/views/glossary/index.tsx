@@ -113,8 +113,7 @@ export default function Glossary(): React.ReactElement {
     };
 
     return (
-        <div className="px-4 lg:px-12 max-w-screen-2xl mx-auto">
-            <div className="flex min-h-screen dark:bg-[#0f1115] p-4 sm:p-6 lg:p-8">
+        <div className="flex min-h-screen dark:bg-[#0f1115] -m-4 sm:-m-6 lg:-m-8 p-4 sm:p-6 lg:p-8">
                 <Sidebar
                     searchTerm={searchTerm}
                     onSearchChange={setSearchTerm}
@@ -135,7 +134,7 @@ export default function Glossary(): React.ReactElement {
 
                 {/* 右侧卡片网格 */}
                 <div className="flex-1 p-6 overflow-y-auto">
-                    <div className="max-w-7xl mx-auto">
+                    <div>
                         <div className="mb-6">
                             <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                                 {selectedSubcategory ? `${selectedCategory} - ${selectedSubcategory}` : selectedCategory}
@@ -154,15 +153,14 @@ export default function Glossary(): React.ReactElement {
                         />
                     </div>
                 </div>
-            </div>
 
-            {/* 术语详情弹窗 */}
-            <TermModal
-                term={selectedTerm as any}
-                onClose={() => setSelectedTerm(null)}
-                glossaryData={terms as any}
-                onSelectTerm={setSelectedTerm as any}
-            />
+                {/* 术语详情弹窗 */}
+                <TermModal
+                    term={selectedTerm as any}
+                    onClose={() => setSelectedTerm(null)}
+                    glossaryData={terms as any}
+                    onSelectTerm={setSelectedTerm as any}
+                />
         </div>
     );
 }

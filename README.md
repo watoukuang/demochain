@@ -20,6 +20,14 @@ docker run --name demochain-ui --restart=always -p 3005:3000 demochain-ui:latest
 docker run --name nginx --restart=always -p 443:443 -p 80:80 -d -v /usr/local/nginx/nginx.conf:/etc/nginx/nginx.conf -v /usr/local/web:/usr/local/web -v /usr/local/upload:/usr/local/upload nginx
 ```
 
+**断点策略**
+
+```angular2html
+< 640px：移动端（卡片布局）
+640px - 1024px：平板端（紧凑表格）
+≥ 1024px：桌面端（完整布局）
+```
+
 ```shell
 const glossaryData: GlossaryTerm[] = [
     // 基础概念 - 按热门程度排序

@@ -72,38 +72,30 @@ export default function Home(): React.ReactElement {
 
     // 其他共识机制的占位内容
     const renderPOSContent = () => (
-        <div className="px-4 py-8">
-            <div className="max-w-4xl mx-auto text-center">
-                <h1 className="text-3xl font-bold mb-4 text-emerald-600 dark:text-emerald-400">POS 权益证明</h1>
-                <p className="text-gray-600 dark:text-gray-400">POS 共识机制演示即将推出...</p>
-            </div>
+        <div className="text-center">
+            <h1 className="text-3xl font-bold mb-4 text-emerald-600 dark:text-emerald-400">POS 权益证明</h1>
+            <p className="text-gray-600 dark:text-gray-400">POS 共识机制演示即将推出...</p>
         </div>
     )
 
     const renderDPoSContent = () => (
-        <div className="px-4 py-8">
-            <div className="max-w-4xl mx-auto text-center">
-                <h1 className="text-3xl font-bold mb-4 text-indigo-600 dark:text-indigo-400">DPoS 委托权益证明</h1>
-                <p className="text-gray-600 dark:text-gray-400">DPoS 共识机制演示即将推出...</p>
-            </div>
+        <div className="text-center">
+            <h1 className="text-3xl font-bold mb-4 text-indigo-600 dark:text-indigo-400">DPoS 委托权益证明</h1>
+            <p className="text-gray-600 dark:text-gray-400">DPoS 共识机制演示即将推出...</p>
         </div>
     )
 
     const renderBFTContent = () => (
-        <div className="px-4 py-8">
-            <div className="max-w-4xl mx-auto text-center">
-                <h1 className="text-3xl font-bold mb-4 text-pink-600 dark:text-pink-400">BFT 拜占庭容错</h1>
-                <p className="text-gray-600 dark:text-gray-400">BFT 共识机制演示即将推出...</p>
-            </div>
+        <div className="text-center">
+            <h1 className="text-3xl font-bold mb-4 text-pink-600 dark:text-pink-400">BFT 拜占庭容错</h1>
+            <p className="text-gray-600 dark:text-gray-400">BFT 共识机制演示即将推出...</p>
         </div>
     )
 
     const renderPOHContent = () => (
-        <div className="px-4 py-8">
-            <div className="max-w-4xl mx-auto text-center">
-                <h1 className="text-3xl font-bold mb-4 text-sky-600 dark:text-sky-400">POH 历史证明</h1>
-                <p className="text-gray-600 dark:text-gray-400">POH 共识机制演示即将推出...</p>
-            </div>
+        <div className="text-center">
+            <h1 className="text-3xl font-bold mb-4 text-sky-600 dark:text-sky-400">POH 历史证明</h1>
+            <p className="text-gray-600 dark:text-gray-400">POH 共识机制演示即将推出...</p>
         </div>
     )
 
@@ -127,9 +119,9 @@ export default function Home(): React.ReactElement {
 
     // POW 内容（SHA-256 哈希演示）
     const renderPOWContent = () => (
-        <div className="sha256-container px-4 py-8">
-            <div className="sha256-contain max-w-4xl mx-auto">
-                <p className="sha256-title text-2xl md:text-3xl font-semibold text-gray-900 dark:text-white mb-6 text-center">
+        <div className="sha256-container">
+            <div className="sha256-contain">
+                <p className="sha256-title text-2xl font-semibold text-gray-900 dark:text-white mb-6 text-center">
                     区块链<span className="sha256-highlight text-yellow-600 dark:text-yellow-500">在线演示平台</span>
                 </p>
                 <div

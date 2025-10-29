@@ -2,10 +2,10 @@ import React from 'react';
 import {AppProps} from 'next/app';
 import {useRouter} from 'next/router';
 import Head from 'next/head';
-import Index from '../layout';
+import Layout from '../layout/layout';
 import {getPageSEO} from '@/src/shared/utils/seo';
 import '../styles/globals.css';
-import { ToastProvider } from 'components/toast';
+import {ToastProvider} from 'components/toast';
 
 function Application({Component, pageProps}: AppProps): React.ReactElement {
     const router = useRouter();
@@ -65,9 +65,9 @@ function Application({Component, pageProps}: AppProps): React.ReactElement {
             </Head>
 
             <ToastProvider>
-                <Index>
+                <Layout>
                     <Component {...pageProps} />
-                </Index>
+                </Layout>
             </ToastProvider>
         </>
     );
