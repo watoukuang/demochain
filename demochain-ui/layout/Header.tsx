@@ -224,8 +224,7 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                             </svg>
                         </button>
 
-                        {/* 品牌Logo和标题 - 在所有屏幕尺寸下都显示 */}
-                        <Link href="/" className="flex items-center gap-2" onClick={() => {
+                        <Link href="/" className="flex items-center gap-2 whitespace-nowrap overflow-hidden min-w-0" onClick={() => {
                             setConsensus('POW')
                             if (typeof window !== 'undefined') {
                                 localStorage.setItem('consensus', 'POW')
@@ -233,10 +232,9 @@ export default function Header({toggleSidebar}: HeaderProps): React.ReactElement
                             }
                         }}
                         >
-                            <Logo/>
+                            <span className="shrink-0 inline-flex"><Logo/></span>
                             <span
-                                className="text-xl md:text-2xl font-bold tracking-wide leading-none select-none bg-gradient-to-r from-orange-500 to-purple-600 dark:from-orange-400 dark:to-purple-400
-                        bg-clip-text text-transparent drop-shadow-sm">Demo Chain</span>
+                                className="truncate max-w-[50vw] sm:max-w-[60vw] md:max-w-none text-xl md:text-2xl font-bold tracking-wide leading-none select-none bg-gradient-to-r from-orange-500 to-purple-600 dark:from-orange-400 dark:to-purple-400 bg-clip-text text-transparent drop-shadow-sm">Demo Chain</span>
                         </Link>
 
                         {/* 桌面端导航 */}
