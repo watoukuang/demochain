@@ -6,8 +6,8 @@ type Props = {
 
 const Container: React.FC<Props> = ({ children }) => {
   return (
-    <div className="min-h-screen">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen dark:bg-[#0f1115]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-10">
         {children}
       </div>
     </div>
