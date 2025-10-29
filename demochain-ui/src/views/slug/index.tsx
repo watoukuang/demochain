@@ -96,15 +96,18 @@ export default function ArticleDetailPage() {
             </Head>
 
             <Container>
-                <article className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <Header title={article.title} created={article.created} views={article.views} tags={article.tags} />
-                    <Content content={article.content} />
-                    <footer className="px-8 pb-8">
+                <article
+                    className="bg-white dark:bg-[#1a1d24] rounded-xl border border-gray-200 dark:border-[#2a2c31] overflow-hidden dark:hover:shadow-2xl">
+                    <Header title={article.title} created={article.created} views={article.views} tags={article.tags}/>
+                    <Content content={article.content}/>
+                    <footer className="px-8 pb-8 bg-transparent">
                         <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
                             <div className="flex items-center justify-center">
-                                <Link href="/article" className="inline-flex items-center text-orange-600 dark:text-orange-400 hover:underline">
+                                <Link href="/article"
+                                      className="inline-flex items-center text-orange-600 dark:text-orange-400 hover:underline">
                                     <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                              d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                                     </svg>
                                     返回文章列表
                                 </Link>
