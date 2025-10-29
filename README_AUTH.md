@@ -38,8 +38,8 @@
   - 加载状态
   - Google OAuth 支持
 
-### 5. Header 集成
-- **文件**: `layout/Header.tsx`
+### 5. Index 集成
+- **文件**: `layout/index.tsx`
 - **功能**: 
   - 根据认证状态显示不同 UI
   - 登录/登出按钮

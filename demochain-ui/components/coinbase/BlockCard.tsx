@@ -10,7 +10,7 @@ type Props = {
 export default function BlockCard({ block }: Props) {
   return (
     <div className="block-card-container rounded-lg border bg-white border-gray-200 dark:border-gray-700 dark:bg-gradient-to-br dark:from-gray-800 dark:to-gray-900 shadow-lg">
-      {/* Card Header */}
+      {/* Card Title */}
       <div className="p-4 border-b border-gray-200 dark:border-gray-700">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-yellow-500">区块 {block.height}</h2>
       </div>

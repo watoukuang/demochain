@@ -5,7 +5,7 @@ import type { MiniBlock, Tx } from '../../types/block'
 export default function BlockCardFull({ block }: { block: MiniBlock }) {
   return (
     <div className="cbase block-card-container rounded-lg border border-gray-700 bg-gradient-to-br from-gray-800 to-gray-900 shadow-xl w-[420px] shrink-0">
-      {/* Card Header */}
+      {/* Card Title */}
       <div className="p-6 border-b border-gray-700">
         <h2 className="text-lg font-semibold text-yellow-500">区块</h2>
       </div>

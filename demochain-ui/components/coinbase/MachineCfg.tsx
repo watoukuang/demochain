@@ -80,7 +80,7 @@ function MachineCfgInner(props: MachineCfgProps, ref: React.Ref<MachineCfgRef | 
   return (
     <>
       <div className="pool-cfg-card rounded-lg border border-gray-700 bg-gradient-to-br from-gray-800 to-gray-900 shadow-xl">
-        {/* Card Header */}
+        {/* Card Title */}
         <div className="flex items-center justify-between p-6 border-b border-gray-700">
           <h2 className="title text-lg font-semibold text-yellow-500">配置</h2>
           <button
@@ -194,7 +194,7 @@ function MachineCfgInner(props: MachineCfgProps, ref: React.Ref<MachineCfgRef | 
       {open && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-gray-800 rounded-lg border border-gray-700 w-96 max-w-full mx-4">
-            {/* Modal Header */}
+            {/* Modal Title */}
             <div className="flex items-center justify-between p-6 border-b border-gray-700">
               <h3 className="text-lg font-semibold text-white">开始转账</h3>
               <button

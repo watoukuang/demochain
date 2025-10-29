@@ -43,7 +43,7 @@ export default function Home(): React.ReactElement {
             setConsensus(saved);
         };
 
-        // 监听自定义事件（当 Header 中切换共识时触发）
+        // 监听自定义事件（当 Title 中切换共识时触发）
         window.addEventListener('consensusChanged', handleStorageChange);
         
         return () => {
