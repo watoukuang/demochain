@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {createPortal} from 'react-dom';
 import GoogleIcon from '../../components/icons/GoogleIcon'
-import {login, register, LoginRequest, RegisterRequest} from '../../src/shared/api/auth';
+import {login, register} from '../../src/shared/api/auth';
 import {useToast} from 'components/toast';
+import {LoginDTO, RegisterDTO} from "@/src/shared/types/user";
 
 interface LoginModalProps {
     open: boolean;
@@ -81,16 +82,16 @@ export default function LoginModal({open, onClose, onSuccess}: LoginModalProps) 
     };
 
     const handleLogin = async (email: string, password: string) => {
-        const req: LoginRequest = {email, password};
+        const req: LoginDTO = {email, password};
         const res = await login(req);
-        onSuccess?.(res.user);
+        onSuccess?.(res.user_detail);
         toast.success('登录成功');
         resetForm();
         onClose();
     };
 
     const handleSignup = async (email: string, password: string) => {
-        const payload: RegisterRequest = {email, password};
+        const payload: RegisterDTO = {email, password};
         await register(payload);
         toast.success('注册成功');
         setMode('login');

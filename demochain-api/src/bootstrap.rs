@@ -65,7 +65,7 @@ pub fn no_auth_path(path: &str) -> bool {
     matches!(
         path,
         "/" | "/health" | "/api/health" |
-        "/api/auth/login" | "/api/auth/register" | "/api/auth/refresh" |
+        "/api/auth/Login" | "/api/auth/register" | "/api/auth/refresh" |
         "/api/article/page" | "/api/term/page" |
         "/docs" | "/swagger" | "/openapi.json"
     ) || path.starts_with("/assets/") || path.starts_with("/public/") || path.starts_with("/api/article/") || path.starts_with("/api/term/")

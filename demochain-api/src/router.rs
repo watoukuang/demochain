@@ -54,7 +54,7 @@ fn health_router() -> Router<AppState> {
 fn auth_router() -> Router<AppState> {
     Router::new()
         .route("/api/auth/register", post(handlers::user::register))
-        .route("/api/auth/login", post(handlers::user::login))
+        .route("/api/auth/Login", post(handlers::user::login))
 }
 
 fn order_router() -> Router<AppState> {
