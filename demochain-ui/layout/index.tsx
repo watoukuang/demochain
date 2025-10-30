@@ -1,6 +1,6 @@
 import React from 'react';
 import Header from './components/Header';
-import Footer from './Footer';
+import Footer from './components/Footer';
 import {LayoutProps} from '../types';
 
 export default function Layout({children}: LayoutProps): React.ReactElement {
@@ -14,8 +14,6 @@ export default function Layout({children}: LayoutProps): React.ReactElement {
                     {children}
                 </div>
             </main>
-
-            {/* 页脚 */}
             <Footer/>
         </div>
     );
