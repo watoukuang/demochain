@@ -1,6 +1,6 @@
 import React from 'react';
 
-const EmptyState: React.FC = () => (
+const Empty: React.FC = () => (
   <div className="text-center py-12">
     <div className="text-gray-400 dark:text-gray-500 mb-4">
       <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -12,4 +12,4 @@ const EmptyState: React.FC = () => (
   </div>
 );
 
-export default EmptyState;
+export default Empty;

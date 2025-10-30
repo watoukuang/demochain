@@ -61,7 +61,7 @@ export default function Menu(props: MenuProps): React.ReactElement {
     const allItems: MenuItem[] = React.useMemo(() => {
         const extra: MenuItem[] = [
             {name: '名词', href: '/glossary', icon: (<NameIcon/>)},
-            {name: '文章', href: '/article', icon: (<ArticleIcon/>)},
+            {name: '文章', href: '/blogs', icon: (<ArticleIcon/>)},
         ];
         return [...props.menuItems, ...extra];
     }, [props.menuItems]);
@@ -69,7 +69,7 @@ export default function Menu(props: MenuProps): React.ReactElement {
     const {currentPathname} = props;
 
     const LinkItem = ({item}: { item: MenuItem }) => {
-        const isActive = currentPathname === item.href || (item.href === '/article' && currentPathname.startsWith('/article/'));
+        const isActive = currentPathname === item.href || (item.href === '/article' && currentPathname.startsWith('/blogs/'));
         return (
             <Link
                 key={item.name}
@@ -117,7 +117,7 @@ export default function Menu(props: MenuProps): React.ReactElement {
                     <div role="menu"
                          className="absolute right-0 mt-2 w-48 rounded-2xl border bg-white backdrop-blur-sm shadow-lg ring-1 ring-black/5 p-2 border-gray-200 dark:bg-[#1e1e1e] dark:border-[#2d2d30] dark:ring-white/5 z-50">
                         {items.map((item) => {
-                            const isActive = currentPathname === item.href || (item.href === '/article' && currentPathname.startsWith('/article/'));
+                            const isActive = currentPathname === item.href || (item.href === '/article' && currentPathname.startsWith('/blogs/'));
                             return (
                                 <Link
                                     key={`more-${item.name}`}
@@ -145,7 +145,7 @@ export default function Menu(props: MenuProps): React.ReactElement {
 
     return (
         <div className="flex items-center">
-            {/* < md: only show Article */}
+            {/* < md: only show Articles */}
             <div className="flex md:hidden items-center space-x-1">
                 {(() => {
                     const article = allItems.find(i => i.href === '/article');

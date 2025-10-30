@@ -5,7 +5,7 @@ import Head from 'next/head';
 import Layout from '../layout';
 import {getPageSEO} from '@/src/shared/utils/seo';
 import '../styles/globals.css';
-import {ToastProvider} from 'components/toast';
+import {ToastProvider} from 'components/Toast';
 
 function Application({Component, pageProps}: AppProps): React.ReactElement {
     const router = useRouter();

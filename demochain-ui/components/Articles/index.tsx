@@ -1,11 +1,9 @@
 import React, {useEffect, useState} from 'react';
-import Head from 'next/head';
 import {Article, pageArticleAPI} from '@/src/shared/api/article';
 import Pagination from '@/src/views/order/components/pagination';
-import Title from '@/components/Title';
-import ArticleCard from '@/src/views/article/components/article-card';
-import Skeleton from '@/src/views/article/components/skeleton';
-import EmptyState from '@/src/views/article/components/empty-state';
+import Acard from '@/components/Articles/components/Acard';
+import Skeleton from '@/components/Articles/components/Skeleton';
+import Empty from '@/components/Articles/components/Empty';
 
 // 模拟分类数据
 const categories = [
@@ -55,15 +53,10 @@ export default function ArticleIndex() {
 
     return (
         <>
-            <Head>
-                <title>文章中心 - DemoChain</title>
-                <meta name="description"
-                      content="探索区块链技术的深度文章，涵盖基础知识、共识机制、智能合约、DeFi 等热门话题"/>
-            </Head>
+
 
             <div className="min-h-screen">
                 <div className="py-4 sm:py-6 lg:py-12">
-                    <Title/>
                     <div>
                         {loading ? (
                             // 加载状态
@@ -72,10 +65,10 @@ export default function ArticleIndex() {
                             </div>
                         ) : (
                             <>
-                                {/* 文章列表 */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8 mb-8 lg:mb-12">
+                                <div
+                                    className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8 mb-8 lg:mb-12">
                                     {articles.map((article) => (
-                                        <ArticleCard key={article.id} article={article} categoryMap={categoryMap}/>
+                                        <Acard key={article.id} article={article} categoryMap={categoryMap}/>
                                     ))}
                                 </div>
 
@@ -91,7 +84,7 @@ export default function ArticleIndex() {
 
                                 {/* 无文章提示 */}
                                 {!loading && articles.length === 0 && (
-                                    <EmptyState/>
+                                    <Empty/>
                                 )}
                             </>
                         )}

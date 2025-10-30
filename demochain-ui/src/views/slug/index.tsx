@@ -26,7 +26,7 @@ export default function ArticleDetailPage() {
                 setArticle(articleData);
 
             } catch (err) {
-                console.error('Failed to load article:', err);
+                console.error('Failed to load blogs:', err);
                 setError(err instanceof Error ? err.message : '加载文章失败');
             } finally {
                 setLoading(false);
@@ -73,7 +73,7 @@ export default function ArticleDetailPage() {
                         抱歉，您访问的文章可能已被删除或不存在
                     </p>
                     <Link
-                        href="/article"
+                        href="/Users/xukui/demo-workspace/demochain/demochain-ui/pages/blogs"
                         className="inline-flex items-center px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
                     >
                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -103,7 +103,7 @@ export default function ArticleDetailPage() {
                     <footer className="px-8 pb-8 bg-transparent">
                         <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
                             <div className="flex items-center justify-center">
-                                <Link href="/article"
+                                <Link href="/Users/xukui/demo-workspace/demochain/demochain-ui/pages/blogs"
                                       className="inline-flex items-center text-orange-600 dark:text-orange-400 hover:underline">
                                     <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}

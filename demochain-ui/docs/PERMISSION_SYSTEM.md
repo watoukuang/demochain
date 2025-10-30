@@ -205,7 +205,7 @@ export default function POSStakingPage() {
 ### 2. 文章详情页面
 
 ```typescript
-// pages/article/[slug].tsx
+// pages/blogs/[slug].tsx
 export default function ArticleDetailPage() {
   const { recordUsage } = useAccess();
   

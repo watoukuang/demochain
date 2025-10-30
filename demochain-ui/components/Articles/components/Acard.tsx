@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import {useRouter} from 'next/router';
 import ClockIcon from '@/components/Icons/ClockIcon';
 import EyeIcon from '@/components/Icons/EyeIcon';
 import {Article} from '@/src/shared/api/article';
@@ -10,13 +10,13 @@ interface ArticleCardProps {
     categoryMap?: Record<string, string>;
 }
 
-const ArticleCard: React.FC<ArticleCardProps> = ({article, categoryMap = {}}) => {
+const Acard: React.FC<ArticleCardProps> = ({article, categoryMap = {}}) => {
     const router = useRouter();
     const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString('zh-CN');
     const displayTags = (article.tags || []).slice(0, 3).map((id) => categoryMap[id] ?? id);
 
     return (
-        <Link href={`/article/${article.id}`} className="block">
+        <Link href={`/blogs/${article.id}`} className="block">
             <article
                 onClick={(e) => {
                     // 作为兜底，确保点击整个卡片可导航
@@ -63,4 +63,4 @@ const ArticleCard: React.FC<ArticleCardProps> = ({article, categoryMap = {}}) =>
     );
 };
 
-export default ArticleCard;
+export default Acard;

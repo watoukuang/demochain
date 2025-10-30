@@ -58,7 +58,7 @@ export const pageSEO: Record<string, Partial<SEOConfig>> = {
   '/pricing': { title: '定价 - DemoChain', description: '免费版与付费会员：月度 $3、年度 $10、终身 $15，付费均可访问全部演示。' },
   // glossary
   '/glossary': { title: '名词解释 - DemoChain', description: '区块链核心术语详解：POW、POS、DPoS、BFT、POH 等共识机制，智能合约、代币经济学等技术概念。' },
-  // Article
+  // Articles
   '/article': { 
     title: '文章中心 - DemoChain', 
     description: '深入探索区块链技术文章，涵盖基础知识、共识机制、智能合约、DeFi、NFT 等热门话题的专业解析。',

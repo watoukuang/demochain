@@ -10,7 +10,7 @@ pub fn configure_router<S>(router: Router<S>) -> Router<S>
 where
     S: Clone + Send + Sync + 'static,
 {
-    // When using credentials on the client, access-Control-Allow-Origin cannot be '*'.
+    // When using credentials on the client, Access-Control-Allow-Origin cannot be '*'.
     // Allow specific dev origins and enable credentials.
     let origins = [
         HeaderValue::from_static("http://localhost:3000"),

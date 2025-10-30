@@ -26,7 +26,7 @@ pages/pos/
 
 ```typescript
 import React, { useState, useEffect } from 'react'
-import Header from '@/components/access/Header'
+import Header from '@/components/Access/Header'
 import { useAccess } from '@/src/shared/hooks/useAccess'
 ```
 
@@ -300,7 +300,7 @@ if (result.hasPermission) {
 "use client"
 
 import React, { useState, useEffect } from 'react'
-import Header from '@/components/access/Header'
+import Header from '@/components/Access/Header'
 import { useAccess } from '@/src/shared/hooks/useAccess'
 
 export default function POSStaking() {

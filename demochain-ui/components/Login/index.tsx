@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {createPortal} from 'react-dom';
 import GoogleIcon from '@/components/Icons/GoogleIcon'
 import {login, register} from '../../src/shared/api/auth';
-import {useToast} from 'components/toast';
+import {useToast} from 'components/Toast';
 import {LoginDTO, RegisterDTO} from "@/src/shared/types/user";
 
 interface LoginModalProps {

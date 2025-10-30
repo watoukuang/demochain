@@ -1,7 +1,7 @@
 "use client"
 
 import React, {useState, useCallback} from 'react'
-import Access from "@/components/access";
+import Access from "components/Access";
 
 export default function PosStaking(): React.ReactElement {
     const [balance, setBalance] = useState(1000)
