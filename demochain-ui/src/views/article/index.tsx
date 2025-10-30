@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import Head from 'next/head';
 import {Article, pageArticleAPI} from '@/src/shared/api/article';
 import Pagination from '@/src/views/order/components/pagination';
-import Index from '@/components/Title';
+import Title from '@/components/Title';
 import ArticleCard from '@/src/views/article/components/article-card';
 import Skeleton from '@/src/views/article/components/skeleton';
 import EmptyState from '@/src/views/article/components/empty-state';
@@ -63,7 +63,7 @@ export default function ArticleIndex() {
 
             <div className="min-h-screen">
                 <div className="py-4 sm:py-6 lg:py-12">
-                    <Index/>
+                    <Title/>
                     <div>
                         {loading ? (
                             // 加载状态

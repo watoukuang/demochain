@@ -4,9 +4,6 @@ export interface LayoutProps {
     children: ReactNode;
 }
 
-export interface HeaderProps {
-    toggleSidebar: () => void;
-}
 
 // API Mock 相关类型定义
 export interface ApiMockConfig {

@@ -2,7 +2,7 @@ import React from 'react';
 import {AppProps} from 'next/app';
 import {useRouter} from 'next/router';
 import Head from 'next/head';
-import Layout from '../layout/layout';
+import Layout from '../layout';
 import {getPageSEO} from '@/src/shared/utils/seo';
 import '../styles/globals.css';
 import {ToastProvider} from 'components/toast';

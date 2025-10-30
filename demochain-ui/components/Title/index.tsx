@@ -5,10 +5,10 @@ interface HeaderProps {
     description?: string;
 }
 
-const Index: React.FC<HeaderProps> = ({
-                                           title = '文章中心',
-                                           description = '探索区块链技术的深度文章，涵盖基础知识、共识机制、智能合约、DeFi 等热门话题',
-                                       }) => {
+const Title: React.FC<HeaderProps> = ({
+                                          title = '文章中心',
+                                          description = '探索区块链技术的深度文章，涵盖基础知识、共识机制、智能合约、DeFi 等热门话题',
+                                      }) => {
     return (
         <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{title}</h1>
@@ -17,4 +17,4 @@ const Index: React.FC<HeaderProps> = ({
     );
 };
 
-export default Index;
+export default Title;

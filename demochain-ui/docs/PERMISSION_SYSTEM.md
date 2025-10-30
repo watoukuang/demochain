@@ -49,7 +49,7 @@
 export type SubscriptionPlan = 'free' | 'monthly' | 'yearly' | 'lifetime';
 
 // 权限类型
-export type Index = 'pow_access' | 'pos_access' | ...;
+export type Header = 'pow_access' | 'pos_access' | ...;
 
 // 用户订阅状态
 export interface UserSubscription {
@@ -90,12 +90,12 @@ export function useAccess() {
 }
 ```
 
-### 4. 权限门控组件 (`components/permissions/index.tsx`)
+### 4. 权限门控组件 (`components/permissions/Header.tsx`)
 
 ```typescript
-<Index permission="pos_access">
+<Header permission="pos_access">
   <POSConsensusDemo />
-</Index>
+</Header>
 ```
 
 ### 5. 使用量指示器 (`components/permissions/UsageIndicator.tsx`)
@@ -132,25 +132,25 @@ function MyComponent() {
 
 ```typescript
 // 有权限时显示内容，无权限时显示升级提示
-<Index permission="pos_access">
+<Header permission="pos_access">
   <POSDemo />
-</Index>
+</Header>
 
 // 自定义无权限时的显示内容
-<Index 
+<Header 
   permission="pos_access"
   fallback={<CustomUpgradePrompt />}
 >
   <POSDemo />
-</Index>
+</Header>
 
 // 仅检查权限，不显示升级提示
-<Index 
+<Header 
   permission="pos_access"
   showUpgradePrompt={false}
 >
   <POSDemo />
-</Index>
+</Header>
 ```
 
 ### 3. 使用统计记录
@@ -195,9 +195,9 @@ await recordUsage('data_export', {
 // pages/pos/staking.tsx
 export default function POSStakingPage() {
   return (
-    <Index permission="pos_access">
+    <Header permission="pos_access">
       <POSStakingDemo />
-    </Index>
+    </Header>
   );
 }
 ```
@@ -215,9 +215,9 @@ export default function ArticleDetailPage() {
   }, [slug]);
   
   return (
-    <Index permission="article_read">
+    <Header permission="article_read">
       <ArticleContent />
-    </Index>
+    </Header>
   );
 }
 ```
@@ -242,11 +242,11 @@ function DataExportButton() {
   };
   
   return (
-    <Index permission="export_data">
+    <Header permission="export_data">
       <button onClick={handleExport}>
         导出数据
       </button>
-    </Index>
+    </Header>
   );
 }
 ```
@@ -277,7 +277,7 @@ function Sidebar() {
 在 `types/permission.ts` 中添加新的权限类型：
 
 ```typescript
-export type Index = 
+export type Header = 
   | 'existing_permissions...'
   | 'new_feature_access';    // 新权限
 ```
@@ -307,7 +307,7 @@ interface SubscriptionConfig {
 ### 3. 自定义权限检查逻辑
 
 ```typescript
-const customPermissionCheck = useCallback((permission: Index) => {
+const customPermissionCheck = useCallback((permission: Header) => {
   const baseResult = checkPermission(permission);
   
   // 添加自定义逻辑
@@ -323,7 +323,7 @@ const customPermissionCheck = useCallback((permission: Index) => {
 
 ### 1. 权限检查时机
 
-- **页面级**: 在页面组件中使用 `Index`
+- **页面级**: 在页面组件中使用 `Header`
 - **功能级**: 在具体功能按钮/组件中检查权限
 - **API 调用前**: 在发起 API 请求前验证权限
 

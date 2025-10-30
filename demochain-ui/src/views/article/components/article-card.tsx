@@ -1,8 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import ClockIcon from '@/components/icons/ClockIcon';
-import EyeIcon from '@/components/icons/EyeIcon';
+import ClockIcon from '@/components/Icons/ClockIcon';
+import EyeIcon from '@/components/Icons/EyeIcon';
 import {Article} from '@/src/shared/api/article';
 
 interface ArticleCardProps {

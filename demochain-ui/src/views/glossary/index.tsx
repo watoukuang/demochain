@@ -3,7 +3,7 @@ import Sidebar from './components/Sidebar';
 import TermsGrid from './components/TermsGrid';
 import TermModal from './components/TermModal';
 import {pageTermAPI, Term} from '@/src/shared/api/term';
-import {category} from '@/src/config/term';
+import {category} from '@/config/term';
 
 interface GlossaryTerm {
     id?: number;

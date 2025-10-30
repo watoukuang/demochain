@@ -1,5 +1,5 @@
 import React from 'react';
-import Logo from '../components/icons/Logo';
+import LogoIcon from '@/components/Icons/LogoIcon';
 
 export default function Footer(): React.ReactElement {
     return (
@@ -10,7 +10,7 @@ export default function Footer(): React.ReactElement {
                     {/* 左侧品牌与备案（占两列） */}
                     <div className="md:col-span-2">
                         <div className="flex items-center gap-2 mb-2">
-                            <Logo/>
+                            <LogoIcon/>
                             <span
                                 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white">Demo Chain</span>
                         </div>

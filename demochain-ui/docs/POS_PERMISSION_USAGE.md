@@ -26,7 +26,7 @@ pages/pos/
 
 ```typescript
 import React, { useState, useEffect } from 'react'
-import Index from '@/components/access/Index'
+import Header from '@/components/access/Header'
 import { useAccess } from '@/src/shared/hooks/useAccess'
 ```
 
@@ -53,12 +53,12 @@ export default function POSComponent() {
 
 ```typescript
 return (
-  <Index permission="pos_access">
+  <Header permission="pos_access">
     {/* 页面内容 */}
     <div className="px-4 py-8">
       {/* 实际功能组件 */}
     </div>
-  </Index>
+  </Header>
 )
 ```
 
@@ -165,7 +165,7 @@ await recordUsage('pos_delegation', {
 
 ## 🚫 权限拒绝处理
 
-当用户没有 `pos_access` 权限时，`Index` 会自动显示升级提示：
+当用户没有 `pos_access` 权限时，`Header` 会自动显示升级提示：
 
 ### 升级提示内容
 - **标题**: "需要升级访问权限"
@@ -177,12 +177,12 @@ await recordUsage('pos_delegation', {
 ### 自定义权限拒绝
 
 ```typescript
-<Index 
+<Header 
   permission="pos_access"
   fallback={<CustomUpgradePrompt />}
 >
   <POSContent />
-</Index>
+</Header>
 ```
 
 ## 🔍 权限检查方式
@@ -190,9 +190,9 @@ await recordUsage('pos_delegation', {
 ### 1. 声明式检查 (推荐)
 
 ```typescript
-<Index permission="pos_access">
+<Header permission="pos_access">
   <POSStakingDemo />
-</Index>
+</Header>
 ```
 
 ### 2. 编程式检查
@@ -273,7 +273,7 @@ if (result.hasPermission) {
 ## 🎯 最佳实践
 
 ### 1. 权限检查时机
-- **页面级**: 使用 `Index` 包装整个页面
+- **页面级**: 使用 `Header` 包装整个页面
 - **功能级**: 在具体操作前检查权限
 - **导航级**: 在菜单中显示权限状态
 
@@ -300,7 +300,7 @@ if (result.hasPermission) {
 "use client"
 
 import React, { useState, useEffect } from 'react'
-import Index from '@/components/access/Index'
+import Header from '@/components/access/Header'
 import { useAccess } from '@/src/shared/hooks/useAccess'
 
 export default function POSStaking() {
@@ -330,7 +330,7 @@ export default function POSStaking() {
   }
 
   return (
-    <Index permission="pos_access">
+    <Header permission="pos_access">
       <div className="px-4 py-8">
         {/* 页面内容 */}
         <POSStakingInterface 
@@ -339,7 +339,7 @@ export default function POSStaking() {
           onStake={handleStake}
         />
       </div>
-    </Index>
+    </Header>
   )
 }
 ```

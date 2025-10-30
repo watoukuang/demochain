@@ -34,7 +34,7 @@ impl JwtService {
         if auth_header.starts_with("Bearer ") {
             Ok(&auth_header[7..])
         } else {
-            Err(anyhow!("Invalid authorization header format"))
+            Err(anyhow!("Invalid authorization components format"))
         }
     }
 }
@@ -61,7 +61,7 @@ where
     type Rejection = StatusCode;
 
     async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
-        // 尝试从 Authorization header 获取 token
+        // 尝试从 Authorization components 获取 token
         let TypedHeader(Authorization(bearer)) = parts
             .extract::<TypedHeader<Authorization<Bearer>>>()
             .await

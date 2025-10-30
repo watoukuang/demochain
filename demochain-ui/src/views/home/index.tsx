@@ -19,7 +19,7 @@ async function sha256(message: string): Promise<string> {
 export default function Home(): React.ReactElement {
     // 共识机制状态
     const [consensus, setConsensus] = useState<Consensus>('POW')
-    
+
     // SHA-256 相关状态
     const [data, setData] = useState<string>('')
     const [hash, setHash] = useState<string>('e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855')
@@ -37,7 +37,7 @@ export default function Home(): React.ReactElement {
     // 监听 localStorage 变化，实时更新共识机制
     useEffect(() => {
         if (typeof window === 'undefined') return;
-        
+
         const handleStorageChange = () => {
             const saved = (localStorage.getItem('consensus') as Consensus) || 'POW';
             setConsensus(saved);
@@ -45,7 +45,7 @@ export default function Home(): React.ReactElement {
 
         // 监听自定义事件（当 Title 中切换共识时触发）
         window.addEventListener('consensusChanged', handleStorageChange);
-        
+
         return () => {
             window.removeEventListener('consensusChanged', handleStorageChange);
         };
