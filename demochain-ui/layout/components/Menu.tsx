@@ -60,15 +60,15 @@ interface MenuProps {
 export default function Menu(props: MenuProps): React.ReactElement {
     const allItems: MenuItem[] = React.useMemo(() => {
         const extra: MenuItem[] = [
-            { name: '名词', href: '/glossary', icon: (<NameIcon/>) },
-            { name: '文章', href: '/article', icon: (<ArticleIcon/>) },
+            {name: '名词', href: '/glossary', icon: (<NameIcon/>)},
+            {name: '文章', href: '/article', icon: (<ArticleIcon/>)},
         ];
         return [...props.menuItems, ...extra];
     }, [props.menuItems]);
 
-    const { currentPathname } = props;
+    const {currentPathname} = props;
 
-    const LinkItem = ({ item }: { item: MenuItem }) => {
+    const LinkItem = ({item}: { item: MenuItem }) => {
         const isActive = currentPathname === item.href || (item.href === '/article' && currentPathname.startsWith('/article/'));
         return (
             <Link
@@ -86,7 +86,7 @@ export default function Menu(props: MenuProps): React.ReactElement {
         );
     };
 
-    const OverflowMenu = ({ items }: { items: MenuItem[] }) => {
+    const OverflowMenu = ({items}: { items: MenuItem[] }) => {
         const [open, setOpen] = useState(false);
         const ref = useRef<HTMLDivElement | null>(null);
 
@@ -114,7 +114,8 @@ export default function Menu(props: MenuProps): React.ReactElement {
                     </svg>
                 </button>
                 {open && (
-                    <div role="menu" className="absolute right-0 mt-2 w-48 rounded-2xl border bg-white backdrop-blur-sm shadow-lg ring-1 ring-black/5 p-2 border-gray-200 dark:bg-[#1e1e1e] dark:border-[#2d2d30] dark:ring-white/5 z-50">
+                    <div role="menu"
+                         className="absolute right-0 mt-2 w-48 rounded-2xl border bg-white backdrop-blur-sm shadow-lg ring-1 ring-black/5 p-2 border-gray-200 dark:bg-[#1e1e1e] dark:border-[#2d2d30] dark:ring-white/5 z-50">
                         {items.map((item) => {
                             const isActive = currentPathname === item.href || (item.href === '/article' && currentPathname.startsWith('/article/'));
                             return (
@@ -124,6 +125,7 @@ export default function Menu(props: MenuProps): React.ReactElement {
                                     className={`flex items-center font-medium gap-2 px-3 py-2 rounded-lg text-sm hover:bg-gray-100 dark:hover:bg-gray-800 ${isActive ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100' : 'text-gray-700 dark:text-gray-200'}`}
                                     onClick={() => setOpen(false)}
                                 >
+                                    {item.icon}
                                     <span>{item.name}</span>
                                 </Link>
                             );
@@ -147,28 +149,28 @@ export default function Menu(props: MenuProps): React.ReactElement {
             <div className="flex md:hidden items-center space-x-1">
                 {(() => {
                     const article = allItems.find(i => i.href === '/article');
-                    return article ? <LinkItem key={`sm-article`} item={article} /> : null;
+                    return article ? <LinkItem key={`sm-article`} item={article}/> : null;
                 })()}
             </div>
 
             {/* md only */}
             <div className="hidden md:flex lg:hidden xl:hidden items-center space-x-1">
                 {inlineMd.map((item) => (
-                    <LinkItem key={`md-${item.name}`} item={item} />
+                    <LinkItem key={`md-${item.name}`} item={item}/>
                 ))}
-                <OverflowMenu items={overflowMd} />
+                <OverflowMenu items={overflowMd}/>
             </div>
 
             <div className="md:hidden lg:flex xl:hidden items-center space-x-1">
                 {inlineLg.map((item) => (
-                    <LinkItem key={`lg-inline-${item.name}`} item={item} />
+                    <LinkItem key={`lg-inline-${item.name}`} item={item}/>
                 ))}
-                <OverflowMenu items={overflowLg} />
+                <OverflowMenu items={overflowLg}/>
             </div>
 
             <div className="hidden xl:flex items-center space-x-1">
                 {allItems.map((item) => (
-                    <LinkItem key={`xl-${item.name}`} item={item} />
+                    <LinkItem key={`xl-${item.name}`} item={item}/>
                 ))}
             </div>
         </div>
