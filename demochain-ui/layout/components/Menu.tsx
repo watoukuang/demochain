@@ -143,7 +143,16 @@ export default function Menu(props: MenuProps): React.ReactElement {
 
     return (
         <div className="flex items-center">
-            <div className="md:flex lg:hidden xl:hidden flex items-center space-x-1">
+            {/* < md: only show Article */}
+            <div className="flex md:hidden items-center space-x-1">
+                {(() => {
+                    const article = allItems.find(i => i.href === '/article');
+                    return article ? <LinkItem key={`sm-article`} item={article} /> : null;
+                })()}
+            </div>
+
+            {/* md only */}
+            <div className="hidden md:flex lg:hidden xl:hidden items-center space-x-1">
                 {inlineMd.map((item) => (
                     <LinkItem key={`md-${item.name}`} item={item} />
                 ))}
