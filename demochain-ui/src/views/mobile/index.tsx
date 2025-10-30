@@ -1,7 +1,5 @@
 import React from 'react';
-import Link from 'next/link';
 import Articles from "@/components/Articles";
-import Logo from "@/components/Logo";
 
 export default function MobileHero(): React.ReactElement {
     return (
