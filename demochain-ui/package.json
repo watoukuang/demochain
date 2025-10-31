@@ -1,7 +1,7 @@
 {
-  "name": "apitool-ui",
+  "name": "demochain-ui",
   "version": "1.0.0",
-  "description": "ApiTool - API Mock 与调试平台",
+  "description": "DemoChain - 区块链共识平台",
   "private": true,
   "scripts": {
     "dev": "next dev ",
@@ -18,7 +18,7 @@
     "nextjs",
     "tailwindcss"
   ],
-  "author": "ApiTool",
+  "author": "XiaoKuiGe",
   "license": "MIT",
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.13",
