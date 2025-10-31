@@ -7,7 +7,7 @@ interface RequestConfig {
 }
 
 class RequestService {
-    private baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://demochain.org:8085';
+    private baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://demochain.org';
 
     private async request<T>(url: string, options: RequestInit & RequestConfig = {}): Promise<R<T>> {
         const {headers = {}, timeout = 10000, skipErrorHandler, ...fetchOptions} = options;

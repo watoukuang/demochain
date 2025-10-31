@@ -24,16 +24,46 @@ docker run --name nginx --restart=always -p 443:443 -p 80:80 -d -v /usr/local/ng
 
 **后端**
 
-- 构建后端镜像
+- 构建后端二进制包
 
 ```shell
-.build
+root@local:~# cd /opt/app/demochain/demochain-api
+root@local:/opt/app/demochain/demochain-api# ./build.sh
+```
+
+- 上传数据文件
+```shell
+root@local:~# cd /opt/data/demochain
+root@local:~# scp demochain.db root@38.190.226.11:~
+```
+
+- 上传二进制包
+```shell
+root@local:~# cd /opt/app/demochain/demochain-api/dist
+root@local:~# scp demochain root@38.190.226.11:~
+```
+
+- 远程登录
+```shell
+root@local:~# ssh root@38.190.226.11
+```
+
+- 新建文件夹
+```shell
+root@remote:~# mkdir /opt/data/demochain
+root@remote:~# mkdir /opt/app/demochain
+```
+- 移动文件夹
+```shell
+root@remote:~# mv ~/demochain.db /opt/data/demochain/
+root@remote:~# mv ~/demochain /opt/app/demochain/
 ```
 
 - 启动服务
 
 ```shell
-docker run --name demochain-backend --restart=always -p 8085:8085 demochain-backend:latest
+root@remote:~#cd /opt/app/demochain/
+root@remote:~# ./demochain
 ```
 
 ### 后端接口
