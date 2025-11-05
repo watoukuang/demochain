@@ -1,7 +1,6 @@
 import React from "react";
 import TelegramIcon from "@/components/Icons/TelegramIcon";
 import TwitterIcon from "@/components/Icons/TwitterIcon";
-import DiscordIcon from "@/components/Icons/DiscordIcon";
 import Logo from "@/components/Logo";
 
 export default function Footer(): React.ReactElement {
@@ -37,16 +36,7 @@ export default function Footer(): React.ReactElement {
                         </a>
                         <div className="flex items-center gap-3 justify-center">
                             <a
-                                href="#"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                aria-label="Discord"
-                                className={`${socialLinkClass} hover:border-indigo-400 hover:text-indigo-600`}
-                            >
-                                <DiscordIcon className="h-4 w-4"/>
-                            </a>
-                            <a
-                                href="#"
+                                href="https://x.com/thexiaokuige"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 aria-label="Twitter"
@@ -55,7 +45,7 @@ export default function Footer(): React.ReactElement {
                                 <TwitterIcon className="h-4 w-4"/>
                             </a>
                             <a
-                                href="#"
+                                href="https://t.me/thexiaokuige"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 aria-label="Telegram"
