@@ -60,7 +60,7 @@ interface MenuProps {
 export default function Menu(props: MenuProps): React.ReactElement {
     const allItems: MenuItem[] = React.useMemo(() => {
         const extra: MenuItem[] = [
-            {name: '名词', href: '/glossary', icon: (<NameIcon/>)},
+            // {name: '名词', href: '/glossary', icon: (<NameIcon/>)},
             {name: '文章', href: '/blogs', icon: (<ArticleIcon/>)},
         ];
         return [...props.menuItems, ...extra];
