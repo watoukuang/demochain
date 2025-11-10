@@ -32,28 +32,34 @@ root@local:/opt/app/demochain/demochain-api# ./build.sh
 ```
 
 - 上传数据文件
+
 ```shell
 root@local:~# cd /opt/data/demochain
 root@local:~# scp demochain.db root@38.190.226.11:~
 ```
 
 - 上传二进制包
+
 ```shell
 root@local:~# cd /opt/app/demochain/demochain-api/dist
 root@local:~# scp demochain root@38.190.226.11:~
 ```
 
 - 远程登录
+
 ```shell
 root@local:~# ssh root@38.190.226.11
 ```
 
 - 新建文件夹
+
 ```shell
 root@remote:~# mkdir /opt/data/demochain
 root@remote:~# mkdir /opt/app/demochain
 ```
+
 - 移动文件夹
+
 ```shell
 root@remote:~# mv ~/demochain.db /opt/data/demochain/
 root@remote:~# mv ~/demochain /opt/app/demochain/
