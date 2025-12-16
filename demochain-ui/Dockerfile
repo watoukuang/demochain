@@ -21,7 +21,7 @@ RUN npm config set registry $NPM_REGISTRY \
 RUN npm ci || (npm config set registry https://registry.npmjs.org && npm ci)
 
 # Copy source
-COPY . .
+COPY . .ls
 
 # Build production
 RUN npm run build
